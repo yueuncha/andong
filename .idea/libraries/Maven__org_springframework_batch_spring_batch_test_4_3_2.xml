@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.springframework.batch:spring-batch-test:4.3.2">
+    <CLASSES>
+      <root url="jar://C:/eGovFrame-4.0.0/maven/repository/org/springframework/batch/spring-batch-test/4.3.2/spring-batch-test-4.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://C:/eGovFrame-4.0.0/maven/repository/org/springframework/batch/spring-batch-test/4.3.2/spring-batch-test-4.3.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://C:/eGovFrame-4.0.0/maven/repository/org/springframework/batch/spring-batch-test/4.3.2/spring-batch-test-4.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

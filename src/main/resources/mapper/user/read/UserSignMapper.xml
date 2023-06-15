@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.user.board.repository.UserMainRepository">
+    <select id="selectUserList" resultType="com.tour.user.board.vo.MemberVO">
+        SELECT
+               mb_idx
+             , mb_id
+             , mb_pw
+             , mb_email
+             , mb_ci
+             , mb_gender
+             , mb_birth
+             , mb_regdate
+             , mb_level
+             , mb_status
+             , mb_nickname
+             , mb_local
+             , mb_foreigner
+        FROM ad_member
+        WHERE mb_status = 1
+    </select>
+
+    <select id="selectUserOne" parameterType="Integer" resultType="com.tour.user.board.vo.MemberVO">
+        SELECT
+            mb_idx
+             , mb_id
+             , mb_pw
+             , mb_email
+             , mb_ci
+             , mb_gender
+             , mb_birth
+             , mb_regdate
+             , mb_level
+             , mb_status
+             , mb_nickname
+             , mb_local
+             , mb_foreigner
+        FROM ad_member
+        WHERE mb_status = 1
+        AND  mb_idx = #{mb_idx}
+    </select>
+
+    <select id="userDupChk" resultType="Integer">
+        SELECT
+            ${mb_param} = ${mb_param}
+        FROM ad_member
+        WHERE mb_status = 1
+        AND  ${mb_param} = #{mb_value}
+    </select>
+
+    <select id="userDataOne" parameterType="Object" resultType="com.tour.user.board.vo.MemberVO">
+        SELECT
+            ${mb_param}
+        FROM ad_member
+        WHERE mb_status = 1
+          AND mb_idx = #{mb_idx}
+    </select>
+
+    <select id="userLogin" parameterType="String" resultType="com.tour.user.board.vo.MemberVO">
+        SELECT
+            mb_idx
+             , mb_id
+             , mb_pw
+             , mb_email
+             , mb_ci
+             , mb_gender
+             , mb_birth
+             , mb_regdate
+             , mb_level
+             , mb_status
+             , mb_nickname
+             , mb_local
+             , mb_foreigner
+        FROM ad_member
+        WHERE mb_status = 1
+        AND mb_id = #{mb_id}
+    </select>
+
+
+
+</mapper>
