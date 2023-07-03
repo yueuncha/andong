@@ -1,4 +1,4 @@
-package com.tour.user.board.repository;
+package com.tour.user.board.repository.read;
 
 import com.tour.user.board.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface UserMainRepository {
+public interface UserMainReadRepository {
 
     List<MemberVO> selectUserList();
 
@@ -14,10 +14,10 @@ public interface UserMainRepository {
 
     MemberVO userLogin(String mb_id);
 
-    Integer userDupChk(String mb_param, String mb_value);
+    int userDupChk(String mb_param, String mb_value);
 
     MemberVO userDataOne(String mb_param, int mb_idx);
 
-    Integer userJoin(MemberVO vo);
-
 }
+
+

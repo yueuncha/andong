@@ -28,15 +28,14 @@ public class ExceptionController {
         this.setForm = new JsonForm(LocalDateTime.now()).setData();
     }
 
-    //예외 처리
-    @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Exception.class)
-    public Map<String, Object> serverError(Exception e){
-        setForm.replace("code", "SUCCESS", "SERVER ERROR");
-        setForm.put("message", e.getMessage());
-        return setForm;
-    }
+//    //예외 처리
+//    @ResponseBody
+//    @ExceptionHandler(Exception.class)
+//    public Map<String, Object> serverError(Exception e){
+//        setForm.replace("code", "SUCCESS", "SERVER ERROR");
+//        setForm.put("message", e.getMessage());
+//        return setForm;
+//    }
 
 
 

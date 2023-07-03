@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/user")
@@ -26,13 +28,21 @@ public class UserMainController{
         this.userMainService = userMainService;
     }
 
-    @RequestMapping("/main")
+    @RequestMapping("/agreement")
+    public ModelAndView userAgreement(){
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("user/userAgreement");
+        mv.addObject("agreement",userMainService.userAgreement());
+        return mv;
+    }
+
+    @RequestMapping("/listAll")
     @ResponseBody
     public JSONObject userList() throws Exception{
         return userMainService.userList(setForm);
     }
 
-    @RequestMapping("/myData")
+    @RequestMapping("/userOne")
     @ResponseBody
     public JSONObject userOne(int mb_idx) throws Exception{
         return userMainService.userOne(mb_idx, setForm);

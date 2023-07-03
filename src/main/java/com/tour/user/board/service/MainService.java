@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface MainService {
 
+    //이용약관
+    Map<String, String> userAgreement();
 
     // 회원가입
     JSONObject userJoin(MemberVO vo, Map<String, Object> map);
