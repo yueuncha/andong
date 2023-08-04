@@ -23,3 +23,6 @@
 <script src="/resources/vendor/datatables/dataTables.bootstrap4.js"></script>
 <!-- Page level custom scripts -->
 <script src="/resources/js/demo/datatables-demo.js"></script>
+
+<!-- @@ -->
+<script src="/resources/js/admin.js"></script>

@@ -1,14 +1,18 @@
 package com.tour.admin.member.controller;
 
 import com.tour.admin.member.service.MemberServiceImpl;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-@RequestMapping("/member/")
+import java.util.HashMap;
+import java.util.Map;
+
+@RequestMapping("/admin/member")
 @Controller
 public class MemberController {
 
@@ -19,10 +23,36 @@ public class MemberController {
         this.memberServiceImpl = memberServiceImpl;
     }
 
-    @RequestMapping("userView")
+    @RequestMapping("/user")
     public ModelAndView userView(){
         ModelAndView mv = new ModelAndView();
         mv.setViewName("admin/member/userView");
         return mv;
     }
+
+    @RequestMapping("/store")
+    public ModelAndView storeView(){
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("admin/member/storeView");
+        return mv;
+    }
+
+    @RequestMapping("/manager")
+    public ModelAndView managerView(){
+        return memberServiceImpl.managerView();
+    }
+
+
+    @RequestMapping("/managerSave")
+    @ResponseBody
+    public int managerSave(@RequestBody HashMap<String, Object> params){
+        return memberServiceImpl.managerSave(params);
+    }
+
+    @RequestMapping("/managerSelectOne")
+    @ResponseBody
+    public Map<String, Object> managerOne(@RequestBody int mb_idx){
+        return memberServiceImpl.managerOne(mb_idx);
+    }
+
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.admin.member.repository.write.MemberWriteRepository">
+    <insert id="managerInsert" parameterType="map">
+        INSERT INTO ad_member
+        (mb_id, mb_pw, mb_regdate, mb_level, mb_status, mb_nickname,  mb_foreigner)
+        VALUES(#{mb_id}, #{mb_pw}, CURRENT_TIMESTAMP, 3, 1, #{mb_nickname},  'K')
+    </insert>
+
+</mapper>

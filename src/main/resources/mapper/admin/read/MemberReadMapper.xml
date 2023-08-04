@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.admin.member.repository.read.MemberReadRepository">
+    <select id="managerList" resultType="java.util.Map" >
+        SELECT
+            mb_idx
+            , mb_id
+            , mb_nickname
+            , CAST(mb_level AS SIGNED) as mb_level
+            , mb_regdate
+            , CAST(mb_status AS SIGNED) as mb_status
+        FROM ad_member
+    </select>
+
+    <select id="managerOne" resultType="java.util.Map" parameterType="Integer">
+        SELECT
+            mb_idx
+            , mb_id
+            , mb_nickname
+            , CAST(mb_level AS SIGNED) as mb_level
+            , CAST(mb_status AS SIGNED) as mb_status
+        FROM ad_member
+        WHERE mb_idx = #{mb_idx}
+    </select>
+
+</mapper>

@@ -5,7 +5,7 @@
 <configuration>
     <settings>
         <!-- mybatis cache 사용여부 -->
-        <setting name="cacheEnabled" value="true"/>
+        <setting name="cacheEnabled" value="false"/>
         <!-- 지연로딩 사용여부 -->
         <setting name="lazyLoadingEnabled" value="false"/>
         <!-- 한 개의 구문에서 여러 개의 ResultSet을 허용할지 여부 -->
@@ -17,7 +17,4 @@
         <!-- DB 응답 타임아웃 설정 -->
         <setting name="defaultStatementTimeout" value="25000"/>
     </settings>
-    <typeAliases>
-        <package name="com.tour.*"/>
-    </typeAliases>
 </configuration>

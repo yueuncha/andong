@@ -539,7 +539,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="exampleFormControlSelect1">소분류</label>
+                                        <label for="exampleFormControlSelect2">소분류</label>
                                         <select class="form-control" id="exampleFormControlSelect2">
                                             <option>선택1</option>
                                             <option>선택2</option>

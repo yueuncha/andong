@@ -1,9 +1,9 @@
 
 
 (function($) {
-  "use strict"; // Start of use strict
-  $('#accordionSidebar').load("side.html");
-  $('#navbar').load("navbar.html");
+   "use strict"; // Start of use strict
+  // $('#accordionSidebar').load("side.html");
+  // $('#navbar').load("navbar.html");
 
   // Toggle the side navigation
   $(document).on('click', "#sidebarToggle, #sidebarToggleTop", function(e) {
