@@ -1,4 +1,4 @@
-package com.tour.admin.member.repository.read;
+package com.tour.admin.repository.read;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.json.simple.JSONObject;

@@ -1,4 +1,4 @@
-package com.tour.admin.member.repository.write;
+package com.tour.admin.repository.write;
 
 import org.apache.ibatis.annotations.Mapper;
 

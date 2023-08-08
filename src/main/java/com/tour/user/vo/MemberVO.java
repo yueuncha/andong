@@ -1,4 +1,4 @@
-package com.tour.user.board.vo;
+package com.tour.user.vo;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;

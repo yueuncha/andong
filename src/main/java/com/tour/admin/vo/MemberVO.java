@@ -1,4 +1,4 @@
-package com.tour.admin.member.vo;
+package com.tour.admin.vo;
 
 
 

@@ -1,36 +1,29 @@
-package com.tour.user.board.service;
+package com.tour.user.service;
 
 import com.tour.AES128;
-import com.tour.user.board.repository.read.UserMainReadRepository;
-import com.tour.user.board.repository.write.UserMainWriteRepository;
-import com.tour.user.board.vo.MemberVO;
+import com.tour.user.repository.read.UserMemberReadRepository;
+import com.tour.user.repository.write.UserMemberWriteRepository;
+import com.tour.user.service.origin.MemberService;
+import com.tour.user.vo.MemberVO;
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
-public class UserMainServiceImpl implements MainService{
+public class UserMemberServiceImpl implements MemberService {
 
     @Value("#{aesConfig['key']}")
     private String key;
 
-    private final UserMainReadRepository readRepository;
-    private final UserMainWriteRepository writeRepository;
+    private final UserMemberReadRepository readRepository;
+    private final UserMemberWriteRepository writeRepository;
 
     @Autowired
-    public UserMainServiceImpl(UserMainReadRepository readRepository, UserMainWriteRepository writeRepository) {
+    public UserMemberServiceImpl(UserMemberReadRepository readRepository, UserMemberWriteRepository writeRepository) {
         this.readRepository = readRepository;
         this.writeRepository = writeRepository;
     }
@@ -107,7 +100,7 @@ public class UserMainServiceImpl implements MainService{
             boolean txt = new EqualsBuilder().append(aes128.javaDecrypt(vo.get().getMb_pw()), mb_pw).isEquals();
 
             map.put("loginResult",txt);
-            map.put("result", (txt) ? vo.get() : null);
+            map.put("result", (txt) ? vo.get() : "");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,8 +135,8 @@ public class UserMainServiceImpl implements MainService{
     @Override
     public JSONObject userDataOne(String mb_param, int mb_idx, Map<String, Object> map) {
         String param = sqlParamChk(mb_param);
-        MemberVO vo = (param != null) ? Optional.ofNullable(readRepository.userDataOne(param, mb_idx)).orElseGet(null) : null;
-        map.put("result", (vo != null) ? vo : Collections.singletonMap( mb_param, "파라미터 확인"));
+        Map<String, Object> params = (param != null) ? Optional.ofNullable(readRepository.userDataOne(param, mb_idx)).orElseGet(null) : null;
+        map.put("result", (params != null) ? params : Collections.singletonMap( mb_param, "parameter check"));
         return new JSONObject(map);
     }
 
@@ -167,4 +160,16 @@ public class UserMainServiceImpl implements MainService{
         map.put("result", Collections.singletonMap("joinResult", (result != 0) ? "Y" : "N"));
         return new JSONObject(map);
     }
+
+    @Override
+    public JSONObject mailSend(String email, Map<String, Object> map) {
+        Random random = new Random();
+        int resNum = random.nextInt(888888)+111111;
+        map.put("result", resNum);
+        return new JSONObject(map);
+    }
+
+
+
+
 }

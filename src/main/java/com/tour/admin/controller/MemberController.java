@@ -1,7 +1,6 @@
-package com.tour.admin.member.controller;
+package com.tour.admin.controller;
 
-import com.tour.admin.member.service.MemberServiceImpl;
-import org.json.simple.JSONObject;
+import com.tour.admin.service.MemberServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

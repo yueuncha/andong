@@ -1,4 +1,4 @@
-package com.tour.admin.member.service;
+package com.tour.admin.service;
 
 
 import org.json.simple.JSONObject;

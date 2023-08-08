@@ -18,7 +18,6 @@ public class JsonForm {
 
     public Map<String, Object> setData(){
         Map<String, Object> map = new HashMap<>();
-        map.put("code", "SUCCESS");
         map.put("localTime",time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
         return map;
     }

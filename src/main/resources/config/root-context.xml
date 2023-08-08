@@ -40,12 +40,12 @@
     </bean>
 
 
-    <mybatis-spring:scan base-package="com.tour.*.*.repository.read"
+    <mybatis-spring:scan base-package="com.tour.*.repository.read"
                          annotation="org.apache.ibatis.annotations.Mapper"
                          factory-ref="SqlSessionFactoryRead"/>
 
 
-    <mybatis-spring:scan base-package="com.tour.*.*.repository.write"
+    <mybatis-spring:scan base-package="com.tour.*.repository.write"
                          annotation="org.apache.ibatis.annotations.Mapper"
                          factory-ref="SqlSessionFactoryWrite"/>
 

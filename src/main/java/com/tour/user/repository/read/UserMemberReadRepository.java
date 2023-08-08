@@ -1,12 +1,13 @@
-package com.tour.user.board.repository.read;
+package com.tour.user.repository.read;
 
-import com.tour.user.board.vo.MemberVO;
+import com.tour.user.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
-public interface UserMainReadRepository {
+public interface UserMemberReadRepository {
 
     List<MemberVO> selectUserList();
 
@@ -16,7 +17,7 @@ public interface UserMainReadRepository {
 
     int userDupChk(String mb_param, String mb_value);
 
-    MemberVO userDataOne(String mb_param, int mb_idx);
+    Map<String, Object> userDataOne(String mb_param, int mb_idx);
 
 }
 
