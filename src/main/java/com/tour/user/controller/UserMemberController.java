@@ -100,6 +100,14 @@ public class UserMemberController {
         return userMemberService.mailSend(email, setForm);
     }
 
+    /**
+     *비밀번호 변경
+     */
+    @RequestMapping("/pwChange")
+    @ResponseBody
+    public JSONObject passwordChange(Map<String, Object> param){
+        return userMemberService.passwordChange(param);
+    }
 
 
 

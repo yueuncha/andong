@@ -30,4 +30,11 @@
         , #{mb_foreigner}
         )
     </insert>
+
+    <update id="passwordChange" parameterType="java.util.Map">
+        UPDATE ad_member
+        SET mb_pw = #{mb_pw}
+        WHERE mb_idx = #{mb_idx}
+    </update>
+
 </mapper>

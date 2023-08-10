@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.user.repository.read.UserStoreReadRepository">
+    <select id="storeSearch" parameterType="java.util.Map" resultType="java.util.List">
+        SELECT st.str_idx, asd.str_idx, asd.str_dt_name from ad_store st
+                                                                 left join ad_store_detail asd
+                                                                           on st.str_idx = asd.str_idx
+        WHERE asd.str_dt_type = 'ko'
+          and st.str_type = 'T';
+
+    </select>
+</mapper>

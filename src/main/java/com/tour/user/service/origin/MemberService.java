@@ -23,6 +23,9 @@ public interface MemberService {
     JSONObject userDataOne(String mb_param, int mb_idx, Map<String, Object> map);
     //이메일발송
     JSONObject mailSend(String email, Map<String, Object> map);
+    //비밀번호변경
+    JSONObject passwordChange(Map<String, Object> param);
+
 
 
 }

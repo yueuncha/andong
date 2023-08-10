@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserMemberServiceImpl implements MemberService {
@@ -169,7 +170,18 @@ public class UserMemberServiceImpl implements MemberService {
         return new JSONObject(map);
     }
 
-
+    @Override
+    public JSONObject passwordChange(Map<String, Object> param) {
+        String res = "FAIL";
+        try {
+            AES128 aes = new AES128(key);
+            param.replace("mb_pw", param.get("mb_pw"), aes.javaEncrypt(param.get("mb_pw").toString()));
+            res = (writeRepository.passwordChange(param) != 0) ? "SUCCESS" : "FAIL";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new JSONObject(Collections.singletonMap("result", res));
+    }
 
 
 }

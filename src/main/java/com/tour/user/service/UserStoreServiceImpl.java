@@ -8,6 +8,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class UserStoreServiceImpl implements StoreService {
 
@@ -25,6 +27,11 @@ public class UserStoreServiceImpl implements StoreService {
         return null;
     }
 
-
-
+    @Override
+    public JSONObject storeSearch(Map<String, Object> param) {
+        String keyword = (param.get("keyword").toString()).replaceAll(" ", "");
+        param.replace("keyword", keyword);
+        writeRepository.storeSearch(param);
+        return null;
+    }
 }
