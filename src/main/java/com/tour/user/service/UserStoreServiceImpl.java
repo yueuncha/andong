@@ -31,7 +31,39 @@ public class UserStoreServiceImpl implements StoreService {
     public JSONObject storeSearch(Map<String, Object> param) {
         String keyword = (param.get("keyword").toString()).replaceAll(" ", "");
         param.replace("keyword", keyword);
-        writeRepository.storeSearch(param);
+        readRepository.storeSearch(param);
         return null;
     }
+
+    @Override
+    public JSONObject categoryList() {
+        return null;
+    }
+
+    @Override
+    public JSONObject categoryDetail() {
+        return null;
+    }
+
+    @Override
+    public JSONObject storeDetail() {
+        return null;
+    }
+
+    @Override
+    public JSONObject storeView() {
+        return null;
+    }
+
+    @Override
+    public JSONObject storeLike() {
+        return null;
+    }
+
+    @Override
+    public JSONObject storeReview() {
+        return null;
+    }
+
+
 }

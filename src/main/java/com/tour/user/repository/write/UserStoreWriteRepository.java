@@ -7,5 +7,7 @@ import java.util.Map;
 
 @Mapper
 public interface UserStoreWriteRepository {
-    List<Map<String, Object>> storeSearch(Map<String, Object> param);
+    int storeView();
+    int storeLike();
+    int storeReview();
 }

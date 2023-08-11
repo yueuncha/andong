@@ -8,7 +8,8 @@
         FROM ad_store st
         LEFT JOIN ad_store_detail asd
         ON st.str_idx = asd.str_idx
-        WHERE asd.str_dt_type = #{lang}
+        WHERE
+              (asd.str_dt_type = #{lang} OR asd.str_dt_type = 'ko')
         AND asd.str_dt_name LIKE CONCAT('%',#{keyword},'%')
     </select>
 
@@ -24,7 +25,21 @@
 
     </select>
 
-    <select id="storeDetail"></select>
+    <select id="storeDetail">
+        SELECT DISTINCT st.str_idx
+                      , asd.str_idx
+                      , asd.str_dt_name
+        from ad_store st
+        left join ad_store_detail asd
+        on st.str_idx = asd.str_idx
+        WHERE st.str_category = (
+            SELECT ct_parent
+            from ad_category
+            WHERE ct_idx = 10
+        )
+        or st.str_category = 10
+        and asd.str_dt_type = 'ko';
+    </select>
 
     <select id="storeView"></select>
 </mapper>
