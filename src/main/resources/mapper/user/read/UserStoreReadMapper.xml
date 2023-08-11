@@ -2,11 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserStoreReadRepository">
     <select id="storeSearch" parameterType="java.util.Map" resultType="java.util.List">
-        SELECT st.str_idx, asd.str_idx, asd.str_dt_name from ad_store st
-                                                                 left join ad_store_detail asd
-                                                                           on st.str_idx = asd.str_idx
-        WHERE asd.str_dt_type = 'ko'
-          and st.str_type = 'T';
+        SELECT st.str_idx
+             , asd.str_idx
+             , asd.str_dt_name
+        FROM ad_store st
+        LEFT JOIN ad_store_detail asd
+        ON st.str_idx = asd.str_idx
+        WHERE asd.str_dt_type = #{lang}
+        AND asd.str_dt_name LIKE CONCAT('%',#{keyword},'%')
+    </select>
+
+    <select id="categoryList" >
 
     </select>
+
+    <select id="categoryDetail">
+
+    </select>
+
+    <select id="storeList">
+
+    </select>
+
+    <select id="storeDetail"></select>
+
+    <select id="storeView"></select>
 </mapper>
