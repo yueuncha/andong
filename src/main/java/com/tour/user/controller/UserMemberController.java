@@ -6,11 +6,13 @@ import com.tour.user.vo.MemberVO;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/user")
@@ -105,8 +107,11 @@ public class UserMemberController {
      */
     @RequestMapping("/pwChange")
     @ResponseBody
-    public JSONObject passwordChange(Map<String, Object> param){
-        return userMemberService.passwordChange(param);
+    public JSONObject passwordChange(String mb_idx, String mb_pw){
+        Map<String, Object> map = new HashMap<>();
+        map.put("mb_idx", mb_idx);
+        map.put("mb_pw", mb_pw);
+        return userMemberService.passwordChange(map);
     }
 
 

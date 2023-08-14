@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -175,7 +176,7 @@ public class UserMemberServiceImpl implements MemberService {
         String res = "FAIL";
         try {
             AES128 aes = new AES128(key);
-            param.replace("mb_pw", param.get("mb_pw"), aes.javaEncrypt(param.get("mb_pw").toString()));
+            param.replace("mb_pw", aes.javaEncrypt(param.get("mb_pw").toString()));
             res = (writeRepository.passwordChange(param) != 0) ? "SUCCESS" : "FAIL";
         } catch (Exception e) {
             e.printStackTrace();

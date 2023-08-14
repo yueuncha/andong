@@ -8,6 +8,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,36 +30,51 @@ public class UserStoreServiceImpl implements StoreService {
     }
 
     @Override
-    public JSONObject storeSearch(Map<String, Object> param) {
-        String keyword = (param.get("keyword").toString()).replaceAll(" ", "");
-        param.replace("keyword", keyword);
-        readRepository.storeSearch(param);
-        return null;
+    public List<Map<String, Object>> storeSearch(Map<String, Object> params) {
+        String keyword = (params.get("keyword").toString()).replaceAll(" ", "");
+        params.replace("keyword", keyword);
+        return readRepository.storeSearch(params);
     }
 
     @Override
-    public JSONObject categoryList() {
-        return null;
+    public List<Map<String, Object>> categoryList(String ct_parent, String lang) {
+        return readRepository.categoryList(ct_parent, lang);
     }
 
     @Override
-    public JSONObject categoryDetail() {
-        return null;
+    public List<Map<String, Object>> categoryDetail(String str_category, String lang) {
+        return readRepository.categoryDetail(str_category, lang);
     }
 
     @Override
-    public JSONObject storeDetail() {
-        return null;
+    public List<Map<String, Object>> storeDetail(String str_idx, String lang) {
+        return readRepository.storeDetail(str_idx, lang);
     }
 
     @Override
-    public JSONObject storeView() {
-        return null;
+    public Map<String, Object> storeView(String str_idx) {
+        String res = (writeRepository.storeView(str_idx) != 0) ? "SUCCESS" : "FAIL";
+        return Collections.singletonMap("result", res);
     }
 
     @Override
-    public JSONObject storeLike() {
-        return null;
+    public Map<String, Object> storeLike(Map<String, Object> params) {
+        String like_res = params.get("like_status").toString();
+        String res = "";
+        System.out.println(like_res);
+        if(like_res.equals("Y")){
+
+            /*업데이트*/
+            writeRepository.storeDisLike(params);
+            writeRepository.likeCntDown(params);
+
+        }else{
+            /*신규등록*/
+            writeRepository.storeLike(params);
+            writeRepository.likeCntUp(params);
+        }
+
+        return Collections.singletonMap("result", res);
     }
 
     @Override

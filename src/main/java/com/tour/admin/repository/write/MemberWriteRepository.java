@@ -10,4 +10,5 @@ public interface MemberWriteRepository {
 
     int managerInsert(Map<String, Object> params);
 
+
 }

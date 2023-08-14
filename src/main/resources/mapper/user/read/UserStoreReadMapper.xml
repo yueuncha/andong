@@ -2,44 +2,76 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserStoreReadRepository">
     <select id="storeSearch" parameterType="java.util.Map" resultType="java.util.List">
-        SELECT st.str_idx
-             , asd.str_idx
-             , asd.str_dt_name
+        SELECT DISTINCT
+               st.str_idx AS str_idx
+             , asd.str_dt_name AS str_idx
+             , 0 AS str_review_num
         FROM ad_store st
-        LEFT JOIN ad_store_detail asd
-        ON st.str_idx = asd.str_idx
-        WHERE
-              (asd.str_dt_type = #{lang} OR asd.str_dt_type = 'ko')
+            LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+        WHERE asd.str_dt_type = #{lang} OR asd.str_dt_type = 'ko'
         AND asd.str_dt_name LIKE CONCAT('%',#{keyword},'%')
     </select>
 
-    <select id="categoryList" >
-
+    <select id="categoryList" parameterType="String" resultType="map">
+        SELECT
+            DISTINCT st.str_idx AS str_idx
+                   , asd.str_dt_type AS str_dt_type
+                   , asd.str_dt_name AS str_dt_name
+                   , st.str_image AS str_image
+                   , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                   , 0 AS str_review_num
+                    , IFNULL(
+                        (SELECT like_status
+                         FROM ad_like
+                         WHERE mb_idx = 6 and str_idx = st.str_idx), 'N') AS like_status
+        FROM ad_store st
+                 LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+                 LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+        WHERE ac.ct_parent = #{ct_parent}
+          AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
     </select>
 
-    <select id="categoryDetail">
-
+    <select id="categoryDetail"  parameterType="String" resultType="map">
+        SELECT DISTINCT
+                    st.str_idx AS str_idx
+                   , asd.str_dt_type AS str_dt_type
+                   , asd.str_dt_name AS str_dt_name
+                   , st.str_image AS str_image
+                   , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                   , 0 AS str_review_num
+                   , IFNULL(
+                        (SELECT like_status
+                         FROM ad_like
+                         WHERE mb_idx = 6 and str_idx = st.str_idx), 'N') AS like_status
+        FROM ad_store st
+                 LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+        WHERE st.str_category = #{str_category}
+          AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
     </select>
 
-    <select id="storeList">
-
+    <select id="storeDetail" parameterType="String" resultType="java.util.Map">
+        SELECT DISTINCT
+            st.str_idx
+            , st.str_image
+            , st.str_week_s_time
+            , st.str_week_e_time
+            , st.str_phone
+            , st.str_category
+            , asd.str_dt_name
+            , asd.str_dt_type
+            , IFNULL(asd.str_dt_address , '') AS str_dt_address
+            , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
+            , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+            , 0 AS str_review_num
+            , IFNULL(
+                (SELECT like_status
+                FROM ad_like
+                WHERE mb_idx = 6 and str_idx = st.str_idx), 'N') AS like_status
+		FROM ad_store st
+ 			LEFT JOIN ad_store_detail asd
+			ON st.str_idx = asd.str_idx
+		WHERE st.str_idx = #{str_idx}
+		AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
     </select>
 
-    <select id="storeDetail">
-        SELECT DISTINCT st.str_idx
-                      , asd.str_idx
-                      , asd.str_dt_name
-        from ad_store st
-        left join ad_store_detail asd
-        on st.str_idx = asd.str_idx
-        WHERE st.str_category = (
-            SELECT ct_parent
-            from ad_category
-            WHERE ct_idx = 10
-        )
-        or st.str_category = 10
-        and asd.str_dt_type = 'ko';
-    </select>
-
-    <select id="storeView"></select>
 </mapper>

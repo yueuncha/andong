@@ -31,7 +31,7 @@
         )
     </insert>
 
-    <update id="passwordChange" parameterType="java.util.Map">
+    <update id="passwordChange" parameterType="map">
         UPDATE ad_member
         SET mb_pw = #{mb_pw}
         WHERE mb_idx = #{mb_idx}

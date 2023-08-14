@@ -16,5 +16,6 @@
         <setting name="defaultExecutorType" value="SIMPLE"/>
         <!-- DB 응답 타임아웃 설정 -->
         <setting name="defaultStatementTimeout" value="25000"/>
+        <setting name="callSettersOnNulls" value="true"/>
     </settings>
 </configuration>

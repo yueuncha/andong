@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.tour.user.repository.read.UserStoreWriteRepository">
-    <update id="storeView" ></update>
-    <update id="storeLike"></update>
-    
-    <insert id="storeReview"></insert>
+<mapper namespace="com.tour.user.repository.write.UserStoreWriteRepository">
+    <update id="storeView" >
+        UPDATE ad_store
+        set str_view_cnt = str_view_cnt+1
+        WHERE  str_idx = #{str_idx}
+    </update>
 
+    <insert id="storeLike" parameterType="integer" >
+        INSERT ad_like (
+            mb_idx
+            , str_idx
+            , like_type
+        ) VALUES (
+            #{mb_idx}
+            , #{str_idx}
+            , 'S'
+        )
+    </insert>
+
+    <update id="storeDisLike" parameterType="integer">
+        update ad_like set like_status = 'N' where str_idx = #{str_idx} and mb_idx = #{mb_idx}
+    </update>
+
+    <update id="likeCntUp" parameterType="integer">
+        update ad_store set str_like_cnt = str_like_cnt+1 where str_idx = #{str_idx}
+    </update>
+
+    <update id="likeCntDown" parameterType="integer">
+        update ad_store set str_like_cnt = str_like_cnt-1 where str_idx = #{str_idx}
+    </update>
 
 </mapper>
