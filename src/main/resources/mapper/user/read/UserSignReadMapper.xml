@@ -1,39 +1,45 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserMemberReadRepository">
-    <select id="selectUserList" resultType="com.tour.user.vo.MemberVO">
+    <select id="selectUserList" resultType="map">
         SELECT
-            mb_idx
-             , IFNULL(mb_id, '')
+            am.mb_idx
+             , IFNULL(am.mb_id, '') AS mb_id
              , mb_pw
-             , IFNULL(mb_email, '')
-             , IFNULL(mb_ci, '')
-             , mb_gender
-             , IFNULL(mb_birth, '')
-             , mb_regdate
-             , mb_level
-             , mb_status
-             , mb_nickname
-             , IFNULL(mb_local, '')
-             , mb_foreigner
-        FROM ad_member
+             , IFNULL(am.mb_email, '') AS mb_email
+             , IFNULL(am.mb_ci, '') AS mb_ci
+             , IFNULL(am.mb_gender, '') AS mb_gender
+             , IFNULL(am.mb_birth, '') AS mb_birth
+             , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+             , CAST(am.mb_level AS SIGNED) AS mb_level
+             , CAST(am.mb_status AS SIGNED) AS mb_status
+             , IFNULL(am.mb_nickname, '') AS mb_nickname
+             , (SELECT ls.set_1_name FROM local_set_1 ls
+             WHERE ls.set_1_code = am.mb_local ) AS mb_local
+             , (SELECT lss.set_2_name FROM local_set_2  lss
+             WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+             , am.mb_foreigner
+        FROM ad_member am
         WHERE mb_status = 1
     </select>
 
-    <select id="selectUserOne" parameterType="Integer" resultType="com.tour.user.vo.MemberVO">
+    <select id="selectUserOne" parameterType="Integer" resultType="map">
         SELECT
             mb_idx
-             , IFNULL(mb_id, '')
+             , IFNULL(mb_id, '') AS mb_id
              , mb_pw
-             , IFNULL(mb_email, '')
-             , IFNULL(mb_ci, '')
-             , mb_gender
-             , IFNULL(mb_birth, '')
-             , mb_regdate
-             , mb_level
-             , mb_status
+             , IFNULL(mb_email, '') AS mb_email
+             , IFNULL(mb_ci, '') AS mb_ci
+             , IFNULL(mb_gender, '') AS mb_gender
+             , IFNULL(mb_birth, '') AS mb_birth
+             , DATE_FORMAT(mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+             , CAST(mb_level AS SIGNED) AS mb_level
+             , CAST(mb_status AS SIGNED) AS mb_status
              , mb_nickname
-             , IFNULL(mb_local, '')
+             , (SELECT ls.set_1_name FROM local_set_1 ls
+                WHERE ls.set_1_code = am.mb_local ) AS mb_local
+             , (SELECT lss.set_2_name FROM local_set_2  lss
+                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
              , mb_foreigner
         FROM ad_member
         WHERE mb_status = 1
@@ -56,25 +62,46 @@
           AND mb_idx = #{mb_idx}
     </select>
 
-    <select id="userLogin" parameterType="String" resultType="com.tour.user.vo.MemberVO">
+    <select id="userLogin" parameterType="String" resultType="map">
         SELECT
             mb_idx
-             , IFNULL(mb_id, '')
+             , IFNULL(mb_id, '') AS mb_id
              , mb_pw
-             , IFNULL(mb_email, '')
-             , IFNULL(mb_ci, '')
-             , mb_gender
-             , IFNULL(mb_birth, '')
-             , mb_regdate
-             , mb_level
-             , mb_status
+             , IFNULL(mb_email, '') AS mb_email
+             , IFNULL(mb_ci, '') AS mb_ci
+             , IFNULL(mb_gender, '') AS mb_gender
+             , IFNULL(mb_birth, '') AS mb_birth
+             , DATE_FORMAT(mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+             , CAST(mb_level AS SIGNED) AS mb_level
+             , CAST(mb_status AS SIGNED) AS mb_status
              , mb_nickname
-             , IFNULL(mb_local, '')
+             , (SELECT ls.set_1_name FROM local_set_1 ls
+                WHERE ls.set_1_code = am.mb_local ) AS mb_local
+             , (SELECT lss.set_2_name FROM local_set_2  lss
+                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
              , mb_foreigner
         FROM ad_member
         WHERE mb_status = 1
           AND mb_email = #{mb_email}
     </select>
 
+    <select id="localCategory" parameterType="String" resultType="map">
+        SELECT
+            ls.set_1_idx
+            , ls.set_1_code
+            , ls.set_1_name
+            , ls.set_1_type
+        FROM local_set_1 ls
+        WHERE ls.set_1_type = #{mb_foreign}
+    </select>
 
+    <select id="localChoice" parameterType="String" resultType="map">
+        SELECT
+            lss.set_2_idx
+            , lss.set_1_code
+            , lss.set_2_code
+            , lss.set_2_name
+        FROM local_set_2 lss
+        WHERE lss.set_1_code = #{mb_set_1_code}
+    </select>
 </mapper>

@@ -1,32 +1,46 @@
 package com.tour.user.controller;
 
+import com.tour.AES128;
 import com.tour.JsonForm;
+import com.tour.user.ExceptionController;
 import com.tour.user.service.UserMemberServiceImpl;
 import com.tour.user.vo.MemberVO;
+import jdk.nashorn.internal.parser.JSONParser;
+import jdk.nashorn.internal.parser.Parser;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/user")
 @Controller
 public class UserMemberController {
 
-    private Map<String, Object> setForm;
+    @Value("#{aesConfig['key']}")
+    private String key;
+
     private final UserMemberServiceImpl userMemberService;
+    private Map<String, Object> setForm;
 
     @Autowired
     public UserMemberController(UserMemberServiceImpl userMemberService) {
-        this.setForm = new JsonForm(LocalDateTime.now()).setData();
         this.userMemberService = userMemberService;
+        this.setForm = new JsonForm(LocalDateTime.now()).setData();
     }
+
+    @Autowired
+
 
     /**
      *이용약관
@@ -44,8 +58,9 @@ public class UserMemberController {
      */
     @RequestMapping("/listAll")
     @ResponseBody
-    public JSONObject userList() throws Exception{
-        return userMemberService.userList(setForm);
+    public Map<String, Object> userList(HttpServletResponse response){
+
+        return userMemberService.userList();
     }
 
     /**
@@ -53,8 +68,8 @@ public class UserMemberController {
      */
     @RequestMapping("/userOne")
     @ResponseBody
-    public JSONObject userOne(int mb_idx) throws Exception{
-        return userMemberService.userOne(mb_idx, setForm);
+    public  Map<String, Object> userOne(int mb_idx, HttpServletResponse response) throws Exception{
+        return userMemberService.userOne(mb_idx);
     }
 
     /**
@@ -62,8 +77,8 @@ public class UserMemberController {
      */
     @RequestMapping("/login")
     @ResponseBody
-    public JSONObject userLogin(String mb_id, String mb_pw){
-        return userMemberService.userLogin(mb_id, mb_pw, setForm);
+    public Map<String, Object> userLogin(@RequestBody Map<String, Object> params, HttpServletResponse response) throws Exception {
+        return userMemberService.userLogin(params);
     }
 
     /**
@@ -71,8 +86,9 @@ public class UserMemberController {
      */
     @RequestMapping("/join")
     @ResponseBody
-    public JSONObject userJoin(MemberVO vo){
-        return userMemberService.userJoin(vo, setForm);
+    public Map<String, Object> userJoin(MemberVO vo, HttpServletResponse response){
+
+        return userMemberService.userJoin(vo);
     }
 
     /**
@@ -80,8 +96,8 @@ public class UserMemberController {
      */
     @RequestMapping("/dupChk")
     @ResponseBody
-    public JSONObject userDupChk(String mb_param, String mb_value){
-        return userMemberService.userDupChk(mb_param, mb_value, setForm);
+    public Map<String, Object> userDupChk(String mb_param, String mb_value){
+        return userMemberService.userDupChk(mb_param, mb_value);
     }
 
     /**
@@ -90,7 +106,7 @@ public class UserMemberController {
     @RequestMapping("/dataOne")
     @ResponseBody
     public JSONObject dataOne(String mb_param, int mb_idx){
-        return userMemberService.userDataOne(mb_param, mb_idx, setForm);
+        return userMemberService.userDataOne(mb_param, mb_idx);
     }
 
     /**
@@ -99,7 +115,7 @@ public class UserMemberController {
     @RequestMapping("/emailChk")
     @ResponseBody
     public JSONObject mailSend(String email){
-        return userMemberService.mailSend(email, setForm);
+        return userMemberService.mailSend(email);
     }
 
     /**
@@ -114,6 +130,48 @@ public class UserMemberController {
         return userMemberService.passwordChange(map);
     }
 
+    @GetMapping("/localList")
+    @ResponseBody
+    public Map<String, Object> localList(String mb_foreign){
+        return userMemberService.localCategory(mb_foreign);
+    }
+
+    @GetMapping("/localChoice")
+    @ResponseBody
+    public Map<String, Object> localChoice(String set_1_code){
+        JSONObject json = new JSONObject(userMemberService.localChoice(set_1_code));
+        String res = "바보야 이거 아니야";
+        return userMemberService.localChoice(set_1_code);
+    }
+
+    @PostMapping("/test")
+    @ResponseBody
+    public Map<String, Object> encryptTest(MemberVO vo){
+        String val = vo.getReq();
+
+        //JSONParser parser = new JSONParser();
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("req", val);
+
+        String res = "";
+        try{
+            AES128 aes = new AES128(key);
+            val = aes.javaEncrypt(val);
+            String test = aes.javaDecrypt(val);
+
+            map.put("decrypt", test);
+            res = "성공";
+
+            map.put("encrypt", aes.javaEncrypt(val));
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            res = "실패";
+        }
+        map.put("result", res);
+        return map;
+    }
 
 
 }

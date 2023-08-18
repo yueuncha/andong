@@ -2,6 +2,9 @@ package com.tour.user.vo;
 
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Map;
+
 @Data
 public class MemberVO {
 
@@ -33,6 +36,6 @@ public class MemberVO {
 
     private String mb_param;
     private String mb_value;
-
+    private String req;
 
 }

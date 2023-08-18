@@ -11,12 +11,15 @@ public interface StoreService {
     JSONObject storeList();
     //검색
     List<Map<String, Object>> storeSearch(Map<String, Object> params);
-    List<Map<String, Object>> categoryList(String ct_parent, String lang);
-    List<Map<String, Object>> categoryDetail(String str_category, String lang);
-    List<Map<String, Object>> storeDetail(String str_idx, String lang);
-    Map<String, Object> storeView(String str_idx);
+    Map<String, Object> categoryList(Map<String, Object> params);
+    Map<String, Object> categoryDetail(String str_category, String lang, String mb_idx);
+    Map<String, Object> storeDetail(String str_idx, String lang, String mb_idx);
+    Map<String, Object> storeView(String str_idx, String mb_idx);
     Map<String, Object> storeLike(Map<String, Object> params);
-    JSONObject storeReview();
+    Map<String, Object> strReviewCreate(Map<String, Object> params);
+
+
+
 
 
 }

@@ -9,9 +9,9 @@ import java.util.Map;
 public interface UserStoreReadRepository {
 
     List<Map<String, Object>> storeSearch(Map<String, Object> params);
-    List<Map<String, Object>> categoryList(String ct_parent, String lang);
-    List<Map<String, Object>> categoryDetail(String str_category, String lang);
-    List<Map<String, Object>> storeDetail(String str_idx, String lang);
+    List<Map<String, Object>> categoryList(Map<String, Object> params);
+    List<Map<String, Object>> categoryDetail(String str_category, String lang, String mb_idx);
+    List<Map<String, Object>> storeDetail(String str_idx, String lang, String mb_idx);
 
 
 

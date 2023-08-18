@@ -8,15 +8,7 @@
     </update>
 
     <insert id="storeLike" parameterType="integer" >
-        INSERT ad_like (
-            mb_idx
-            , str_idx
-            , like_type
-        ) VALUES (
-            #{mb_idx}
-            , #{str_idx}
-            , 'S'
-        )
+        INSERT ad_like ( mb_idx, str_idx, like_type) VALUES ( #{mb_idx}, #{str_idx}, 'S')
     </insert>
 
     <update id="storeDisLike" parameterType="integer">
@@ -30,5 +22,23 @@
     <update id="likeCntDown" parameterType="integer">
         update ad_store set str_like_cnt = str_like_cnt-1 where str_idx = #{str_idx}
     </update>
+
+
+    <!--/////////////////////////////////////////////////////////////////////////////////////////////-->
+
+    <insert id="strReviewCreate" parameterType="map">
+        INSERT ad_review (mb_idx, str_idx, rv_type, rv_contents) VALUES
+            (#{mb_idx}, #{str_idx}, (
+            SELECT str_type FROM ad_store WHERE str_idx = #{str_idx}
+        ), #{rv_contents})
+    </insert>
+
+
+
+
+
+
+
+
 
 </mapper>

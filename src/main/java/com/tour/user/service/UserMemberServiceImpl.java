@@ -74,9 +74,11 @@ public class UserMemberServiceImpl implements MemberService {
      * 전체 회원 조회
      * */
     @Override
-    public JSONObject userList(Map<String, Object> map){
-        map.put("result", readRepository.selectUserList());
-        return new JSONObject(map);
+    public Map<String, Object> userList(){
+        Map<String , Object> result = new HashMap<>();
+        List<Map<String, Object>> lis = readRepository.selectUserList();
+        result.put("result", lis);
+        return result;
     }
 
     /**
@@ -84,29 +86,38 @@ public class UserMemberServiceImpl implements MemberService {
      * @param mb_idx
      * */
     @Override
-    public JSONObject userOne(int mb_idx, Map<String, Object> map){
-        MemberVO vo = readRepository.selectUserOne(mb_idx);
-        map.put("result", (vo != null) ? vo : Collections.singletonMap("파라미터 확인",mb_idx));
-        return new JSONObject(map);
+    public Map<String, Object> userOne(int mb_idx){
+        return Collections.singletonMap("result", readRepository.selectUserOne(mb_idx));
     }
 
     /**
      * 회원 로그인
-     * @param mb_id mb_pw
+     * @param params mb_pw
      * */
     @Override
-    public JSONObject userLogin(String mb_id, String mb_pw, Map<String, Object> map){
+    public JSONObject userLogin( Map<String, Object> params){
+        Map<String ,Object> map = new HashMap<>();
+        String email = (params != null && !params.isEmpty() && params.get("mb_email") != "") ? params.get("mb_email").toString() : "이메일을 입력하세요.";
+        String password = (params != null && !params.isEmpty() && params.get("mb_pw") != "") ? params.get("mb_pw").toString() : "비밀번호를 입력하세요.";
         try {
             AES128 aes128 = new AES128(key);
-            Optional<MemberVO> vo = Optional.ofNullable(readRepository.userLogin(mb_id));
-            boolean txt = new EqualsBuilder().append(aes128.javaDecrypt(vo.get().getMb_pw()), mb_pw).isEquals();
+            Optional<Map<String, Object>> vo =
+                    Optional.ofNullable(readRepository.userLogin(email));
+            boolean txt = new EqualsBuilder()
+                    .append(aes128.javaDecrypt(vo.get().get("mb_pw").toString()), params.get("mb_pw").toString()).isEquals();
 
             map.put("loginResult",txt);
             map.put("result", (txt) ? vo.get() : "");
 
         } catch (Exception e) {
             e.printStackTrace();
-            map.put("loginResult", "N");
+            if(!params.isEmpty() && params != null){
+                map.put("mb_email", email);
+                map.put("mb_pw", params.get("mb_pw").toString());
+            }else{
+               map.put("error", "json null 오류");
+            }
+            map.put("loginResult", false);
         }
 
         return new JSONObject(map);
@@ -119,9 +130,11 @@ public class UserMemberServiceImpl implements MemberService {
      * mb_value : 중복체크 대상의 값
      * */
     @Override
-    public JSONObject userDupChk(String mb_param, String mb_value, Map<String, Object> map){
+    public JSONObject userDupChk(String mb_param, String mb_value){
+        Map<String, Object> map = new HashMap<>();
         String param = sqlParamChk(mb_param);
-        int resNum = (param != null) ? Optional.ofNullable(readRepository.userDupChk(param, mb_value)).orElseGet(() -> 0) : 0;
+        int resNum = 0;
+        resNum = (param != null) ? Optional.ofNullable(readRepository.userDupChk(param, mb_value)).orElseGet(() -> 0) : 0;
         String result = (param != null) ? ((resNum != 1 ) ? "Y" : "N") : "파라미터 확인";
         map.put("result", Collections.singletonMap(mb_param, result));
 
@@ -135,10 +148,11 @@ public class UserMemberServiceImpl implements MemberService {
      * mb_idx : 회원고유번호
      * */
     @Override
-    public JSONObject userDataOne(String mb_param, int mb_idx, Map<String, Object> map) {
+    public JSONObject userDataOne(String mb_param, int mb_idx) {
+        Map<String, Object> map = new HashMap<>();
         String param = sqlParamChk(mb_param);
         Map<String, Object> params = (param != null) ? Optional.ofNullable(readRepository.userDataOne(param, mb_idx)).orElseGet(null) : null;
-        map.put("result", (params != null) ? params : Collections.singletonMap( mb_param, "parameter check"));
+        map.put("result", (params != null) ? params : Collections.singletonMap( mb_param, "파라미터 값(컬럼명) 확인"));
         return new JSONObject(map);
     }
 
@@ -147,7 +161,8 @@ public class UserMemberServiceImpl implements MemberService {
      * @param vo MemberVO
      * */
     @Override
-    public JSONObject userJoin(MemberVO vo, Map<String, Object> map) {
+    public JSONObject userJoin(MemberVO vo) {
+        Map <String, Object> map = new HashMap<>();
         int result = (vo.getMb_id() != null) ? 1 : 0;
         try {
             AES128 aes128 = new AES128(key);
@@ -164,25 +179,56 @@ public class UserMemberServiceImpl implements MemberService {
     }
 
     @Override
-    public JSONObject mailSend(String email, Map<String, Object> map) {
+    public JSONObject mailSend(String email) {
         Random random = new Random();
         int resNum = random.nextInt(888888)+111111;
-        map.put("result", resNum);
-        return new JSONObject(map);
-    }
+        return new JSONObject(Collections.singletonMap("result", resNum));
+     }
 
     @Override
-    public JSONObject passwordChange(Map<String, Object> param) {
-        String res = "FAIL";
-        try {
-            AES128 aes = new AES128(key);
-            param.replace("mb_pw", aes.javaEncrypt(param.get("mb_pw").toString()));
-            res = (writeRepository.passwordChange(param) != 0) ? "SUCCESS" : "FAIL";
-        } catch (Exception e) {
-            e.printStackTrace();
+    public JSONObject passwordChange(Map<String, Object> params) {
+        Map<String, Object> map = new HashMap<>();
+        boolean result = (params != null && !params.isEmpty() ) ?
+                (params.get("mb_pw") != null && params.get("mb_pw") != "") ? true : false : false;
+        String res = "";
+
+        if(result){
+            try {
+                AES128 aes = new AES128(key);
+                params.replace("mb_pw", aes.javaEncrypt(params.get("mb_pw").toString()));
+                res = (writeRepository.passwordChange(params) != 0) ? "SUCCESS" : "mb_idx 확인";
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else{
+            res = "mb_pw 확인";
         }
+
         return new JSONObject(Collections.singletonMap("result", res));
     }
 
 
+    @Override
+    public Map<String, Object> localCategory(String mb_foreign) {
+        Map<String, Object> map ;
+        boolean result = (mb_foreign != null && !mb_foreign.isEmpty()) ? true : false;
+        if(result){
+            map = Collections.singletonMap("result", readRepository.localCategory(mb_foreign));
+        }else{
+            map = Collections.singletonMap("result", "mb_foreign 확인");
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> localChoice(String set_1_code) {
+        Map<String, Object> map ;
+        boolean result = (set_1_code != null && !set_1_code.isEmpty()) ? true : false;
+        if(result){
+            map = Collections.singletonMap("result", readRepository.localChoice(set_1_code));
+        }else{
+            map = Collections.singletonMap("result", "set_1_code 확인");
+        }
+        return map;
+    }
 }
