@@ -1,6 +1,5 @@
 package com.tour.user.repository.read;
 
-import com.tour.user.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

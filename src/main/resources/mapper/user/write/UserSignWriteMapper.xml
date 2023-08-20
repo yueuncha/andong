@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.write.UserMemberWriteRepository">
-    <insert id="userJoin" parameterType="com.tour.user.vo.MemberVO">
+    <insert id="userJoin" parameterType="com.tour.user.vo.RequestVO">
         INSERT INTO ad_member (
          mb_pw
         , mb_email
@@ -15,7 +15,7 @@
         , mb_local
         , mb_foreigner
         )VALUES(
-         #{mb_pw}
+        HEX(AES_ENCRYPT(#{mb_pw}, 'key1234567891234'))
         , #{mb_email}
         , #{mb_ci}
         , #{mb_gender}
@@ -25,13 +25,14 @@
         , 1
         , #{mb_nickname}
         , #{mb_local}
+        , #{mb_local2}
         , #{mb_foreigner}
         )
     </insert>
 
     <update id="passwordChange" parameterType="map">
         UPDATE ad_member
-        SET mb_pw = #{mb_pw}
+        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, 'key1234567891234'))
         WHERE mb_idx = #{mb_idx}
     </update>
 

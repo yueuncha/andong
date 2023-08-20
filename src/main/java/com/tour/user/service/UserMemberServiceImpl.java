@@ -4,16 +4,20 @@ import com.tour.AES128;
 import com.tour.user.repository.read.UserMemberReadRepository;
 import com.tour.user.repository.write.UserMemberWriteRepository;
 import com.tour.user.service.origin.MemberService;
-import com.tour.user.vo.MemberVO;
+import com.tour.user.vo.RequestVO;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.ibatis.ognl.ObjectElementsAccessor;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
+import java.sql.Connection;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserMemberServiceImpl implements MemberService {
@@ -30,12 +34,44 @@ public class UserMemberServiceImpl implements MemberService {
         this.writeRepository = writeRepository;
     }
 
+    public Map<String, Object> stringToJson(String str) throws Exception{
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(str);
+
+        if(json.containsKey("cryption") && (boolean)json.get("cryption")){
+            AES128 aes = new AES128(key);
+            String result = String.valueOf(json.get("result"));
+            JSONObject temp = (JSONObject) parser.parse(aes.javaDecrypt(result));
+            json.replace("result", temp);
+        }else{
+            String result = String.valueOf(json.get("result"));
+            JSONObject temp = (JSONObject) parser.parse(result);
+            json.replace("result", temp);
+        }
+
+        return json;
+    }
+
+    public String Encrypt(String params) throws Exception{
+        AES128 aes = new AES128(key);
+
+        return aes.javaEncrypt(params);
+    }
+
+    public Map<String, Object> Decrypt(String params) throws Exception{
+        AES128 aes = new AES128(key);
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(aes.javaDecrypt(params));
+
+        return json;
+    }
+
     /**
      * 입력 받은 컬럼명 확인
      * */
     public String sqlParamChk(String mb_param) {
         try {
-            mb_param = new MemberVO().getClass().getDeclaredField(mb_param).getName();
+            mb_param = new RequestVO().getClass().getDeclaredField(mb_param).getName();
         } catch (NoSuchFieldException e) {
             mb_param = null;
         }
@@ -69,6 +105,31 @@ public class UserMemberServiceImpl implements MemberService {
         return map;
     }
 
+    @Override
+    public Map<String, Object> test(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramsRes = new HashMap<>();
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        newParams = (Map<String, Object>) oldParams.get("result");
+
+        if(state){
+            if((boolean) oldParams.get("cryption")){
+                paramsRes.put("ereq", Encrypt(new JSONObject(newParams).toJSONString()));
+                paramsRes.put("req", newParams);
+            }else{
+                paramsRes.put("req", newParams);
+                paramsRes.put("ereq", Encrypt(new JSONObject(newParams).toJSONString()));
+            }
+        }else{
+            paramsRes.put("error", oldParams);
+        }
+
+        return paramsRes;
+    }
 
     /**
      * 전체 회원 조회
@@ -83,44 +144,76 @@ public class UserMemberServiceImpl implements MemberService {
 
     /**
      * 특정 회원 조회
-     * @param mb_idx
      * */
     @Override
-    public Map<String, Object> userOne(int mb_idx){
-        return Collections.singletonMap("result", readRepository.selectUserOne(mb_idx));
+    public Map<String, Object> userOne(RequestVO vo) throws Exception {
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        int mb_idx = 0;
+
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            mb_idx = (newParams.containsKey("mb_idx")) ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
+
+            if((boolean)oldParams.get("cryption")){
+                JSONObject json = new JSONObject(readRepository.selectUserOne(mb_idx));
+                paramRes.put("ereq", Encrypt(json.toJSONString()));
+            }else{
+                paramRes.put("req", readRepository.selectUserOne(mb_idx));
+            }
+
+        }else{
+            paramRes.put("error", oldParams);
+        }
+
+        return paramRes;
     }
 
     /**
      * 회원 로그인
-     * @param params mb_pw
      * */
     @Override
-    public JSONObject userLogin( Map<String, Object> params){
-        Map<String ,Object> map = new HashMap<>();
-        String email = (params != null && !params.isEmpty() && params.get("mb_email") != "") ? params.get("mb_email").toString() : "이메일을 입력하세요.";
-        String password = (params != null && !params.isEmpty() && params.get("mb_pw") != "") ? params.get("mb_pw").toString() : "비밀번호를 입력하세요.";
-        try {
-            AES128 aes128 = new AES128(key);
-            Optional<Map<String, Object>> vo =
-                    Optional.ofNullable(readRepository.userLogin(email));
-            boolean txt = new EqualsBuilder()
-                    .append(aes128.javaDecrypt(vo.get().get("mb_pw").toString()), params.get("mb_pw").toString()).isEquals();
+    public Map<String, Object> userLogin( RequestVO vo) throws Exception {
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
 
-            map.put("loginResult",txt);
-            map.put("result", (txt) ? vo.get() : "");
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            if(!params.isEmpty() && params != null){
-                map.put("mb_email", email);
-                map.put("mb_pw", params.get("mb_pw").toString());
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            String email = (newParams.containsKey("mb_email")) ? newParams.get("mb_email").toString() : null;
+            Map<String, Object> login = (email != null) ? readRepository.userLogin(email) : null;
+            boolean loginResult = (newParams.containsKey("mb_pw") && login != null) ? true : false;
+
+            if(loginResult){
+                paramRes.put("result", true);
             }else{
-               map.put("error", "json null 오류");
+                paramRes.put("messege", "아이디/비밀번호를 확인해주세요");
+                paramRes.put("result", false);
             }
-            map.put("loginResult", false);
+
+            if((boolean)oldParams.get("cryption")){
+                JSONObject json = new JSONObject(readRepository.userLogin(email));
+                paramRes.put("ereq", Encrypt(json.toJSONString()));
+            }else{
+                paramRes.put("req", readRepository.userLogin(email));
+            }
+
+        }else{
+            paramRes.put("error", oldParams);
         }
 
-        return new JSONObject(map);
+        return paramRes;
     }
 
     /**
@@ -130,30 +223,73 @@ public class UserMemberServiceImpl implements MemberService {
      * mb_value : 중복체크 대상의 값
      * */
     @Override
-    public JSONObject userDupChk(String mb_param, String mb_value){
-        Map<String, Object> map = new HashMap<>();
-        String param = sqlParamChk(mb_param);
-        int resNum = 0;
-        resNum = (param != null) ? Optional.ofNullable(readRepository.userDupChk(param, mb_value)).orElseGet(() -> 0) : 0;
-        String result = (param != null) ? ((resNum != 1 ) ? "Y" : "N") : "파라미터 확인";
-        map.put("result", Collections.singletonMap(mb_param, result));
+    public Map<String, Object> userDupChk(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
 
-        return new JSONObject(map);
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            int resNum = 0;
+            newParams = (Map<String, Object>) oldParams.get("result");
+            String mb_param = (newParams.containsKey("mb_param")) ? newParams.get("mb_param").toString() : null;
+            String mb_value = (mb_param != null && newParams.containsKey("mb_value"))
+                    ? newParams.get("mb_value").toString() : null;
+
+            resNum = (mb_param != null) ? Optional.ofNullable(readRepository.userDupChk(mb_param, mb_value)).orElseGet(() -> 0) : 0;
+            String res = (mb_param != null) ? ((resNum != 1 ) ? "Y" : "N") : "파라미터 확인";
+            newParams.put("use" , res);
+
+            if((boolean)oldParams.get("cryption")){
+                paramRes.put("ereq", newParams);
+            }else{
+                paramRes.put("req", newParams);
+            }
+
+        }else {
+            paramRes.put("error", oldParams);
+        }
+
+        return paramRes;
     }
 
     /**
      * 특정 컬럼 값 가져오기
-     * @param
-     * mb_param : 컬럼명
-     * mb_idx : 회원고유번호
      * */
     @Override
-    public JSONObject userDataOne(String mb_param, int mb_idx) {
-        Map<String, Object> map = new HashMap<>();
-        String param = sqlParamChk(mb_param);
-        Map<String, Object> params = (param != null) ? Optional.ofNullable(readRepository.userDataOne(param, mb_idx)).orElseGet(null) : null;
-        map.put("result", (params != null) ? params : Collections.singletonMap( mb_param, "파라미터 값(컬럼명) 확인"));
-        return new JSONObject(map);
+    public Map<String, Object> userDataOne(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+
+            String mb_param = (newParams.containsKey("mb_param")) ? String.valueOf(newParams.get("mb_param")) : null;
+            int mb_idx = (mb_param != null && newParams.containsKey("mb_idx"))
+                    ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
+
+            newParams = (mb_param != null) ? Optional.ofNullable(readRepository.userDataOne(mb_param, mb_idx)).orElseGet(null) : null;
+            newParams = (newParams != null) ? newParams : Collections.singletonMap( mb_param, "파라미터 값(컬럼명) 확인");
+
+            if((boolean)oldParams.get("cryption")){
+                JSONObject json = new JSONObject(newParams);
+                paramRes.put("ereq", Encrypt(json.toJSONString()));
+            }else{
+                paramRes.put("req", newParams);
+            }
+        }else {
+            paramRes.put("error", oldParams);
+        }
+
+        return paramRes;
     }
 
     /**
@@ -161,9 +297,9 @@ public class UserMemberServiceImpl implements MemberService {
      * @param vo MemberVO
      * */
     @Override
-    public JSONObject userJoin(MemberVO vo) {
+    public JSONObject userJoin(RequestVO vo) {
         Map <String, Object> map = new HashMap<>();
-        int result = (vo.getMb_id() != null) ? 1 : 0;
+        /*int result = (vo.getMb_id() != null) ? 1 : 0;
         try {
             AES128 aes128 = new AES128(key);
             if(result != 0){
@@ -174,61 +310,133 @@ public class UserMemberServiceImpl implements MemberService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        map.put("result", Collections.singletonMap("joinResult", (result != 0) ? "Y" : "N"));
+        map.put("result", Collections.singletonMap("joinResult", (result != 0) ? "Y" : "N"));*/
         return new JSONObject(map);
     }
 
     @Override
-    public JSONObject mailSend(String email) {
+    public Map<String, Object> mailSend(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
         Random random = new Random();
         int resNum = random.nextInt(888888)+111111;
-        return new JSONObject(Collections.singletonMap("result", resNum));
+
+        if(state){
+            if((boolean)oldParams.get("cryption")){
+
+                paramRes.put("ereq", resNum);
+            }else{
+                paramRes.put("req", resNum);
+            }
+        }else {
+            paramRes.put("error", oldParams);
+        }
+
+        return paramRes;
      }
 
     @Override
-    public JSONObject passwordChange(Map<String, Object> params) {
-        Map<String, Object> map = new HashMap<>();
-        boolean result = (params != null && !params.isEmpty() ) ?
-                (params.get("mb_pw") != null && params.get("mb_pw") != "") ? true : false : false;
-        String res = "";
+    public Map<String, Object> passwordChange(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+        String temp = "";
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
 
-        if(result){
-            try {
-                AES128 aes = new AES128(key);
-                params.replace("mb_pw", aes.javaEncrypt(params.get("mb_pw").toString()));
-                res = (writeRepository.passwordChange(params) != 0) ? "SUCCESS" : "mb_idx 확인";
-            } catch (Exception e) {
-                e.printStackTrace();
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            int mb_idx = (newParams.containsKey("mb_idx")) ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
+            String mb_pw = (newParams.containsKey("mb_pw") && mb_idx != 0) ? newParams.get("mb_pw").toString() : null;
+
+            if(mb_pw != null) {
+                if((boolean)oldParams.get("cryption")){
+                    //JSONObject json = new JSONObject(Collections.singletonMap("result", temp));
+                    temp = (writeRepository.passwordChange(newParams) != 0) ? "SUCCESS" : "mb_idx 확인";
+                    paramRes.put("ereq", temp);
+                }else{
+                    temp = (writeRepository.passwordChange(newParams) != 0) ? "SUCCESS" : "mb_idx 확인";
+                    paramRes.put("req", temp);
+                }
+            }else{
+                paramRes.put("result", "파라미터 확ㅇ");
             }
         }else{
-            res = "mb_pw 확인";
+            paramRes.put("error", oldParams);
         }
 
-        return new JSONObject(Collections.singletonMap("result", res));
+        return paramRes;
     }
 
 
     @Override
-    public Map<String, Object> localCategory(String mb_foreign) {
-        Map<String, Object> map ;
-        boolean result = (mb_foreign != null && !mb_foreign.isEmpty()) ? true : false;
-        if(result){
-            map = Collections.singletonMap("result", readRepository.localCategory(mb_foreign));
+    public Map<String, Object> localCategory(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            String mb_foreign = (newParams.containsKey("mb_foreign")) ? newParams.get("mb_foreign").toString() : null;
+
+            if(mb_foreign != null){
+                if((boolean)oldParams.get("cryption")){
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.add(readRepository.localCategory(mb_foreign));
+                    paramRes.put("ereq", Encrypt(jsonArray.toJSONString()));
+                }else{
+                    paramRes.put("req", readRepository.localCategory(mb_foreign));
+                }
+            }else{
+                paramRes.put("result", "파라미터 확인");
+            }
         }else{
-            map = Collections.singletonMap("result", "mb_foreign 확인");
+            paramRes.put("error", oldParams);
         }
-        return map;
+        return paramRes;
     }
 
     @Override
-    public Map<String, Object> localChoice(String set_1_code) {
-        Map<String, Object> map ;
-        boolean result = (set_1_code != null && !set_1_code.isEmpty()) ? true : false;
-        if(result){
-            map = Collections.singletonMap("result", readRepository.localChoice(set_1_code));
+    public Map<String, Object> localChoice(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            newParams =(Map<String, Object>) oldParams.get("result");
+            String set_1_code = (newParams.containsKey("set_1_code")) ? newParams.get("set_1_code").toString() : null;
+
+            if(set_1_code != null){
+                if((boolean) oldParams.get("cryption")){
+                    JSONArray array = new JSONArray();
+                    array.add(readRepository.localChoice(set_1_code));
+                    paramRes.put("ereq", Encrypt(array.toJSONString()));
+                }else{
+                    paramRes.put("req", readRepository.localChoice(set_1_code));
+                }
+            }else{
+                paramRes.put("result", "상위 카테고리 확인");
+            }
         }else{
-            map = Collections.singletonMap("result", "set_1_code 확인");
+            paramRes.put("error", oldParams);
         }
-        return map;
+
+        return paramRes;
     }
 }

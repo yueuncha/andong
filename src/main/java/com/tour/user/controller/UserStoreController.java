@@ -74,7 +74,7 @@ public class UserStoreController {
     @GetMapping(value = "/image", produces= MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
     public byte[] getImage(
-                           @RequestParam("value") String value) // A
+                           @RequestParam("value") String value) //
             throws IOException {
         FileInputStream fis = null;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -107,5 +107,11 @@ public class UserStoreController {
         }
         return fileArray;
     }
+
+
+    /*
+    * 이미지 조회/ 메뉴 조회 / 리뷰 별점/ 통계/ 패스 저장 / 패스 추가 / 일정 추가 / 축제체험 조회 /
+    *
+    * */
 
 }

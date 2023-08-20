@@ -5,7 +5,7 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , mb_pw
+             , AES_DECRYPT(UNHEX(am.mb_pw , 'key1234567891234'))
              , IFNULL(am.mb_email, '') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
@@ -27,7 +27,7 @@
         SELECT
             mb_idx
              , IFNULL(mb_id, '') AS mb_id
-             , mb_pw
+             , AES_DECRYPT(UNHEX(mb_pw , 'key1234567891234'))
              , IFNULL(mb_email, '') AS mb_email
              , IFNULL(mb_ci, '') AS mb_ci
              , IFNULL(mb_gender, '') AS mb_gender
@@ -37,9 +37,9 @@
              , CAST(mb_status AS SIGNED) AS mb_status
              , mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
-                WHERE ls.set_1_code = am.mb_local ) AS mb_local
+                WHERE ls.set_1_code = mb_local ) AS mb_local
              , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+                WHERE lss.set_2_code = mb_local2 ) AS mb_local2
              , mb_foreigner
         FROM ad_member
         WHERE mb_status = 1
@@ -76,9 +76,9 @@
              , CAST(mb_status AS SIGNED) AS mb_status
              , mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
-                WHERE ls.set_1_code = am.mb_local ) AS mb_local
+                WHERE ls.set_1_code = mb_local ) AS mb_local
              , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+                WHERE lss.set_2_code = mb_local2 ) AS mb_local2
              , mb_foreigner
         FROM ad_member
         WHERE mb_status = 1
