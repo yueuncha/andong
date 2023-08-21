@@ -2,6 +2,7 @@ package com.tour.user.controller;
 
 import com.tour.JsonForm;
 import com.tour.user.service.UserStoreServiceImpl;
+import com.tour.user.vo.RequestVO;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,44 +33,44 @@ public class UserStoreController {
 
     @PostMapping("/category")
     @ResponseBody
-    public Map<String, Object> categoryList(@RequestBody Map<String, Object> params){
-        return storeService.categoryList(params);
+    public Map<String, Object> categoryList(RequestVO vo) throws Exception{
+        return storeService.categoryList(vo);
     }
 
     @PostMapping("/storeSearch")
     @ResponseBody
-    public List<Map<String, Object>> storeSearch(Map<String, Object> params){
-        return storeService.storeSearch(params);
+    public List<Map<String, Object>> storeSearch(RequestVO vo) throws Exception{
+        return storeService.storeSearch(vo);
     }
 
-    @GetMapping("/categoryDetail")
+    @PostMapping("/categoryDetail")
     @ResponseBody
-    public Map<String, Object> categoryDetail(String str_category, String lang, String mb_idx){
-        return storeService.categoryDetail(str_category, lang, mb_idx);
+    public Map<String, Object> categoryDetail(RequestVO vo) throws Exception{
+        return storeService.categoryDetail(vo);
     }
 
-    @GetMapping("/storeDetail")
+    @PostMapping("/storeDetail")
     @ResponseBody
-    public Map<String, Object> storeDetail(String str_idx, String lang, String mb_idx){
-        return storeService.storeDetail(str_idx, lang, mb_idx);
+    public Map<String, Object> storeDetail(RequestVO vo) throws Exception{
+        return storeService.storeDetail(vo);
     }
 
-    @GetMapping("/storeViewCnt")
+    @PostMapping("/storeViewCnt")
     @ResponseBody
-    public Map<String, Object> storeView(String str_idx, String mb_idx){
-        return storeService.storeView(str_idx, mb_idx);
+    public Map<String, Object> storeView(RequestVO vo) throws Exception{
+        return storeService.storeView(vo);
     }
 
     @PostMapping("/storeLike")
     @ResponseBody
-    public Map<String, Object> storeLike(@RequestBody Map<String, Object> params){
-        return storeService.storeLike(params);
+    public Map<String, Object> storeLike(RequestVO vo) throws Exception{
+        return storeService.storeLike(vo);
     }
 
     @PostMapping("/reviewWrite")
     @ResponseBody
-    public Map<String, Object> strReviewWrite(@RequestBody Map<String, Object> params){
-        return storeService.strReviewCreate(params);
+    public Map<String, Object> strReviewWrite(RequestVO vo) throws Exception{
+        return storeService.strReviewCreate(vo);
     }
     @GetMapping(value = "/image", produces= MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
@@ -113,5 +114,8 @@ public class UserStoreController {
     * 이미지 조회/ 메뉴 조회 / 리뷰 별점/ 통계/ 패스 저장 / 패스 추가 / 일정 추가 / 축제체험 조회 /
     *
     * */
+
+
+
 
 }

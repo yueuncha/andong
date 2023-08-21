@@ -32,8 +32,20 @@
 
     <update id="passwordChange" parameterType="map">
         UPDATE ad_member
-        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, 'key1234567891234'))
+        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, 'andong2023andong'))
         WHERE mb_idx = #{mb_idx}
     </update>
+
+    <update id="sessionChk" parameterType="map">
+        UPDATE fcm_info
+            SET fcm_token = #{fcm_token}
+                , device_os_ver = #{device_os_ver}
+                , device_name = #{device_name}
+                , app_type = #{app_type}
+              , app_ver = #{app_ver}
+              , fcm_date = DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s')
+        WHERE mb_idx = #{mb_idx}
+    </update>
+
 
 </mapper>

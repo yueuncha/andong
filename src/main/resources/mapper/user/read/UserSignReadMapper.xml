@@ -5,7 +5,7 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , AES_DECRYPT(UNHEX(am.mb_pw , 'key1234567891234'))
+             , am.mb_pw
              , IFNULL(am.mb_email, '') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
@@ -13,37 +13,43 @@
              , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
              , CAST(am.mb_level AS SIGNED) AS mb_level
              , CAST(am.mb_status AS SIGNED) AS mb_status
-             , IFNULL(am.mb_nickname, '') AS mb_nickname
+             , am.mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
-             WHERE ls.set_1_code = am.mb_local ) AS mb_local
+                WHERE ls.set_1_code = am.mb_local ) AS mb_local
              , (SELECT lss.set_2_name FROM local_set_2  lss
-             WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
              , am.mb_foreigner
+             , IFNULL(fi.app_type , '') AS app_type
+             , IFNULL(fi.app_ver , '') AS app_ver
         FROM ad_member am
+                 LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
     </select>
 
     <select id="selectUserOne" parameterType="Integer" resultType="map">
         SELECT
-            mb_idx
-             , IFNULL(mb_id, '') AS mb_id
-             , AES_DECRYPT(UNHEX(mb_pw , 'key1234567891234'))
-             , IFNULL(mb_email, '') AS mb_email
-             , IFNULL(mb_ci, '') AS mb_ci
-             , IFNULL(mb_gender, '') AS mb_gender
-             , IFNULL(mb_birth, '') AS mb_birth
-             , DATE_FORMAT(mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
-             , CAST(mb_level AS SIGNED) AS mb_level
-             , CAST(mb_status AS SIGNED) AS mb_status
-             , mb_nickname
+            am.mb_idx
+             , IFNULL(am.mb_id, '') AS mb_id
+             , am.mb_pw
+             , IFNULL(am.mb_email, '') AS mb_email
+             , IFNULL(am.mb_ci, '') AS mb_ci
+             , IFNULL(am.mb_gender, '') AS mb_gender
+             , IFNULL(am.mb_birth, '') AS mb_birth
+             , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+             , CAST(am.mb_level AS SIGNED) AS mb_level
+             , CAST(am.mb_status AS SIGNED) AS mb_status
+             , am.mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
-                WHERE ls.set_1_code = mb_local ) AS mb_local
+                WHERE ls.set_1_code = am.mb_local ) AS mb_local
              , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = mb_local2 ) AS mb_local2
-             , mb_foreigner
-        FROM ad_member
+                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+             , am.mb_foreigner
+             , IFNULL(fi.app_type , '') AS app_type
+             , IFNULL(fi.app_ver , '') AS app_ver
+        FROM ad_member am
+                 LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
-          AND  mb_idx = #{mb_idx}
+          AND  am.mb_idx = #{mb_idx}
     </select>
 
     <select id="userDupChk" parameterType="Object" resultType="Integer">
@@ -64,23 +70,26 @@
 
     <select id="userLogin" parameterType="String" resultType="map">
         SELECT
-            mb_idx
-             , IFNULL(mb_id, '') AS mb_id
-             , mb_pw
-             , IFNULL(mb_email, '') AS mb_email
-             , IFNULL(mb_ci, '') AS mb_ci
-             , IFNULL(mb_gender, '') AS mb_gender
-             , IFNULL(mb_birth, '') AS mb_birth
-             , DATE_FORMAT(mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
-             , CAST(mb_level AS SIGNED) AS mb_level
-             , CAST(mb_status AS SIGNED) AS mb_status
-             , mb_nickname
+            am.mb_idx
+             , IFNULL(am.mb_id, '') AS mb_id
+             , am.mb_pw
+             , IFNULL(am.mb_email, '') AS mb_email
+             , IFNULL(am.mb_ci, '') AS mb_ci
+             , IFNULL(am.mb_gender, '') AS mb_gender
+             , IFNULL(am.mb_birth, '') AS mb_birth
+             , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+             , CAST(am.mb_level AS SIGNED) AS mb_level
+             , CAST(am.mb_status AS SIGNED) AS mb_status
+             , am.mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
-                WHERE ls.set_1_code = mb_local ) AS mb_local
+                WHERE ls.set_1_code = am.mb_local ) AS mb_local
              , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = mb_local2 ) AS mb_local2
-             , mb_foreigner
-        FROM ad_member
+                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+             , am.mb_foreigner
+             , IFNULL(fi.app_type , '') AS app_type
+             , IFNULL(fi.app_ver , '') AS app_ver
+        FROM ad_member am
+                 LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
           AND mb_email = #{mb_email}
     </select>
@@ -104,4 +113,6 @@
         FROM local_set_2 lss
         WHERE lss.set_1_code = #{mb_set_1_code}
     </select>
+
+
 </mapper>

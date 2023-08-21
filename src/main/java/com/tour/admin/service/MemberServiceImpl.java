@@ -16,6 +16,8 @@ public class MemberServiceImpl implements MemberService{
 
     @Value("#{aesConfig['key']}")
     private String key;
+    @Value("#{aesCrypt['cryptkey']}")
+    private String cryptkey;
 
     private final MemberReadRepository readRepository;
     private final MemberWriteRepository writeRepository;
@@ -37,7 +39,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public int managerSave(Map<String, Object> params) {
         try{
-            AES128 aes = new AES128(key);
+            AES128 aes = new AES128(key, cryptkey);
             String password = aes.javaEncrypt(params.get("mb_pw").toString());
             params.replace("mb_pw", password);
         }catch (Exception e){}

@@ -12,20 +12,22 @@ import java.util.Base64.*;
 public class AES128 extends Exception{
 
     private String key;
+    private String cryptKey;
     private SecretKeySpec keySpec;
     private Cipher cipher;
 
     /**
      * key set
      * */
-    public AES128(String key) throws Exception{
+    public AES128(String key, String cryptKey) throws Exception{
         byte [] keyBytes = new byte[16];
-        byte [] obj = key.getBytes("UTF-8");
+        byte [] obj = cryptKey.getBytes("UTF-8");
 
         System.arraycopy(obj, 0, keyBytes,0, keyBytes.length);
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
 
         this.key = key.substring(0, 16);
+        this.cryptKey = cryptKey.substring(0, 16);
         this.keySpec = keySpec;
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
     }

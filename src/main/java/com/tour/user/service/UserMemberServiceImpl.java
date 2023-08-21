@@ -25,6 +25,9 @@ public class UserMemberServiceImpl implements MemberService {
     @Value("#{aesConfig['key']}")
     private String key;
 
+    @Value("#{aesCrypt['cryptkey']}")
+    private String cryptkey;
+
     private final UserMemberReadRepository readRepository;
     private final UserMemberWriteRepository writeRepository;
 
@@ -39,7 +42,7 @@ public class UserMemberServiceImpl implements MemberService {
         JSONObject json = (JSONObject) parser.parse(str);
 
         if(json.containsKey("cryption") && (boolean)json.get("cryption")){
-            AES128 aes = new AES128(key);
+            AES128 aes = new AES128(key, cryptkey);
             String result = String.valueOf(json.get("result"));
             JSONObject temp = (JSONObject) parser.parse(aes.javaDecrypt(result));
             json.replace("result", temp);
@@ -53,18 +56,10 @@ public class UserMemberServiceImpl implements MemberService {
     }
 
     public String Encrypt(String params) throws Exception{
-        AES128 aes = new AES128(key);
-
+        AES128 aes = new AES128(key, cryptkey);
         return aes.javaEncrypt(params);
     }
 
-    public Map<String, Object> Decrypt(String params) throws Exception{
-        AES128 aes = new AES128(key);
-        JSONParser parser = new JSONParser();
-        JSONObject json = (JSONObject) parser.parse(aes.javaDecrypt(params));
-
-        return json;
-    }
 
     /**
      * 입력 받은 컬럼명 확인
@@ -392,12 +387,17 @@ public class UserMemberServiceImpl implements MemberService {
             String mb_foreign = (newParams.containsKey("mb_foreign")) ? newParams.get("mb_foreign").toString() : null;
 
             if(mb_foreign != null){
+                List<Map<String, Object>> temp = readRepository.localCategory(mb_foreign);
+                JSONArray arr = new JSONArray();
+
+                for(Map<String, Object> map : temp){
+                    arr.add(new JSONObject(map));
+                }
+
                 if((boolean)oldParams.get("cryption")){
-                    JSONArray jsonArray = new JSONArray();
-                    jsonArray.add(readRepository.localCategory(mb_foreign));
-                    paramRes.put("ereq", Encrypt(jsonArray.toJSONString()));
+                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("req", readRepository.localCategory(mb_foreign));
+                    paramRes.put("req", arr);
                 }
             }else{
                 paramRes.put("result", "파라미터 확인");
@@ -423,12 +423,16 @@ public class UserMemberServiceImpl implements MemberService {
             String set_1_code = (newParams.containsKey("set_1_code")) ? newParams.get("set_1_code").toString() : null;
 
             if(set_1_code != null){
+                List<Map<String, Object>> temp = readRepository.localChoice(set_1_code);
+                JSONArray arr = new JSONArray();
+
+                for(Map<String, Object> map : temp){
+                    arr.add(new JSONObject(map));
+                }
                 if((boolean) oldParams.get("cryption")){
-                    JSONArray array = new JSONArray();
-                    array.add(readRepository.localChoice(set_1_code));
-                    paramRes.put("ereq", Encrypt(array.toJSONString()));
+                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("req", readRepository.localChoice(set_1_code));
+                    paramRes.put("req", arr);
                 }
             }else{
                 paramRes.put("result", "상위 카테고리 확인");
@@ -438,5 +442,25 @@ public class UserMemberServiceImpl implements MemberService {
         }
 
         return paramRes;
+    }
+
+    @Override
+    public Map<String, Object> sessionChk(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+
+
+        }else {
+            paramRes.put("error", oldParams);
+        }
+
+        return null;
     }
 }

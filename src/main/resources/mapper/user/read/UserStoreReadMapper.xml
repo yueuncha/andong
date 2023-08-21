@@ -32,6 +32,10 @@
                         (SELECT like_status
                          FROM ad_like
                          WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
+                    ,IFNULL(
+                        ( SELECT fi.app_type FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_type
+                    ,IFNULL(
+                        (SELECT fi.app_ver FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_ver
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
@@ -40,7 +44,7 @@
         GROUP BY st.str_idx, asd.str_dt_type
     </select>
 
-    <select id="categoryDetail"  parameterType="String" resultType="map">
+    <select id="categoryDetail"  parameterType="map" resultType="map">
         SELECT DISTINCT
                     st.str_idx AS str_idx
                       , st.str_lat
@@ -57,6 +61,10 @@
                         (SELECT like_status
                          FROM ad_like
                          WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
+                      ,IFNULL(
+                ( SELECT fi.app_type FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_type
+                      ,IFNULL(
+                (SELECT fi.app_ver FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_ver
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
         WHERE st.str_category = #{str_category}
@@ -64,7 +72,7 @@
         GROUP BY st.str_idx, asd.str_dt_type
     </select>
 
-    <select id="storeDetail" parameterType="String" resultType="java.util.Map">
+    <select id="storeDetail" parameterType="map" resultType="java.util.Map">
         SELECT DISTINCT
             st.str_idx
             , st.str_lat
@@ -86,7 +94,11 @@
             , IFNULL(
                 (SELECT like_status
                 FROM ad_like
-                WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
+                WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx GROUP BY mb_idx), 'N') AS like_status
+            ,IFNULL(
+                ( SELECT fi.app_type FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_type
+            ,IFNULL(
+                (SELECT fi.app_ver FROM fcm_info fi WHERE fi.mb_idx = IFNULL(#{mb_idx}, '')), '') AS app_ver
 		FROM ad_store st
  			LEFT JOIN ad_store_detail asd
 			ON st.str_idx = asd.str_idx
