@@ -107,6 +107,33 @@
         GROUP BY st.str_idx, asd.str_dt_type
     </select>
 
+    <select id="categoryNameList" parameterType="map" resultType="map">
+        SELECT
+            ac.ct_idx
+             , ac.ct_ko_nm
+             , ac.ct_ja_nm
+             , ac.ct_es_nm
+             , ac.ct_zh_nm
+             , ac.ct_eu_nm
+             , ac.ct_de_nm
+        FROM ad_category ac
+        WHERE ac.ct_parent = 1
+    </select>
+
+    <select id="categoryName" parameterType="map" resultType="map">
+        SELECT
+            ac.ct_idx
+             , ac.ct_ko_nm
+             , ac.ct_ja_nm
+             , ac.ct_es_nm
+             , ac.ct_zh_nm
+             , ac.ct_eu_nm
+             , ac.ct_de_nm
+        FROM ad_category ac
+        WHERE ac.ct_parent = #{ct_parent}
+    </select>
+
+
     <select id="strReviewRead" parameterType="map" resultType="list">
         SELECT
             av.str_idx

@@ -79,7 +79,7 @@ public class UserMemberController {
      */
     @RequestMapping("/join")
     @ResponseBody
-    public Map<String, Object> userJoin(RequestVO vo){
+    public Map<String, Object> userJoin(RequestVO vo) throws Exception{
         return userMemberService.userJoin(vo);
     }
 
@@ -137,5 +137,16 @@ public class UserMemberController {
         return userMemberService.test(vo);
     }
 
+    @PostMapping("/sessionChk")
+    @ResponseBody
+    public Map<String, Object> sessionChk(RequestVO vo) throws Exception{
+        return userMemberService.sessionChk(vo);
+    }
+
+    @PostMapping("/emailUser")
+    @ResponseBody
+    public Map<String, Object> emailUser(RequestVO vo) throws Exception{
+        return userMemberService.memberEmailChk(vo);
+    }
 
 }

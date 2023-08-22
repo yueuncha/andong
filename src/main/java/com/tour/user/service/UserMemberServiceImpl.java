@@ -109,9 +109,10 @@ public class UserMemberServiceImpl implements MemberService {
         boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
                 ? (boolean) oldParams.get("state") : false;
 
-        newParams = (Map<String, Object>) oldParams.get("result");
-
         if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
             if((boolean) oldParams.get("cryption")){
                 paramsRes.put("ereq", Encrypt(new JSONObject(newParams).toJSONString()));
                 paramsRes.put("req", newParams);
@@ -120,7 +121,8 @@ public class UserMemberServiceImpl implements MemberService {
                 paramsRes.put("ereq", Encrypt(new JSONObject(newParams).toJSONString()));
             }
         }else{
-            paramsRes.put("error", oldParams);
+            paramsRes.replace("result", false);
+            paramsRes.put("msg", oldParams);
         }
 
         return paramsRes;
@@ -157,18 +159,23 @@ public class UserMemberServiceImpl implements MemberService {
             newParams = (Map<String, Object>) oldParams.get("result");
             mb_idx = (newParams.containsKey("mb_idx")) ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
 
+            newParams.put("cryption", cryptkey);
+
+            oldParams.replace("result", true);
+
             if((boolean)oldParams.get("cryption")){
-                JSONObject json = new JSONObject(readRepository.selectUserOne(mb_idx));
-                paramRes.put("ereq", Encrypt(json.toJSONString()));
+                JSONObject json = new JSONObject(readRepository.selectUserOne(newParams));
+                oldParams.put("data", Encrypt(json.toJSONString()));
             }else{
-                paramRes.put("req", readRepository.selectUserOne(mb_idx));
+                oldParams.put("data", readRepository.selectUserOne(newParams));
             }
 
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     /**
@@ -186,29 +193,33 @@ public class UserMemberServiceImpl implements MemberService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
+
+            oldParams.replace("result", true);
+
             String email = (newParams.containsKey("mb_email")) ? newParams.get("mb_email").toString() : null;
-            Map<String, Object> login = (email != null) ? readRepository.userLogin(email) : null;
+            Map<String, Object> login = (email != null) ? readRepository.userLogin(email, cryptkey) : null;
             boolean loginResult = (newParams.containsKey("mb_pw") && login != null) ? true : false;
 
             if(loginResult){
-                paramRes.put("result", true);
+                oldParams.put("login", true);
             }else{
-                paramRes.put("messege", "아이디/비밀번호를 확인해주세요");
-                paramRes.put("result", false);
+                oldParams.put("msg", "아이디/비밀번호를 확인해주세요");
+                oldParams.put("login", false);
             }
 
-            if((boolean)oldParams.get("cryption")){
-                JSONObject json = new JSONObject(readRepository.userLogin(email));
-                paramRes.put("ereq", Encrypt(json.toJSONString()));
+            if((boolean)oldParams.get("cryption") ){
+                JSONObject json = new JSONObject(readRepository.userLogin(email, cryptkey));
+                oldParams.put("data", Encrypt(json.toJSONString()));
             }else{
-                paramRes.put("req", readRepository.userLogin(email));
+                oldParams.put("data", readRepository.userLogin(email, cryptkey));
             }
 
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     /**
@@ -234,21 +245,24 @@ public class UserMemberServiceImpl implements MemberService {
             String mb_value = (mb_param != null && newParams.containsKey("mb_value"))
                     ? newParams.get("mb_value").toString() : null;
 
+            oldParams.replace("result", true);
+
             resNum = (mb_param != null) ? Optional.ofNullable(readRepository.userDupChk(mb_param, mb_value)).orElseGet(() -> 0) : 0;
             String res = (mb_param != null) ? ((resNum != 1 ) ? "Y" : "N") : "파라미터 확인";
             newParams.put("use" , res);
 
             if((boolean)oldParams.get("cryption")){
-                paramRes.put("ereq", newParams);
+                oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
             }else{
-                paramRes.put("req", newParams);
+                oldParams.put("data", newParams);
             }
 
         }else {
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     /**
@@ -267,6 +281,8 @@ public class UserMemberServiceImpl implements MemberService {
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
 
+            oldParams.replace("result", true);
+
             String mb_param = (newParams.containsKey("mb_param")) ? String.valueOf(newParams.get("mb_param")) : null;
             int mb_idx = (mb_param != null && newParams.containsKey("mb_idx"))
                     ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
@@ -276,15 +292,16 @@ public class UserMemberServiceImpl implements MemberService {
 
             if((boolean)oldParams.get("cryption")){
                 JSONObject json = new JSONObject(newParams);
-                paramRes.put("ereq", Encrypt(json.toJSONString()));
+                oldParams.put("data", Encrypt(json.toJSONString()));
             }else{
-                paramRes.put("req", newParams);
+                oldParams.put("data", newParams);
             }
         }else {
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     /**
@@ -292,21 +309,51 @@ public class UserMemberServiceImpl implements MemberService {
      * @param vo MemberVO
      * */
     @Override
-    public JSONObject userJoin(RequestVO vo) {
-        Map <String, Object> map = new HashMap<>();
-        /*int result = (vo.getMb_id() != null) ? 1 : 0;
-        try {
-            AES128 aes128 = new AES128(key);
-            if(result != 0){
-                String password = aes128.javaEncrypt(vo.getMb_pw());
-                vo.setMb_pw(password);
-                result = Optional.ofNullable(writeRepository.userJoin(vo)).orElseGet(() -> 0);
+    public Map<String,Object> userJoin(RequestVO vo) throws Exception{
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> newParams = new HashMap<>();
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_email") && newParams.containsKey("mb_pw") &&newParams.containsKey("mb_ci") &&
+                    newParams.containsKey("mb_gender") && newParams.containsKey("mb_birth") && newParams.containsKey("mb_nickname") &&
+                    newParams.containsKey("mb_local") && newParams.containsKey("mb_local2") && newParams.containsKey("mb_foreigner") &&
+                    newParams.containsKey("fcm_token") && newParams.containsKey("app_ver")
+                    && newParams.containsKey("app_type") && newParams.containsKey("device_name") && newParams.containsKey("device_os_ver")){
+
+                newParams.put("cryptKey", cryptkey);
+
+                if((boolean)oldParams.get("cryption")){
+                    newParams.put("insert" , ( writeRepository.userJoin(newParams) != 0
+                            && writeRepository.fcmInsert(newParams) != 0) ? "SUCCESS" : "FAIL");
+                    newParams.remove("cryptKey");
+
+                    oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
+                }else{
+                    newParams.put("insert" , ( writeRepository.userJoin(newParams) != 0
+                            && writeRepository.fcmInsert(newParams) != 0) ? "SUCCESS" : "FAIL");
+                    newParams.remove("cryptKey");
+                    oldParams.put("data", newParams);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else{
+            oldParams.put("result", false);
+            oldParams.put("msg", oldParams);
         }
-        map.put("result", Collections.singletonMap("joinResult", (result != 0) ? "Y" : "N"));*/
-        return new JSONObject(map);
+
+        return oldParams;
     }
 
     @Override
@@ -324,17 +371,24 @@ public class UserMemberServiceImpl implements MemberService {
         int resNum = random.nextInt(888888)+111111;
 
         if(state){
-            if((boolean)oldParams.get("cryption")){
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
 
-                paramRes.put("ereq", resNum);
+            newParams.put("number", resNum);
+
+            if((boolean)oldParams.get("cryption")){
+                oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
             }else{
-                paramRes.put("req", resNum);
+                oldParams.put("data", newParams);
             }
         }else {
-            paramRes.put("error", oldParams);
+
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+
         }
 
-        return paramRes;
+        return oldParams;
      }
 
     @Override
@@ -352,23 +406,28 @@ public class UserMemberServiceImpl implements MemberService {
             int mb_idx = (newParams.containsKey("mb_idx")) ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
             String mb_pw = (newParams.containsKey("mb_pw") && mb_idx != 0) ? newParams.get("mb_pw").toString() : null;
 
+            oldParams.replace("result", true);
+
             if(mb_pw != null) {
+                temp = (writeRepository.passwordChange(newParams) != 0) ? "SUCCESS" : "FAIL";
+                newParams.put("update", temp);
+
                 if((boolean)oldParams.get("cryption")){
-                    //JSONObject json = new JSONObject(Collections.singletonMap("result", temp));
-                    temp = (writeRepository.passwordChange(newParams) != 0) ? "SUCCESS" : "mb_idx 확인";
-                    paramRes.put("ereq", temp);
+                    oldParams.put("data", new JSONObject(newParams).toJSONString());
                 }else{
-                    temp = (writeRepository.passwordChange(newParams) != 0) ? "SUCCESS" : "mb_idx 확인";
-                    paramRes.put("req", temp);
+                    oldParams.put("data", newParams);
                 }
+
             }else{
-                paramRes.put("result", "파라미터 확ㅇ");
+                oldParams.replace("result", false);
+                oldParams.put("data", " 파라미터 확인 ");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
 
@@ -385,6 +444,7 @@ public class UserMemberServiceImpl implements MemberService {
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
             String mb_foreign = (newParams.containsKey("mb_foreign")) ? newParams.get("mb_foreign").toString() : null;
+            oldParams.replace("result", true);
 
             if(mb_foreign != null){
                 List<Map<String, Object>> temp = readRepository.localCategory(mb_foreign);
@@ -395,17 +455,19 @@ public class UserMemberServiceImpl implements MemberService {
                 }
 
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("req", arr);
+                    oldParams.put("data", arr);
                 }
             }else{
-                paramRes.put("result", "파라미터 확인");
+                oldParams.replace("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
-        return paramRes;
+        return oldParams;
     }
 
     @Override
@@ -422,6 +484,8 @@ public class UserMemberServiceImpl implements MemberService {
             newParams =(Map<String, Object>) oldParams.get("result");
             String set_1_code = (newParams.containsKey("set_1_code")) ? newParams.get("set_1_code").toString() : null;
 
+            oldParams.replace("result", true);
+
             if(set_1_code != null){
                 List<Map<String, Object>> temp = readRepository.localChoice(set_1_code);
                 JSONArray arr = new JSONArray();
@@ -430,18 +494,20 @@ public class UserMemberServiceImpl implements MemberService {
                     arr.add(new JSONObject(map));
                 }
                 if((boolean) oldParams.get("cryption")){
-                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("req", arr);
+                    oldParams.put("data", arr);
                 }
             }else{
-                paramRes.put("result", "상위 카테고리 확인");
+                oldParams.replace("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     @Override
@@ -455,12 +521,50 @@ public class UserMemberServiceImpl implements MemberService {
                 ? (boolean) oldParams.get("state") : false;
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
 
+            if(newParams.containsKey("mb_idx")){
+                if(Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) != 0){
+                    String  res = (writeRepository.sessionChk(newParams) != 0) ? "SUCCESS" : "FAIL";
+                    if((boolean) oldParams.get("cryption")){
+                        newParams.put("update", res);
+                        oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
+                    }else{
+                        newParams.put("update", res);
+                        oldParams.put("data",  newParams);
+                    }
+                }
+            }else{
+                oldParams.replace("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
 
         }else {
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return null;
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> memberEmailChk(RequestVO vo) throws Exception {
+
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        Random random = new Random();
+        int resNum = random.nextInt(888888)+111111;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+        }
+
+        return oldParams;
     }
 }

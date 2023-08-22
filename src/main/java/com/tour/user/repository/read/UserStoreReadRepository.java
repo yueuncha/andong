@@ -1,5 +1,6 @@
 package com.tour.user.repository.read;
 
+import com.tour.user.vo.RequestVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,8 +13,8 @@ public interface UserStoreReadRepository {
     List<Map<String, Object>> categoryList(Map<String, Object> params);
     List<Map<String, Object>> categoryDetail(Map<String, Object> params);
     List<Map<String, Object>> storeDetail(Map<String, Object> params);
-
-
+    List<Map<String, Object>> categoryNameList();
+    List<Map<String, Object>> categoryName(Map<String, Object> params);
 
 
 }

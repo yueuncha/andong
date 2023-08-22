@@ -5,8 +5,8 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , am.mb_pw
-             , IFNULL(am.mb_email, '') AS mb_email
+             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
+             , AES_DECRYPT(IFNULL(am.mb_email, '') , 'andong2023andong') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth
@@ -26,12 +26,12 @@
         WHERE mb_status = 1
     </select>
 
-    <select id="selectUserOne" parameterType="Integer" resultType="map">
+    <select id="selectUserOne" parameterType="map" resultType="map">
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , am.mb_pw
-             , IFNULL(am.mb_email, '') AS mb_email
+             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
+             , AES_DECRYPT(IFNULL(am.mb_email, '') , #{cryptKey}) AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth
@@ -72,8 +72,8 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , am.mb_pw
-             , IFNULL(am.mb_email, '') AS mb_email
+             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
+             , AES_DECRYPT(IFNULL(am.mb_email, '') , #{cryptKey}) AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth

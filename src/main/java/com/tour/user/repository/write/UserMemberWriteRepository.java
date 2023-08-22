@@ -8,9 +8,10 @@ import java.util.Map;
 
 @Mapper
 public interface UserMemberWriteRepository {
-    int userJoin(RequestVO vo);
+    int userJoin(Map<String, Object> param);
+    int fcmInsert(Map<String, Object> param);
     int passwordChange(Map<String, Object> param);
-
+    int sessionChk(Map<String, Object> param);
 }
 
 

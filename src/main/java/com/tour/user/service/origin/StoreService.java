@@ -19,8 +19,8 @@ public interface StoreService {
     Map<String, Object> storeLike(RequestVO vo) throws Exception;
     Map<String, Object> strReviewCreate(RequestVO vo) throws Exception;
 
-
-
+    Map<String, Object> categoryNameList(RequestVO vo) throws Exception;
+    Map<String, Object> categoryName(RequestVO vo) throws Exception;
 
 
 }

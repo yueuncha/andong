@@ -10,9 +10,9 @@ public interface UserMemberReadRepository {
 
     List<Map<String,Object>> selectUserList();
 
-    Map<String, Object> selectUserOne(int mb_idx);
+    Map<String, Object> selectUserOne(Map<String, Object> params);
 
-    Map<String, Object> userLogin(String mb_id);
+    Map<String, Object> userLogin(String mb_email, String cryptKey);
 
     Integer userDupChk(String mb_param, String mb_value);
 

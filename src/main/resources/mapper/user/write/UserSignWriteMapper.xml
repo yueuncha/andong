@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.write.UserMemberWriteRepository">
-    <insert id="userJoin" parameterType="com.tour.user.vo.RequestVO">
+    <insert id="userJoin" parameterType="map">
+        <selectKey resultType="int" keyProperty="mb_idx" order="AFTER">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
         INSERT INTO ad_member (
-         mb_pw
+        mb_pw
         , mb_email
         , mb_ci
         , mb_gender
@@ -13,26 +16,39 @@
         , mb_status
         , mb_nickname
         , mb_local
+        , mb_local2
         , mb_foreigner
         )VALUES(
-        HEX(AES_ENCRYPT(#{mb_pw}, 'key1234567891234'))
-        , #{mb_email}
+        HEX(AES_ENCRYPT(#{mb_pw}, #{cryptKey}))
+        , HEX(AES_ENCRYPT(#{mb_email}, #{cryptKey}))
         , #{mb_ci}
         , #{mb_gender}
         , #{mb_birth}
-        , CURRENT_TIMESTAMP
+        , DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
         , 1
         , 1
         , #{mb_nickname}
         , #{mb_local}
         , #{mb_local2}
-        , #{mb_foreigner}
-        )
+        , #{mb_foreigner})
     </insert>
+
+
+    <insert id="fcmInsert" parameterType="map">
+        INSERT INTO fcm_info  (
+            mb_idx
+            , fcm_token
+            , app_type
+            , app_ver
+            , device_os_ver
+            , device_name
+        )VALUES (#{mb_idx}, #{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name})
+    </insert>
+
 
     <update id="passwordChange" parameterType="map">
         UPDATE ad_member
-        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, 'andong2023andong'))
+        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, #{cryptKey}))
         WHERE mb_idx = #{mb_idx}
     </update>
 
@@ -43,7 +59,7 @@
                 , device_name = #{device_name}
                 , app_type = #{app_type}
               , app_ver = #{app_ver}
-              , fcm_date = DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s')
+              , fcm_date = DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
         WHERE mb_idx = #{mb_idx}
     </update>
 

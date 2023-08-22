@@ -12,7 +12,7 @@ public interface MemberService {
     //이용약관
     Map<String, String> userAgreement();
     //회원가입
-    JSONObject userJoin(RequestVO vo);
+    Map<String, Object> userJoin(RequestVO vo) throws Exception;
     //전체회원조회
     Map<String, Object> userList();
     //특정회원조회
@@ -31,5 +31,5 @@ public interface MemberService {
     Map<String, Object> localCategory(RequestVO vo) throws Exception;
     Map<String, Object> localChoice(RequestVO vo) throws Exception;
     Map<String, Object> sessionChk(RequestVO vo) throws Exception;
-
+    Map<String, Object> memberEmailChk (RequestVO vo) throws Exception;
 }

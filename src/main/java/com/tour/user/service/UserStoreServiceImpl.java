@@ -92,31 +92,29 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
 
             if(newParams.containsKey("ct_parent")){
-                List<Map<String, Object>> temp = readRepository.categoryList(newParams);
-                JSONArray arr = new JSONArray();
-
-                for(Map<String, Object> map : temp){
-                    arr.add(new JSONObject(map));
-                }
-
+                List<Map<String, Object>> arr = readRepository.categoryList(newParams);
+                paramRes.put("tot_cnt", arr.size());
+                paramRes.put("category", readRepository.categoryName(newParams));
+                paramRes.put("store", arr);
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("tot_cnt", arr.size());
-                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(new JSONObject(paramRes).toJSONString()));
                 }else{
-                    paramRes.put("tot_cnt", arr.size());
-                    paramRes.put("req",arr);
+                    oldParams.put("data",paramRes);
                 }
             }else{
-                paramRes.put("error", "상위 카테고리를 선택해주세요");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "파라미터 확인");
             }
 
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
         
-        return paramRes;
+        return oldParams;
     }
 
     //String str_category, String lang, String mb_idx
@@ -132,7 +130,7 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
-
+            oldParams.replace("result", true);
             if(newParams.containsKey("str_category")){
                 List<Map<String, Object>> temp = readRepository.categoryDetail(newParams);
                 JSONArray arr = new JSONArray();
@@ -142,21 +140,21 @@ public class UserStoreServiceImpl implements StoreService {
                 }
 
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("tot_cnt", arr.size());
-                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("tot_cnt", arr.size());
-                    paramRes.put("req",arr);
+                    oldParams.put("data",arr);
                 }
             }else{
-                paramRes.put("error", "카테고리를 선택해주세요");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "str_category 확인");
             }
 
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     //String str_idx, String lang, String mb_idx
@@ -172,6 +170,8 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
             if(newParams.containsKey("str_idx")){
                 writeRepository.storeView(String.valueOf(newParams.get("str_idx")));
                 List<Map<String, Object>> temp = readRepository.storeDetail(newParams);
@@ -181,17 +181,19 @@ public class UserStoreServiceImpl implements StoreService {
                     arr.add(new JSONObject(map));
                 }
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("ereq", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(arr.toJSONString()));
                 }else{
-                    paramRes.put("req", arr);
+                    oldParams.put("data", arr);
                 }
             }else{
-                paramRes.put("error", " 파라미터 확인 ");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "str_idx 확인");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
-        return paramRes;
+        return oldParams;
     }
 
     //string str_idx, String mb_idx
@@ -207,21 +209,23 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
-
+            oldParams.replace("result", true);
             if(newParams.containsKey("str_idx")){
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("ereq",writeRepository.storeView(String.valueOf(newParams.get("str_idx"))) );
+                    paramRes.put("data",Encrypt(writeRepository.storeView(String.valueOf(newParams.get("str_idx")))+"") );
                 }else{
-                    paramRes.put("req",writeRepository.storeView(String.valueOf(newParams.get("str_idx"))));
+                    paramRes.put("data",writeRepository.storeView(String.valueOf(newParams.get("str_idx"))));
                 }
             }else{
-                paramRes.put("error", " 파라미터 확인 ");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "str_idx 확인");
             }
 
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
-        return paramRes;
+        return oldParams;
     }
 
     //mb_idx, str_idx, like_state
@@ -237,36 +241,37 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
             if(newParams.containsKey("mb_idx") && newParams.containsKey("str_idx")){
                 String temp = "";
+
                 if((String.valueOf(newParams.get("like_status"))).equals("Y")){
                     /*업데이트*/
                     newParams.replace("like_status", "N");
                     temp = (writeRepository.storeDisLike(newParams) != 0 && writeRepository.likeCntDown(newParams) != 0)
-                            ? "SUCCESS" : "파라미터(str_idx, mb_idx) 확인";
+                            ? "SUCCESS" : "FAIL";
                 }else{
                     /*신규등록*/
                     newParams.replace("like_status", "Y");
                     temp = (writeRepository.storeLike(newParams) != 0 && writeRepository.likeCntUp(newParams) != 0 )
-                            ? "SUCCESS" : "파라미터(str_idx, mb_idx) 확인";
-
+                            ? "SUCCESS" : "FAIL";
                 }
-
-                newParams.put("result", temp);
 
                 if((boolean)oldParams.get("cryption")){
-                    paramRes.put("ereq", Encrypt(new JSONObject(newParams).toJSONString()));
+                    oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
                 }else{
-                    paramRes.put("req",newParams);
+                    oldParams.put("data",newParams);
                 }
             }else{
-                paramRes.put("error", " 파라미터 확인 ");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "mb_idx, str_idx 확인");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
     }
 
     //mb_idx, str_idx, str_type, rv_content
@@ -282,19 +287,100 @@ public class UserStoreServiceImpl implements StoreService {
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
+
+            oldParams.replace("result", true);
+
             if (newParams.containsKey("mb_idx") && newParams.containsKey("str_idx") && newParams.containsKey("rv_contents")) {
                 if ((boolean) oldParams.get("cryption")) {
-                    paramRes.put("ereq", (writeRepository.strReviewCreate(newParams) != 0) ? true : false);
+                    newParams = ((writeRepository.strReviewCreate(newParams) != 0) ? true : false) ? newParams
+                            : Collections.singletonMap("insert","FAIL") ;
+                    oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
                 } else {
-                    paramRes.put("req", (writeRepository.strReviewCreate(newParams) != 0) ? true : false);
+                    oldParams.put("data", newParams);
                 }
             } else {
-                paramRes.put("error", " 파라미터 확인 ");
+                oldParams.replace("result", false);
+                oldParams.put("msg", "파라미터 확인");
             }
         }else{
-            paramRes.put("error", oldParams);
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
         }
 
-        return paramRes;
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> categoryNameList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        oldParams.replace("result", true);
+
+        if(state){
+            List<Map<String, Object>> temp = readRepository.categoryNameList();
+            JSONArray arr = new JSONArray();
+
+            for(Map<String, Object> map : temp){
+                arr.add(new JSONObject(map));
+            }
+
+            if ((boolean) oldParams.get("cryption")) {
+                oldParams.put("data", Encrypt(arr.toJSONString()));
+            } else {
+                oldParams.put("data", arr);
+            }
+
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", "파라미터 확인");
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> categoryName(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state){
+            newParams = (Map<String, Object>) oldParams.get("result");
+
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("ct_parent")){
+
+                List<Map<String, Object>> temp = readRepository.categoryName(newParams);
+                JSONArray arr = new JSONArray();
+
+                for(Map<String, Object> map : temp){
+                    arr.add(new JSONObject(map));
+                }
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(arr.toJSONString()));
+                } else {
+                    oldParams.replace("data", arr);
+                }
+            }else{
+                oldParams.replace("result", false);
+                oldParams.put("msg", "파라미터 확인");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
     }
 }
