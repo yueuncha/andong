@@ -99,12 +99,18 @@ public class UserStoreServiceImpl implements StoreService {
                 paramRes.put("tot_cnt", arr.size());
                 paramRes.put("category", readRepository.categoryName(newParams));
                 paramRes.put("store", arr);
+
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(new JSONObject(paramRes).toJSONString()));
                 }else{
                     oldParams.put("data",paramRes);
                 }
             }else{
+                paramRes.put("tot_cnt", "0");
+                paramRes.put("category", new JSONObject());
+                paramRes.put("store", new JSONObject());
+
+                oldParams.put("data", paramRes);
                 oldParams.replace("result", false);
                 oldParams.put("msg", "파라미터 확인");
             }
@@ -363,6 +369,7 @@ public class UserStoreServiceImpl implements StoreService {
                 List<Map<String, Object>> temp = readRepository.categoryName(newParams);
                 JSONArray arr = new JSONArray();
 
+
                 for(Map<String, Object> map : temp){
                     arr.add(new JSONObject(map));
                 }
@@ -381,6 +388,77 @@ public class UserStoreServiceImpl implements StoreService {
             oldParams.put("msg", oldParams);
         }
 
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> experienceList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            JSONArray arr = new JSONArray();
+            List<Map<String, Object>> arrList = readRepository.categoryList(newParams);
+            paramRes.put("tot_cnt", arrList.size());
+            paramRes.put("category", readRepository.categoryName(newParams));
+            paramRes.put("store", arrList);
+
+            if ((boolean) oldParams.get("cryption")) {
+                oldParams.put("data", Encrypt(arr.toJSONString()));
+            } else {
+                oldParams.replace("data", arr);
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> experienceDetail(RequestVO vo) throws Exception {
+            Map<String, Object> newParams;
+            String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+            Map<String, Object> oldParams = stringToJson(str);
+            Map<String, Object> paramRes = new HashMap<>();
+
+            boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                    ? (boolean) oldParams.get("state") : false;
+
+            if(state) {
+                newParams = (Map<String, Object>) oldParams.get("result");
+                oldParams.replace("result", true);
+
+                if(newParams.containsKey("str_category") && newParams.get("str_category") != ""){
+                    List<Map<String, Object>> temp = readRepository.experienceDetail(newParams);
+                    paramRes.put("tot_cnt", temp.size());
+                    paramRes.put("category", temp);
+
+                    if ((boolean) oldParams.get("cryption")) {
+                        oldParams.put("data", Encrypt(new JSONObject(paramRes).toJSONString()));
+                    } else {
+                        oldParams.replace("data", paramRes);
+                    }
+
+                }else{
+                    paramRes.put("tot_cnt", 0);
+                    paramRes.put("category", new JSONObject());
+                    oldParams.replace("data", paramRes);
+                    oldParams.replace("result", false);
+                    oldParams.put("msg", "파라미터 확인");
+                }
+
+            }else{
+                oldParams.replace("result", false);
+                oldParams.put("msg", oldParams);
+            }
         return oldParams;
     }
 }

@@ -114,5 +114,18 @@
         WHERE lss.set_1_code = #{mb_set_1_code}
     </select>
 
+    <select id="sessionData" resultType="map" parameterType="map">
+        SELECT
+            fcm_idx
+            , IFNULL(mb_idx, '') AS mb_idx
+            , fcm_token
+            , app_ver
+            , app_type
+            , device_name
+            , device_os_ver
+            , email_check
+        FROM fcm_info
+            WHERE fcm_idx = #{fcm_idx}
+    </select>
 
 </mapper>

@@ -24,6 +24,7 @@ public class RequestVO {
         Map<String, Object> result = new HashMap<>();
         if(req != null){
             result.put("result", req);
+            result.put("msg", "");
             result.put("cryption", false);
             result.put("state", (req != null) ? true : false);
             res = new JSONObject(result).toJSONString();
@@ -38,6 +39,8 @@ public class RequestVO {
         String res = null;
         if(ereq != null){
            result.put("result", ereq);
+           result.put("data", "");
+            result.put("msg", "");
            result.put("cryption", true);
            result.put("state", (ereq != null) ? true : false);
            res = new JSONObject(result).toJSONString();

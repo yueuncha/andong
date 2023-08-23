@@ -35,6 +35,9 @@
 
 
     <insert id="fcmInsert" parameterType="map">
+        <selectKey resultType="int" keyProperty="fcm_idx" order="AFTER">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
         INSERT INTO fcm_info  (
             mb_idx
             , fcm_token
@@ -42,7 +45,7 @@
             , app_ver
             , device_os_ver
             , device_name
-        )VALUES (#{mb_idx}, #{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name})
+        )VALUES (#{mb_idx},#{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name})
     </insert>
 
 
@@ -52,16 +55,12 @@
         WHERE mb_idx = #{mb_idx}
     </update>
 
-    <update id="sessionChk" parameterType="map">
+    <update id="updateEmailChk" parameterType="map">
         UPDATE fcm_info
-            SET fcm_token = #{fcm_token}
-                , device_os_ver = #{device_os_ver}
-                , device_name = #{device_name}
-                , app_type = #{app_type}
-              , app_ver = #{app_ver}
-              , fcm_date = DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
-        WHERE mb_idx = #{mb_idx}
+            SET email_check = #{email_check}
+        WHERE fcm_idx = #{fcm_idx}
     </update>
+
 
 
 </mapper>

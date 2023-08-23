@@ -30,6 +30,7 @@ public interface MemberService {
 
     Map<String, Object> localCategory(RequestVO vo) throws Exception;
     Map<String, Object> localChoice(RequestVO vo) throws Exception;
+    Map<String, Object> newSession(RequestVO vo) throws Exception;
     Map<String, Object> sessionChk(RequestVO vo) throws Exception;
     Map<String, Object> memberEmailChk (RequestVO vo) throws Exception;
 }

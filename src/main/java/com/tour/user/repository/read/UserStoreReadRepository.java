@@ -15,6 +15,7 @@ public interface UserStoreReadRepository {
     List<Map<String, Object>> storeDetail(Map<String, Object> params);
     List<Map<String, Object>> categoryNameList();
     List<Map<String, Object>> categoryName(Map<String, Object> params);
-
+    List<Map<String, Object>> experienceList(Map<String, Object> params);
+    List<Map<String, Object>> experienceDetail(Map<String, Object> params);
 
 }

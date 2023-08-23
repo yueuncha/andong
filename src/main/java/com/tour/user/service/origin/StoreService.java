@@ -22,5 +22,9 @@ public interface StoreService {
     Map<String, Object> categoryNameList(RequestVO vo) throws Exception;
     Map<String, Object> categoryName(RequestVO vo) throws Exception;
 
+    Map<String, Object> experienceList(RequestVO vo) throws Exception;
+    Map<String, Object> experienceDetail(RequestVO vo) throws Exception;
+
+
 
 }
