@@ -25,12 +25,17 @@
     </context:component-scan>
 
     <mvc:resources mapping="resources/" location="/mapper/" />
+    <mvc:resources mapping="/image/**" location="file:/data/file/image" />
     <util:properties id="aesConfig" >
         <prop key="key">key1234567891234</prop>
     </util:properties>
 
     <util:properties id="aesCrypt" >
         <prop key="cryptkey">andong2023andong</prop>
+    </util:properties>
+
+    <util:properties id="address" >
+        <prop key="ip">http://133.186.135.80</prop>
     </util:properties>
 
 

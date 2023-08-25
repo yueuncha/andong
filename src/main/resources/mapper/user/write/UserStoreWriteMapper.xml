@@ -28,10 +28,17 @@
 
 
     <insert id="strReviewCreate" parameterType="map">
+        <selectKey resultType="int" keyProperty="rv_idx" order="AFTER">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
         INSERT ad_review (mb_idx, str_idx, rv_type, rv_contents) VALUES
             (#{mb_idx}, #{str_idx}, (
             SELECT str_type FROM ad_store WHERE str_idx = #{str_idx}
         ), #{rv_contents})
+    </insert>
+
+    <insert id="reviewImageInsert" parameterType="map">
+        INSERT ad_review_image (rv_idx, rv_img_file) VALUES (#{rv_idx}, #{rv_img_file})
     </insert>
 
 

@@ -24,6 +24,7 @@ public class RequestVO {
         Map<String, Object> result = new HashMap<>();
         if(req != null){
             result.put("result", req);
+            result.put("data", "");
             result.put("msg", "");
             result.put("cryption", false);
             result.put("state", (req != null) ? true : false);
