@@ -14,7 +14,7 @@ public interface MemberService {
     //회원가입
     Map<String, Object> userJoin(RequestVO vo) throws Exception;
     //전체회원조회
-    Map<String, Object> userList();
+    Map<String, Object> userList() throws Exception;
     //특정회원조회
     Map<String, Object> userOne(RequestVO vo) throws Exception;
     //회원로그인

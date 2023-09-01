@@ -1,26 +1,51 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserStoreReadRepository">
-    <select id="storeSearch" parameterType="java.util.Map" resultType="java.util.List">
-        SELECT DISTINCT
-               st.str_idx AS str_idx
-             , asd.str_dt_name AS str_idx
-             , (SELECT COUNT(*)
-                FROM ad_review
-                WHERE str_idx = st.str_idx ) AS str_review_cnt
+    <select id="storeSearch" parameterType="map" resultType="map">
+        SELECT DISTINCT st.str_idx AS str_idx,
+                        CASE
+                            WHEN ac.ct_parent = 1 and st.str_category = 11 THEN 'food'
+                            WHEN ac.ct_parent = 10 THEN 'tour'
+                            WHEN ac.ct_parent = 7 THEN 'exp'
+                            WHEN ac.ct_parent = 1 and st.str_category = 3 THEN 'fest'
+                            WHEN ac.ct_parent = 5 THEN 'hotel'
+                            ELSE 'etc'
+                            END AS store_type,
+                        IFNULL(st.str_like_cnt, 0) AS str_like_cnt,
+                        st.str_lat,
+                        st.str_lng,
+                        st.str_category,
+                        IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0) AS review_ave,
+                        ac.ct_ko_nm,
+                        ac.ct_ja_nm,
+                        ac.ct_zh_nm,
+                        ac.ct_es_nm,
+                        ac.ct_eu_nm,
+                        asd.str_dt_type AS str_dt_type,
+                        asd.str_dt_name AS str_dt_name,
+                        IFNULL(CONCAT(#{url}, st.str_image), st.str_image) AS str_image,
+                        IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
+                        (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
+                        0.0 AS str_review_ave,
+                        0.0 AS str_km,
+                        IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
         FROM ad_store st
-            LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
-        WHERE asd.str_dt_type = #{lang} OR asd.str_dt_type = 'ko'
-        AND asd.str_dt_name LIKE CONCAT('%',#{keyword},'%')
+                 LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+                 LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+          AND asd.str_dt_name LIKE CONCAT('%', #{keyword}, '%')
         GROUP BY st.str_idx, asd.str_dt_type
+        ORDER BY IFNULL(#{sorting},'')
     </select>
 
     <select id="categoryList" parameterType="map" resultType="map">
         SELECT
             DISTINCT st.str_idx AS str_idx
+                    , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
                     , st.str_lat
                     , st.str_lng
                     , st.str_category
+                    , IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx) , 0.0) AS review_ave
                     , ac.ct_ko_nm
                     , ac.ct_ja_nm
                     , ac.ct_zh_nm
@@ -51,9 +76,12 @@
     <select id="categoryDetail"  parameterType="map" resultType="map">
         SELECT DISTINCT
             st.str_idx AS str_idx
+                      , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
                       , st.str_lat
                       , st.str_lng
                       , st.str_category
+                      , IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx) , 0.0) AS str_review_ave
+                      , st.str_like_cnt
                       , ac.ct_ko_nm
                       , ac.ct_ja_nm
                       , ac.ct_zh_nm
@@ -63,20 +91,16 @@
                       , asd.str_dt_name AS str_dt_name
                       , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
                       , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
-                      , (SELECT COUNT(*)
-                         FROM ad_review
-                         WHERE str_idx = st.str_idx ) AS str_review_cnt
-                      , 0.0 AS str_review_ave
+                      , (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx ) AS str_review_cnt
                       , 0.0 AS str_km
-                      , IFNULL(
-                (SELECT like_status
-                 FROM ad_like
-                 WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
+                      , IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
-        WHERE st.str_category = #{str_category}
-          AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+            <if test="str_category != 0">
+                AND st.str_category = #{str_category}
+            </if>
         GROUP BY st.str_idx, asd.str_dt_type
         ORDER BY IFNULL(#{sorting},'')
     </select>
@@ -84,6 +108,7 @@
     <select id="storeDetail" parameterType="map" resultType="java.util.Map">
         SELECT DISTINCT
             st.str_idx
+            , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
             , st.str_lat
             , st.str_lng
             , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
@@ -91,6 +116,7 @@
             , st.str_week_e_time
             , st.str_phone
             , st.str_category
+            , IFNULL(st.str_website, '') AS str_website
             , asd.str_dt_name
             , asd.str_dt_type
             , IFNULL(asd.str_dt_address , '') AS str_dt_address
@@ -100,7 +126,7 @@
             , (SELECT COUNT(*)
                FROM ad_review
                WHERE str_idx = st.str_idx ) AS str_review_cnt
-            , 0.0 AS str_review_ave
+            , IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx) , 0.0) AS str_review_ave
             , IFNULL(
                 (SELECT like_status
                 FROM ad_like
@@ -142,6 +168,8 @@
     <select id="experienceList" parameterType="map" resultType="map">
         SELECT
             DISTINCT st.str_idx AS str_idx
+                      , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+                    , IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx) , 0.0) AS str_review_ave
                    , st.str_lat
                    , st.str_lng
                    , st.str_category
@@ -173,23 +201,85 @@
     </select>
 
 
-    <select id="strReviewRead" parameterType="map" resultType="list">
+    <select id="strReviewRead" parameterType="map" resultType="map">
         SELECT
-            av.str_idx
-            , av.mb_idx
-            , av.rv_type
-            , av.rv_anonym
-            , av.rv_blind
-            , av.rv_contents
-            , av.rv_reg_date
-            , av.rv_reg_time
-            , IFNULL(av.rv_reply , '') as
-        FROM ad_review av
-        WHERE str_idx = #{str_idx}
+            av.str_idx,
+            av.mb_idx,
+            av.rv_idx,
+            av.review_avg,
+            COALESCE((SELECT 'Y' FROM ad_review WHERE mb_idx = #{mb_idx}), 'N') AS my_review,
+            COUNT(ar.str_idx) AS review_cnt,
+            COALESCE(al.like_status, 'N') AS like_status,
+            av.rv_type,
+            av.rv_anonym,
+            av.rv_blind,
+            av.rv_contents,
+            DATE_FORMAT(av.rv_reg_date, '%Y/%m/%d') AS rv_reg_date,
+            av.rv_reg_time,
+            COALESCE(av.rv_reply, '') AS rv_reply
+        FROM
+            ad_review av
+                LEFT JOIN
+            ad_review ar ON av.str_idx = ar.str_idx
+                LEFT JOIN
+            ad_like al ON av.mb_idx = al.mb_idx AND av.str_idx = al.str_idx
+        WHERE
+            av.str_idx = #{str_idx} AND av.rv_use = 'Y'
+        GROUP BY
+            av.rv_idx;
+
+    </select>
+
+    <select id="reviewImageList" parameterType="map" resultType="string">
+        SELECT CONCAT(#{url},avi.rv_img_file) from ad_review_image avi WHERE avi.rv_idx = #{rv_idx}
     </select>
 
 
+    <select id="bestKeyword" resultType="String" parameterType="map">
+        SELECT
+               keyword
+        FROM ad_search_history
+        WHERE (search_lang = 'ko' OR search_lang = #{lang})
+        GROUP BY keyword
+        ORDER BY COUNT(*) DESC
+        LIMIT 10
+    </select>
 
+    <select id="chartList" parameterType="map" resultType="map">
+        SELECT
+            COALESCE(ch.chrt_age_group, '') AS chrt_age_group,
+            COALESCE(ch.chrt_gender, '') AS chrt_gender,
+            st.str_idx,
+            st.str_lat,
+            st.str_lng,
+            st.str_category,
+            ac.ct_ko_nm,
+            ac.ct_ja_nm,
+            ac.ct_zh_nm,
+            ac.ct_es_nm,
+            ac.ct_eu_nm,
+            asd.str_dt_type AS str_dt_type,
+            asd.str_dt_name AS str_dt_name,
+            IFNULL(CONCAT('', st.str_image), st.str_image) AS str_image,
+            IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
+            0.0 AS str_km
+        FROM ad_use_chart ch
+                 LEFT JOIN ad_store st ON ch.str_idx = st.str_idx
+                 LEFT JOIN ad_store_detail asd ON ch.str_idx = asd.str_idx
+                 LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+          AND (
+                ch.chrt_gender = #{chrt_gender}
+                OR COALESCE(ch.chrt_gender, '') != ''
+            )
+        AND (
+                ch.chrt_age_group = #{chrt_age_group}
+                OR COALESCE(ch.chrt_age_group, '') != ''
+            )
+        GROUP BY st.str_idx, asd.str_dt_type
+        ORDER BY COUNT(ch.chrt_idx) DESC
+            LIMIT 0, #{count}
 
+    </select>
 
 </mapper>

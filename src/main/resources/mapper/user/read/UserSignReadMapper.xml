@@ -5,8 +5,8 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
-             , AES_DECRYPT(IFNULL(am.mb_email, '') , 'andong2023andong') AS mb_email
+             , IFNULL(am.mb_pw, '') AS mb_pw
+             , IFNULL(am.mb_email, '') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth
@@ -30,8 +30,8 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
-             , AES_DECRYPT(IFNULL(am.mb_email, '') , #{cryptKey}) AS mb_email
+             , IFNULL(am.mb_pw, '') AS mb_pw
+             , IFNULL(am.mb_email, '') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth
@@ -54,7 +54,7 @@
 
     <select id="userDupChk" parameterType="Object" resultType="Integer">
         SELECT
-            ${mb_param} = ${mb_param}
+            COUNT(${mb_param} = ${mb_param})
         FROM ad_member
         WHERE mb_status = 1
           AND ${mb_param} = #{mb_value}
@@ -72,8 +72,8 @@
         SELECT
             am.mb_idx
              , IFNULL(am.mb_id, '') AS mb_id
-             , AES_DECRYPT(am.mb_pw , #{cryptKey}) AS mb_pw
-             , AES_DECRYPT(IFNULL(am.mb_email, '') , #{cryptKey}) AS mb_email
+             , IFNULL(am.mb_pw, '') AS mb_pw
+             , IFNULL(am.mb_email, '') AS mb_email
              , IFNULL(am.mb_ci, '') AS mb_ci
              , IFNULL(am.mb_gender, '') AS mb_gender
              , IFNULL(am.mb_birth, '') AS mb_birth

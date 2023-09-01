@@ -25,6 +25,8 @@ public interface UserMemberReadRepository {
     Map<String , Object> sessionData(Map<String, Object> params);
 
 
+
+
 }
 
 

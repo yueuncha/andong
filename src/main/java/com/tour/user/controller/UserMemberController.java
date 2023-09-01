@@ -14,7 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequestMapping("/user")
@@ -33,7 +35,11 @@ public class UserMemberController {
         this.setForm = new JsonForm(LocalDateTime.now()).setData();
     }
 
-    @Autowired
+    private String getAccessToken(){
+        List scopes = new ArrayList();
+        /*scopes.add("https://www.googleapis.com/auth/firebase.messaging");*/
+        return null;
+    }
 
 
     /**
@@ -52,7 +58,7 @@ public class UserMemberController {
      */
     @RequestMapping("/listAll")
     @ResponseBody
-    public Map<String, Object> userList(){
+    public Map<String, Object> userList() throws Exception{
         return userMemberService.userList();
     }
 

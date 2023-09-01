@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.write.UserStoreWriteRepository">
-    <update id="storeView" >
+    <update id="storeView" parameterType="string">
         UPDATE ad_store
         set str_view_cnt = str_view_cnt+1
         WHERE  str_idx = #{str_idx}
@@ -31,20 +31,71 @@
         <selectKey resultType="int" keyProperty="rv_idx" order="AFTER">
             SELECT LAST_INSERT_ID();
         </selectKey>
-        INSERT ad_review (mb_idx, str_idx, rv_type, rv_contents) VALUES
+        INSERT ad_review (mb_idx, str_idx, rv_type, rv_contents, review_avg) VALUES
             (#{mb_idx}, #{str_idx}, (
             SELECT str_type FROM ad_store WHERE str_idx = #{str_idx}
-        ), #{rv_contents})
+        ), #{rv_contents}, #{review_avg})
     </insert>
+
+    <update id="strReviewUpdate" parameterType="map">
+        UPDATE ad_review
+        SET rv_anonym='N'
+          , rv_contents=''
+          , rv_update_date = DATE_FORMAT(NOW(), '%y-%m-%d')
+          , rv_update_time = DATE_FORMAT(NOW(), '%h-%i-%s')
+          , review_avg = 4.5
+        WHERE mb_idx = #{mb_idx} and str_idx = #{str_idx}
+    </update>
+
+    <update id="rvImageUpdate" parameterType="String">
+        UPDATE ad_review
+        SET rv_img_file = #{rv_img_file}
+        WHERE rv_idx = #{rv_idx}
+    </update>
+
+    <update id="strReviewDelete" parameterType="map">
+        UPDATE ad_review
+        SET rv_use = 'N'
+        WHERE rv_idx = #{rv_idx}
+    </update>
+
+    <update id="rvImageDelete" parameterType="String">
+        UPDATE ad_review
+        SET rv_img_use = #{rv_img_use}
+        WHERE rv_idx = #{rv_idx}
+    </update>
 
     <insert id="reviewImageInsert" parameterType="map">
         INSERT ad_review_image (rv_idx, rv_img_file) VALUES (#{rv_idx}, #{rv_img_file})
     </insert>
 
+    <insert id="searchKeyword" parameterType="map">
+        INSERT INTO andong_test_db.ad_search_history
+            (mb_idx, keyword, reg_date, reg_time, search_lang)
+        VALUES(#{mb_idx}, #{keyword}, DATE_FORMAT(CURRENT_TIMESTAMP, '%y%m%d')
+        , DATE_FORMAT(CURRENT_TIMESTAMP,'%h%i%s'), #{lang})
+    </insert>
 
 
-
-
+    <insert id="storeChrt" parameterType="map">
+        INSERT INTO ad_use_chart (str_idx, chrt_gender, chrt_age, chrt_age_group, chrt_date)
+        SELECT
+            #{str_idx} AS str_idx,
+            mb_gender AS chrt_gender,
+            CASE
+                WHEN mb_birth IS NULL THEN NULL
+                ELSE FLOOR(DATEDIFF(NOW(), mb_birth) / 365)
+                END AS chrt_age,
+            CASE
+                WHEN mb_birth IS NULL THEN NULL
+                ELSE FLOOR(DATEDIFF(NOW(), mb_birth) / 3650)*10
+                END AS chrt_age_group,
+            DATE_FORMAT(NOW(), '%y-%m-%d') AS chrt_date
+        FROM
+            ad_member
+        WHERE
+            mb_idx = #{mb_idx}
+    </insert>
 
 
 

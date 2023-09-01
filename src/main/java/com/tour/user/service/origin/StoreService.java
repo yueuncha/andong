@@ -2,6 +2,7 @@ package com.tour.user.service.origin;
 
 import com.tour.user.vo.RequestVO;
 import org.json.simple.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface StoreService {
     //업체조회
     JSONObject storeList();
     //검색
-    List<Map<String, Object>> storeSearch(RequestVO vo);
+    Map<String, Object> storeSearch(RequestVO vo)throws Exception;
     Map<String, Object> categoryList(RequestVO vo) throws Exception;
     Map<String, Object> categoryDetail(RequestVO vo) throws Exception;
     Map<String, Object> storeDetail(RequestVO vo) throws Exception;
@@ -29,6 +30,11 @@ public interface StoreService {
     Map<String, Object> experienceView(RequestVO vo) throws  Exception;
     Map<String, Object> festivalList(RequestVO vo) throws  Exception;
     Map<String, Object> festivalView(RequestVO vo) throws  Exception;
+
+    Map<String, Object> bestKeyword(RequestVO vo) throws Exception;
+    Map<String, Object> chartList(RequestVO vo) throws Exception;
+
+    Map<String, Object> reviewList(RequestVO vo) throws Exception;
 
 
 }

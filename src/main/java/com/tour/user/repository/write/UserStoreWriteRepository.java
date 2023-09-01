@@ -14,4 +14,6 @@ public interface UserStoreWriteRepository {
     int likeCntDown(Map<String, Object> params);
     int strReviewCreate(Map<String, Object> params);
     int reviewImageInsert(Map<String, Object> params);
+    int searchKeyword(Map<String , Object> params);
+    int storeChrt(Map<String, Object> params);
 }

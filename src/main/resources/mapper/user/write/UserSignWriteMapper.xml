@@ -19,8 +19,8 @@
         , mb_local2
         , mb_foreigner
         )VALUES(
-        HEX(AES_ENCRYPT(#{mb_pw}, #{cryptKey}))
-        , HEX(AES_ENCRYPT(#{mb_email}, #{cryptKey}))
+        HEX(AES_ENCRYPT(#{mb_pw}, #{cryptkey}))
+        , HEX(AES_ENCRYPT(#{mb_email}, #{cryptkey}))
         , #{mb_ci}
         , #{mb_gender}
         , #{mb_birth}
@@ -53,6 +53,18 @@
         UPDATE ad_member
         SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, #{cryptKey}))
         WHERE mb_idx = #{mb_idx}
+    </update>
+
+    <update id="sessionChk" parameterType="map">
+        UPDATE fcm_info
+        SET mb_idx = #{mb_idx}
+          , fcm_token = #{fcm_token}
+          , device_os_ver = #{device_os_ver}
+          , device_name = #{device_name}
+          , app_type = #{app_type}
+          , app_ver = #{app_ver}
+          , fcm_date = DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
+        WHERE fcm_idx = #{fcm_idx}
     </update>
 
     <update id="updateEmailChk" parameterType="map">

@@ -3,7 +3,8 @@ package com.tour;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.validation.constraints.NotNull;
+import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Base64.*;
 
@@ -26,8 +27,8 @@ public class AES128 extends Exception{
         System.arraycopy(obj, 0, keyBytes,0, keyBytes.length);
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
 
-        this.key = key.substring(0, 16);
-        this.cryptKey = cryptKey.substring(0, 16);
+        this.key = key.substring(0,16);
+        this.cryptKey = cryptKey.substring(0,16);
         this.keySpec = keySpec;
         this.cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
     }
@@ -46,34 +47,51 @@ public class AES128 extends Exception{
     /**
      * java 복호화
      * */
-    public String javaDecrypt(String str) throws Exception{
+    public String javaDecrypt(String str) throws Exception {
         Decoder decoder = Base64.getDecoder();
-        byte strBytes [] = decoder.decode(str);
+        byte[] strBytes = decoder.decode(str);
 
         cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(key.getBytes()));
-
         String res = new String(cipher.doFinal(strBytes), "UTF-8");
 
         return res;
     }
 
     /**
-     * mysql 암호화
-     * */
-    public String mySqlEncrypt(String str, String mySqlKey) throws Exception{
-        cipher = Cipher.getInstance("AES");
-
-        return "개발중";
-    }
-
-    /**
      * mysql 복호화
      * */
-    public String mySqlDecrypt(String str, String mySqlKey) throws Exception{
-        cipher = Cipher.getInstance("AES");
+    public String mySqlDecrypt(String str) throws Exception{
+        byte[] encryptedBytes = DatatypeConverter.parseHexBinary(str);
+        byte[] keyBytes = cryptKey.getBytes(StandardCharsets.UTF_8);
 
-        return "개발중";
+        SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+        String decryptedText = new String(decryptedBytes, StandardCharsets.UTF_8);
+
+        return decryptedText;
     }
+
+    /**s
+     * mysql 암호화
+     * */
+    public String mySqlEncrypt(String str) throws Exception{
+        byte[] keyBytes = cryptKey.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
+
+        byte[] encryptedBytes = cipher.doFinal(str.getBytes(StandardCharsets.UTF_8));
+        String encryptedHex = DatatypeConverter.printHexBinary(encryptedBytes);
+
+        return encryptedHex;
+    }
+
+
 
 
 

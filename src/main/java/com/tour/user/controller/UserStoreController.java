@@ -36,10 +36,16 @@ public class UserStoreController {
         return storeService.categoryList(vo);
     }
 
-    @PostMapping("/storeSearch")
+    @PostMapping("/search")
     @ResponseBody
-    public List<Map<String, Object>> storeSearch(RequestVO vo) throws Exception{
+    public Map<String, Object> storeSearch(RequestVO vo) throws Exception{
         return storeService.storeSearch(vo);
+    }
+
+    @PostMapping("/keyword")
+    @ResponseBody
+    public Map<String, Object> bestKeyword(RequestVO vo) throws Exception{
+        return storeService.bestKeyword(vo);
     }
 
     @PostMapping("/categoryDetail")
@@ -98,11 +104,21 @@ public class UserStoreController {
 
     @PostMapping("/reviewWrite")
     @ResponseBody
-    public Map<String, Object> strReviewWrite(MultipartHttpServletRequest multipart, RequestVO vo) throws Exception{
-        return storeService.strReviewCreate(multipart, vo);
+    public Map<String, Object> strReviewWrite(MultipartHttpServletRequest files, RequestVO vo) throws Exception{
+        return storeService.strReviewCreate(files, vo);
     }
 
+    @PostMapping("/chart")
+    @ResponseBody
+    public Map<String, Object> chartList( RequestVO vo) throws Exception{
+        return storeService.chartList(vo);
+    }
 
+    @PostMapping("/review")
+    @ResponseBody
+    public Map<String, Object> reviewList( RequestVO vo) throws Exception{
+        return storeService.reviewList(vo);
+    }
 
 
 

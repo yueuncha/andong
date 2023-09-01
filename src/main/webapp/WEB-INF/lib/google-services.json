@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "780713138191",
+    "project_id": "andongtour-dd1a8",
+    "storage_bucket": "andongtour-dd1a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780713138191:android:3f69becccb566e6236ab7a",
+        "android_client_info": {
+          "package_name": "kr.andong.andong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "780713138191-ga79ifvjffc6qs26sn027enkm02o5dlg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4RA-7yOoY-GdCCo7fjQ9LqsbOTMCFsK4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "780713138191-ga79ifvjffc6qs26sn027enkm02o5dlg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
