@@ -3,10 +3,8 @@ package com.tour.user.service;
 import com.tour.AES128;
 import com.tour.user.repository.read.UserStoreReadRepository;
 import com.tour.user.repository.write.UserStoreWriteRepository;
-import com.tour.user.service.origin.MemberService;
 import com.tour.user.service.origin.StoreService;
 import com.tour.user.vo.RequestVO;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,14 +12,10 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.SocketUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.beans.Encoder;
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 
 @Service
@@ -195,8 +189,6 @@ public class UserStoreServiceImpl implements StoreService {
             oldParams.put("msg", oldParams);
         }
 
-        System.out.println(oldParams);
-
         return oldParams;
     }
 
@@ -217,17 +209,13 @@ public class UserStoreServiceImpl implements StoreService {
             newParams.put("url", ip+"/image/place/");
 
             if(newParams.containsKey("str_category")){
+                ObjectMapper objectMapper = new ObjectMapper();
                 List<Map<String, Object>> temp = readRepository.categoryDetail(newParams);
-                JSONArray arr = new JSONArray();
-
-                for(Map<String, Object> map : temp){
-                    arr.add(new JSONObject(map));
-                }
 
                 if((boolean)oldParams.get("cryption")){
-                    oldParams.put("data", Encrypt(arr.toJSONString()));
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(temp)));
                 }else{
-                    oldParams.put("data",arr);
+                    oldParams.put("data",temp);
                 }
             }else{
                 oldParams.replace("result", false);
@@ -323,7 +311,6 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> newParams;
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
-        Map<String, Object> paramRes = new HashMap<>();
 
         boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
                 ? (boolean) oldParams.get("state") : false;
@@ -336,16 +323,13 @@ public class UserStoreServiceImpl implements StoreService {
             if(newParams.containsKey("mb_idx") && newParams.containsKey("str_idx")){
                 boolean temp = false;
 
-                if((String.valueOf(newParams.get("like_status"))).equals("Y")){
-                    /*업데이트*/
-                    newParams.replace("like_status", "N");
-                    temp = (writeRepository.storeDisLike(newParams) != 0 && writeRepository.likeCntDown(newParams) != 0)
-                            ? true : false;
+                if(writeRepository.storeDisLike(newParams) != 0){
+                     newParams.put("cnt", (String.valueOf(newParams.get("like_status"))).equals("Y") ? "+1" : "-1");
+                    writeRepository.likeCntUp(newParams);
                 }else{
-                    /*신규등록*/
-                    newParams.replace("like_status", "Y");
-                    temp = (writeRepository.storeLike(newParams) != 0 && writeRepository.likeCntUp(newParams) != 0 )
-                            ? true : false;
+                    newParams.put("cnt", "+1");
+                    writeRepository.storeLike(newParams);
+                    writeRepository.likeCntUp(newParams);
                 }
 
                 if((boolean)oldParams.get("cryption")){
@@ -353,6 +337,7 @@ public class UserStoreServiceImpl implements StoreService {
                 }else{
                     oldParams.put("data",newParams);
                 }
+
             }else{
                 oldParams.replace("result", false);
                 oldParams.put("msg", "mb_idx, str_idx 확인");
@@ -372,7 +357,6 @@ public class UserStoreServiceImpl implements StoreService {
 
         for (MultipartFile mFile: files) {
             String fileName = mFile.getOriginalFilename();
-            list.add(fileName);
             String fileCutName = fileName.substring(0, fileName.lastIndexOf("."));
             String fileExt = fileName.substring(fileName.lastIndexOf(".")+1);
             saveFilePath = folderName+ File.separator + fileName;
@@ -404,9 +388,11 @@ public class UserStoreServiceImpl implements StoreService {
                     }
                 }
                 mFile.transferTo(new File(saveFilePath));
+                list.add(saveFileName);
             }else{
                 System.out.println(saveFile.getPath());
                 mFile.transferTo(saveFile);
+                list.add(fileName);
             }
         }
         return list;
@@ -421,6 +407,7 @@ public class UserStoreServiceImpl implements StoreService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
+        boolean res = false;
 
         boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
                 ? (boolean) oldParams.get("state") : false;
@@ -431,8 +418,7 @@ public class UserStoreServiceImpl implements StoreService {
             newParams.put("url", ip+"/image/place/");
 
             if (newParams.containsKey("mb_idx") && newParams.containsKey("str_idx") && newParams.containsKey("rv_contents")) {
-                newParams = ((writeRepository.strReviewCreate(newParams) != 0) ? true : false ) ? newParams
-                            : newParams;
+                res = (writeRepository.strReviewCreate(newParams) != 0) ? true : false;
 
                 //"D:\\image\\review\\"
                 //"/data/file/image/"
@@ -444,9 +430,8 @@ public class UserStoreServiceImpl implements StoreService {
                     imgParams.put("rv_img_file", img);
                     writeRepository.reviewImageInsert(imgParams);
                 }
-
                 newParams.remove("url");
-
+                newParams.put("create", res);
                 if ((boolean) oldParams.get("cryption")) {
                     oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
                 } else {
@@ -564,6 +549,40 @@ public class UserStoreServiceImpl implements StoreService {
             } else {
                 oldParams.replace("data", paramRes);
             }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> mainExperience(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("count", 7);
+            newParams.put("random", true);
+            newParams.put("url", ip+"/image/place/");
+
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> arrList = readRepository.experienceList(newParams);
+
+            if ((boolean) oldParams.get("cryption")) {
+                oldParams.put("data", Encrypt(objectMapper.writeValueAsString(arrList)));
+            } else {
+                oldParams.replace("data", arrList);
+            }
+
         }else{
             oldParams.replace("result", false);
             oldParams.put("msg", oldParams);
@@ -731,7 +750,14 @@ public class UserStoreServiceImpl implements StoreService {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
             newParams.put("url", ip + "/image/place/");
-            newParams.put("count", 3);
+
+            if(newParams.get("chrt_gender") == "A"){
+                newParams.replace("chrt_gender", "");
+            }else if(newParams.get("chrt_age_group") == "0"){
+                newParams.replace("chrt_age_group", "");
+            }
+
+            newParams.put("count", 7);
             List<Map<String, Object>> chart = readRepository.chartList(newParams);
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -769,7 +795,17 @@ public class UserStoreServiceImpl implements StoreService {
 
                 for (Map<String, Object> review: reviewList) {
                     review.put("url", ip + "/image/review/");
-                    review.put("images", readRepository.reviewImageList(review));
+                    List<String> images_id = new ArrayList<>();
+                    List<String> images = new ArrayList<>();
+
+                    for (Map<String, Object> image :readRepository.reviewImageList(review)) {
+                        images.add(String.valueOf(image.get("rv_img_file")));
+                        images_id.add(String.valueOf(image.get("rv_img_idx")));
+                    }
+
+                    review.put("images", images);
+                    review.put("images_id", images_id);
+
                     review.remove("url");
                 }
 
@@ -789,6 +825,273 @@ public class UserStoreServiceImpl implements StoreService {
             oldParams.put("msg", oldParams);
         }
         return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> reviewUpdate(MultipartHttpServletRequest multipart, RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if (state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/review/");
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""
+                    && newParams.containsKey("rv_idx") && newParams.get("rv_idx") != ""){
+                writeRepository.rvImageDelete(newParams);
+                //D:\\images\\review\\
+                ///usr/local/tomcat9/webapps/data/file/image/review/
+                List<MultipartFile> files = multipart.getFiles("files");
+
+                if(files.size() != 0 ){
+                    List<String> imageFile = imageUpload(files, "/usr/local/tomcat9/webapps/data/file/image/review/" );
+                    for (String file: imageFile) {
+                        newParams.put("rv_img_file", file);
+                        writeRepository.reviewImageInsert(newParams);
+                    }
+                }
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                String image_num = String.valueOf(newParams.get("images"));
+                String [] arr = image_num.split(",");
+
+                boolean res = (writeRepository.strReviewUpdate(newParams) != 0) ?  true : false;
+
+                for (String images: arr) {
+                    if(res){
+                        newParams.put("rv_img_idx", images);
+                        writeRepository.rvImageUpdate(newParams);
+                    }
+                }
+
+                paramRes.put("update", res);
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
+                } else {
+                    oldParams.put("data", paramRes);
+                }
+
+            }else{
+                oldParams.put("msg", "파라미터");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> reviewDelete(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if (state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/review/");
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""
+                    && newParams.containsKey("rv_idx") && newParams.get("rv_idx") != ""){
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                boolean res = (writeRepository.strReviewDelete(newParams) != 0) ?  true : false;
+                List<Map<String, Object>> list = readRepository.reviewImageList(newParams);
+
+                for (Map<String, Object> images: list) {
+                    if(res && !list.isEmpty()){
+                        newParams.put("rv_img_file", images.get("rv_img_file"));
+                        writeRepository.rvImageDelete(newParams);
+                    }
+                }
+                paramRes.put("update", res);
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
+                } else {
+                    oldParams.put("data", paramRes);
+                }
+            }else{
+                oldParams.put("msg", "파라미터");
+            }
+
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> rvImageDelete(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if (state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/review/");
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""
+                    && newParams.containsKey("rv_idx") && newParams.get("rv_idx") != ""){
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                paramRes.put("delete", (writeRepository.rvImageDelete(newParams) != 0) ? true : false);
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
+                } else {
+                    oldParams.put("data", paramRes);
+                }
+            }else{
+                oldParams.put("msg", "파라미터");
+            }
+
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> menuList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if (state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/menu/");
+
+            if(newParams.containsKey("str_idx") && newParams.get("str_idx") != ""){
+                List<Map<String, Object>> list = readRepository.menuList(newParams);
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                /*for (Map<String, Object> params: list) {
+                    params.put("menu_images",readRepository.menuImageList(String.valueOf(params.get("mn_idx"))));
+                }*/
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                } else {
+                    oldParams.put("data", list);
+                }
+
+            }else{
+                oldParams.put("msg", "파라미터");
+            }
+
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> menuOne(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/place/");
+
+            if(newParams.containsKey("mn_idx") && newParams.get("mn_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+                paramRes = readRepository.menuOne(newParams);
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
+                }else{
+                    oldParams.put("data", paramRes);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> festivalBanner(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if (state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/place/");
+
+            if(true){
+                List<Map<String, Object>> list = readRepository.festivalBanner(newParams);
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                if ((boolean) oldParams.get("cryption")) {
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                } else {
+                    oldParams.put("data", list);
+                }
+            }else{
+                oldParams.put("msg", "파라미터");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+
+/*************************************************************************************/
+
+    @Override
+    public Map<String, Object> storyTextSave(String values, String fileName) throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("values",values);
+        String [] str = fileName.split("/");
+        params.put("fileName",str[str.length]);
+        writeRepository.storyTextSave(params);
+        return null;
     }
 }
 

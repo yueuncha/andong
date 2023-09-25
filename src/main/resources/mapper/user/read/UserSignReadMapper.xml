@@ -123,9 +123,14 @@
             , app_type
             , device_name
             , device_os_ver
-            , email_check
+            , IFNULL(email_check, '') AS email_check
+            , IFNULL(push_use, '') AS push_use
+            , IFNULL(marketing_use, '') AS marketing_use
+            , IFNULL(user_lat, 0) AS user_lat
+            , IFNULL(user_lng, 0 ) AS user_lng
         FROM fcm_info
             WHERE fcm_idx = #{fcm_idx}
     </select>
+
 
 </mapper>

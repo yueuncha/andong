@@ -12,11 +12,13 @@
     </insert>
 
     <update id="storeDisLike" parameterType="map">
-        update ad_like set like_status = #{like_type} where str_idx = #{str_idx} and mb_idx = #{mb_idx}
+        update ad_like set like_status = #{like_status} where str_idx = #{str_idx} and mb_idx = #{mb_idx}
     </update>
 
     <update id="likeCntUp" parameterType="map">
-        update ad_store set str_like_cnt = str_like_cnt+1 where str_idx = #{str_idx}
+        UPDATE ad_store
+        SET str_like_cnt = str_like_cnt${cnt}
+        WHERE str_idx = #{str_idx}
     </update>
 
     <update id="likeCntDown" parameterType="map">
@@ -39,18 +41,18 @@
 
     <update id="strReviewUpdate" parameterType="map">
         UPDATE ad_review
-        SET rv_anonym='N'
-          , rv_contents=''
+        SET rv_contents= #{rv_contents}
           , rv_update_date = DATE_FORMAT(NOW(), '%y-%m-%d')
-          , rv_update_time = DATE_FORMAT(NOW(), '%h-%i-%s')
-          , review_avg = 4.5
-        WHERE mb_idx = #{mb_idx} and str_idx = #{str_idx}
+          , rv_update_time = DATE_FORMAT(NOW(), '%h:%i:%s')
+          , review_avg = #{review_avg}
+        WHERE mb_idx = #{mb_idx} and rv_idx = #{rv_idx}
     </update>
 
     <update id="rvImageUpdate" parameterType="String">
-        UPDATE ad_review
-        SET rv_img_file = #{rv_img_file}
+        UPDATE ad_review_image
+        SET rv_img_use = 'Y'
         WHERE rv_idx = #{rv_idx}
+        AND rv_img_idx = #{rv_img_idx}
     </update>
 
     <update id="strReviewDelete" parameterType="map">
@@ -60,8 +62,8 @@
     </update>
 
     <update id="rvImageDelete" parameterType="String">
-        UPDATE ad_review
-        SET rv_img_use = #{rv_img_use}
+        UPDATE ad_review_image
+        SET rv_img_use = 'N'
         WHERE rv_idx = #{rv_idx}
     </update>
 
@@ -70,10 +72,10 @@
     </insert>
 
     <insert id="searchKeyword" parameterType="map">
-        INSERT INTO andong_test_db.ad_search_history
-            (mb_idx, keyword, reg_date, reg_time, search_lang)
-        VALUES(#{mb_idx}, #{keyword}, DATE_FORMAT(CURRENT_TIMESTAMP, '%y%m%d')
-        , DATE_FORMAT(CURRENT_TIMESTAMP,'%h%i%s'), #{lang})
+        INSERT INTO ad_search_history
+            (keyword, reg_date, reg_time, search_lang)
+        VALUES(#{keyword}, DATE_FORMAT(NOW(), '%y-%m-%d')
+        , DATE_FORMAT(NOW(),'%h:%i:%s'), #{lang})
     </insert>
 
 
@@ -97,7 +99,15 @@
             mb_idx = #{mb_idx}
     </insert>
 
+    <insert id="storyTextSave" parameterType="map">
+        INSERT INTO andong_test_db.ad_tour
+        (tour_title, tour_view_cnt, tour_reg_dt, tour_reg_time, tour_update_dt, tour_update_time, tour_use, tour_subtitle, tour_contents, tour_category, tour_image)
+        VALUES('제목', 0,DATE_FORMAT(NOW(), '%y-%m-%d'),
+               DATE_FORMAT(NOW(), '%h:%i:%s'),
+               DATE_FORMAT(NOW(), '%y-%m-%d'),
+               DATE_FORMAT(NOW(), '%h:%i:%s'), 'Y', '부제목', #{values}, '카테고리', #{fileName});
 
+    </insert>
 
 
 </mapper>

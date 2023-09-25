@@ -53,6 +53,11 @@ public class UserMemberController {
         return mv;
     }
 
+    @RequestMapping("/testStory")
+    public String andongStory(){
+        return "user/summerNote";
+    }
+
     /**
      * 전체회원조회
      */
@@ -155,4 +160,9 @@ public class UserMemberController {
         return userMemberService.memberEmailChk(vo);
     }
 
+    @PostMapping("/alarm/check")
+    @ResponseBody
+    public Map<String, Object> alarmCheck(RequestVO vo) throws Exception{
+        return userMemberService.alarmCheck(vo);
+    }
 }

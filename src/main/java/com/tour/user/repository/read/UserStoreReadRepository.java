@@ -19,6 +19,10 @@ public interface UserStoreReadRepository {
     List<Map<String, Object>> experienceDetail(Map<String, Object> params);
     List<Map<String, Object>> strReviewRead(Map<String, Object> params);
     List<String> bestKeyword (Map<String, Object> params);
-    List<String> reviewImageList(Map<String, Object> params);
+    List<Map<String, Object>> reviewImageList(Map<String, Object> params);
     List<Map<String, Object>> chartList(Map<String, Object> params);
+    List<Map<String, Object>> menuList(Map<String, Object> params);
+    List<String> menuImageList(String mn_idx);
+    List<Map<String, Object>> festivalBanner(Map<String, Object> params);
+    Map<String, Object> menuOne(Map<String, Object> params);
 }

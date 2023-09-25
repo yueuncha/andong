@@ -45,13 +45,18 @@
             , app_ver
             , device_os_ver
             , device_name
-        )VALUES (#{mb_idx},#{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name})
+            , push_use
+            , marketing_use
+            , user_lat
+            , user_lng
+        )VALUES (#{mb_idx},#{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name}, #{push_use}, #{marketing_use}
+        , #{user_lat} , #{user_lng})
     </insert>
 
 
     <update id="passwordChange" parameterType="map">
         UPDATE ad_member
-        SET mb_pw = HEX(AES_ENCRYPT(#{mb_pw}, #{cryptKey}))
+        SET mb_pw = #{mb_pw}
         WHERE mb_idx = #{mb_idx}
     </update>
 
@@ -64,12 +69,22 @@
           , app_type = #{app_type}
           , app_ver = #{app_ver}
           , fcm_date = DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
+            , push_use = IFNULL(#{push_use}, 'Y')
+            , marketing_use = IFNULL(#{marketing_use}, 'Y')
+         , user_lng = #{user_lng}
+        , user_lat = #{user_lat}
         WHERE fcm_idx = #{fcm_idx}
     </update>
 
     <update id="updateEmailChk" parameterType="map">
         UPDATE fcm_info
             SET email_check = #{email_check}
+        WHERE fcm_idx = #{fcm_idx}
+    </update>
+
+    <update id="alarmCheck" parameterType="map">
+        UPDATE fcm_info
+            SET ${type} = #{use}
         WHERE fcm_idx = #{fcm_idx}
     </update>
 

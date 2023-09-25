@@ -14,6 +14,7 @@ public interface UserMemberWriteRepository {
     int sessionChk(Map<String, Object> param);
 
     int updateEmailChk(Map<String, Object> params);
+    int alarmCheck(Map<String, Object> params);
 }
 
 

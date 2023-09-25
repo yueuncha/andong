@@ -8,12 +8,94 @@
         VALUES(#{mb_idx},DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d'), DATE_FORMAT(CURRENT_TIMESTAMP, '%H:%i:%s'), #{my_image_file});
     </insert>
 
+    <update id="myImageDeleteAll" parameterType="map">
+        UPDATE ad_mypage
+        SET cpl_use = 'Y'
+        WHERE mb_idx = #{mb_idx}
+    </update>
 
+    <update id="myImageDelete" parameterType="map">
+        UPDATE ad_mypage
+        SET cpl_use = 'N'
+        WHERE my_idx = #{my_idx}
+    </update>
 
+    <update id="tourViewCnt" parameterType="map">
+        UPDATE ad_tour
+        set tour_view_cnt = tour_view_cnt+1
+        WHERE tour_idx = #{tour_idx}
+    </update>
 
+    <insert id="passInsert" parameterType="map">
+        <selectKey resultType="int" keyProperty="ps_idx" order="AFTER">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+            INSERT INTO ad_pass_set
+                (ps_title, ps_regdate, ps_use, mb_idx)
+            VALUES(#{ps_title}, DATE_FORMAT(NOW(), '%y-%m-%d'), 'Y', #{mb_idx})
+    </insert>
 
+    <insert id="passDayFirst" parameterType="int">
+        INSERT INTO ad_pass_list (ps_idx, day_number, str_idx, store_turn, pass_list_use)
+        VALUES (#{ps_idx}, 1,0,1,'Y')
+    </insert>
 
+    <insert id="passDayInsert" parameterType="map">
+        INSERT INTO ad_pass_list (ps_idx, day_number, str_idx, store_turn, pass_list_use)
+        SELECT
+            #{ps_idx} AS ps_idx,
+            IFNULL(MAX(day_number) + 1, 1)AS day_number,
+            0 AS str_idx,
+            1 AS store_turn,
+            'Y' AS pass_list_use
+        FROM ad_pass_list
+        WHERE ps_idx = #{ps_idx}
+    </insert>
 
+    <insert id="passStoreInsert" parameterType="map">
+        INSERT INTO ad_pass_list (ps_idx, day_number, str_idx, store_turn, pass_list_use)
+        SELECT
+            #{ps_idx} AS ps_idx,
+            #{day_number} AS day_number,
+            #{str_idx} AS str_idx,
+            MAX(store_turn) + 1 AS store_turn,
+            'Y' AS pass_list_use
+        FROM ad_pass_list
+        WHERE ps_idx = #{ps_idx}
+          AND day_number = #{day_number}
+    </insert>
+
+    <update id="passStoreDelete" parameterType="map">
+        UPDATE ad_pass_list
+        SET pass_list_use = 'N'
+        WHERE psl_idx = #{psl_idx} AND str_idx = #{str_idx}
+    </update>
+
+    <update id="passDayDelete" parameterType="map">
+        UPDATE ad_pass_list
+        SET pass_list_use = 'N'
+        WHERE ps_idx = #{ps_idx} AND day_number = #{day_number};
+
+        UPDATE ad_pass_list
+        SET day_number = day_number - 1
+        WHERE ps_idx = #{ps_idx} AND day_number > #{day_number};
+    </update>
+
+    <update id="passDelete" parameterType="map">
+        UPDATE ad_pass_set
+            SET ps_use = 'N'
+        WHERE ps_idx = #{ps_idx} AND mb_idx = #{mb_idx};
+
+        UPDATE ad_pass_list
+            SET pass_list_use = 'N'
+        WHERE ps_idx = #{ps_idx};
+    </update>
+
+    <update id="passNameUpdate" parameterType="map">
+        UPDATE ad_pass_set
+            SET ps_title = #{ps_title}
+        WHERE ps_idx = #{ps_idx} AND mb_idx =#{mb_idx}
+    </update>
 
 
 </mapper>

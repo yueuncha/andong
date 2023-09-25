@@ -21,6 +21,10 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -432,14 +436,14 @@ public class UserMemberServiceImpl implements MemberService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> newParams = new HashMap<>();
-
+        boolean emailCheckResult = false;
 
         boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
                 ? (boolean) oldParams.get("state") : false;
 
         Random random = new Random();
         int resNum = random.nextInt(888888)+111111;
-
+//<p><br></p><p>안동 관광 앱 인증번호 발송</p><p>인증번호 :&nbsp;</p>
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
@@ -448,7 +452,68 @@ public class UserMemberServiceImpl implements MemberService {
             if(newParams.containsKey("fcm_idx") && newParams.get("fcm_idx") != "" && newParams.containsKey("mb_email")
                 && newParams.get("mb_email") != ""){
 
-                boolean res = (writeRepository.updateEmailChk(newParams) != 0) ? true : false;
+                final String user = "andongsmarttourservice@gmail.com";
+                final String password = "ncbmhtwctczhubfg";
+
+                Properties prop = new Properties();
+                prop.put("mail.debug", "true");
+                prop.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+                prop.put("mail.smtp.host", "smtp.gmail.com");
+                prop.put("mail.smtp.port", 465);
+                prop.put("mail.smtp.auth", "true");
+                prop.put("mail.smtp.ssl.enable", "true");
+                prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+
+                Session session = Session.getDefaultInstance(prop, new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password);
+                    }
+                });
+
+                try {
+                    MimeMessage message = new MimeMessage(session);
+                    message.setFrom(new InternetAddress(user));
+
+                    //수신자메일주소
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(String.valueOf(newParams.get("mb_email"))));
+
+                    // Subject
+                    message.setSubject("[안동관광앱] 인증번호 발송"); //메일 제목을 입력
+
+                    // Text
+                    message.setContent("<p><br></p><p>안동 관광 앱 인증번호 발송</p><p>인증번호: " + resNum + "</p>", "text/html; charset=utf-8");
+
+                    // send the message
+                    Transport.send(message); ////전송
+                    System.out.println("message sent successfully...");
+                    emailCheckResult = true;
+                } catch (AddressException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    System.out.println("메시지 전송 실패: " + e.getMessage());
+                }
+
+
+                /*
+                try {
+                    MimeMessage message = new MimeMessage(session);
+
+                    message.setFrom(new InternetAddress(from)); // from
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(to)); // recipients
+                    message.setSubject("[안동관광앱]인증번호 발송"); // subject
+                    message.setText("<p><br></p><p>안동 관광 앱 인증번호 발송</p><p>인증번호 :&nbsp;</p>"); // content
+
+                    Transport.send(message); // send
+
+                    System.out.println("Sent message successfully");
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }*/
+
+                boolean res = (writeRepository.updateEmailChk(newParams) != 0 && emailCheckResult) ? true : false;
                 newParams.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -486,12 +551,14 @@ public class UserMemberServiceImpl implements MemberService {
             newParams = (Map<String, Object>) oldParams.get("result");
             int mb_idx = (newParams.containsKey("mb_idx")) ? Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) : 0;
             String mb_pw = (newParams.containsKey("mb_pw") && mb_idx != 0) ? newParams.get("mb_pw").toString() : null;
-            newParams.put("cryptkey", cryptkey);
+
             oldParams.replace("result", true);
 
             if(mb_pw != null) {
+                newParams.replace("mb_pw", mySqlEncrypt(String.valueOf(newParams.get("mb_pw"))));
                 temp = (writeRepository.passwordChange(newParams) != 0) ? true : false;
                 newParams.put("update", temp);
+
 
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", new JSONObject(newParams).toJSONString());
@@ -604,25 +671,38 @@ public class UserMemberServiceImpl implements MemberService {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
 
-            if(newParams.containsKey("fcm_idx") && newParams.get("fcm_idx") != "" && newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
-                // 기존회원
-                boolean res = (writeRepository.sessionChk(newParams) != 0) ? true : false;
-            }else if(newParams.containsKey("fcm_idx") && newParams.get("fcm_idx") != "") {
-                // 기존 회원 or 게스트
-                boolean  res = (writeRepository.sessionChk(newParams) != 0) ? true : false;
-            }else if(!newParams.containsKey("fcm_idx") || newParams.get("fcm_idx") == ""){
-                // 신규 게스트
-                newParams.put("mb_idx", 0);
-                boolean  res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
-            }else {
-                oldParams.replace("result", false);
-                oldParams.put("msg", "파라미터 확인");
-            }
+            if(newParams.containsKey("user_lat") && newParams.containsKey("user_lng")){
 
-            if((boolean) oldParams.get("cryption")){
-                oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
-            }else{
-                oldParams.put("data",  newParams);
+                if(newParams.get("user_lat").equals("")){
+                    newParams.replace("user_lat", 0);
+                    newParams.replace("user_lng", 0);
+                }
+
+                if(newParams.containsKey("fcm_idx") && !newParams.get("fcm_idx").equals("") && newParams.containsKey("mb_idx")){
+                    // 기존회원 or 게스트
+                    if(newParams.get("mb_idx").equals("")){
+                        newParams.put("mb_idx", 0);
+                    }
+                    boolean res = (writeRepository.sessionChk(newParams) != 0) ? true : false;
+
+                }else if(newParams.get("fcm_idx").equals("") || newParams.get("fcm_idx").equals(null)){
+                    // 신규 게스트
+                    newParams.put("mb_idx", 0);
+                    boolean  res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
+
+                }else {
+                    oldParams.replace("result", false);
+                    oldParams.put("msg", "파라미터 확인");
+                }
+
+                Map<String, Object> result = readRepository.sessionData(newParams);
+
+                if((boolean) oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(new JSONObject(result).toJSONString()));
+
+                }else{
+                    oldParams.put("data",  result);
+                }
             }
 
         }else {
@@ -706,6 +786,52 @@ public class UserMemberServiceImpl implements MemberService {
             oldParams.replace("msg", oldParams);
         }
 
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> alarmCheck(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("alarm_type") && newParams.get("alarm_type") != ""
+                    && newParams.containsKey("fcm_idx") && newParams.get("fcm_idx") != ""){
+
+                // P : 푸시 M : 마케팅
+
+                if(newParams.get("alarm_type").equals("P")){
+                   newParams.put("type", "push_use");
+                }else{
+                    newParams.put("type", "marketing_use");
+                }
+
+                boolean res = (writeRepository.alarmCheck(newParams) != 0) ? true : false;
+                paramRes.put("update", res);
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(new JSONObject(paramRes).toJSONString()));
+                }else{
+                    oldParams.put("data", paramRes);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
         return oldParams;
     }
 }

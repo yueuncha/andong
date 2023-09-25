@@ -6,7 +6,7 @@
             my_idx,
             mb_idx,
             CONCAT(DATE_FORMAT(my_regdate, '%Y/%m/%d '),DATE_FORMAT(my_regtime, '%H:%i:%s')) AS my_regdate,
-           CONCAT(#{url},IFNULL(my_image_file, '')) AS my_image_file
+            IFNULL(CONCAT(#{url},my_image_file), '') AS my_image_file
         FROM ad_mypage
         WHERE cpl_use  = 'Y'
           AND mb_idx = #{mb_idx}
@@ -18,13 +18,28 @@
 
     <select id="myPageCnt" resultType="map" parameterType="map">
         SELECT
-                (SELECT COUNT(like_idx) FROM ad_like li WHERE li.mb_idx = 6) AS like_cnt,
-                (SELECT COUNT(rv_idx) FROM ad_review rv WHERE rv.mb_idx = 6) AS review_cnt,
-                (SELECT COUNT(my_image_file) FROM ad_mypage mp WHERE mp.mb_idx = 6) AS image_cnt
+                (SELECT am.mb_nickname FROM ad_member am WHERE am.mb_idx = #{mb_idx}) AS mb_nickname,
+                (SELECT COUNT(like_idx) FROM ad_like li WHERE li.mb_idx = #{mb_idx} AND li.like_status = 'Y') AS like_cnt,
+                (SELECT COUNT(rv_idx) FROM ad_review rv WHERE rv.mb_idx = #{mb_idx} AND rv.rv_use = 'Y') AS review_cnt,
+                (SELECT COUNT(my_image_file) FROM ad_mypage mp WHERE mp.mb_idx = #{mb_idx}) AS image_cnt,
+                (SELECT COUNT(rv_idx) FROM ad_review rv WHERE rv.mb_idx = #{mb_idx} AND rv.rv_use = 'Y') AS review_cnt
         FROM DUAL
     </select>
     <select id="myLike" resultType="map" parameterType="map">
+        SET @user_lng = IFNULL((SELECT IF(user_lng != 0.0, user_lng, 128.729853) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  128.729853);
+        SET @user_lat = IFNULL((SELECT IF(user_lng != 0.0, user_lat, 36.568195) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  36.568195);
+
         SELECT
+            CASE
+                WHEN (ac.ct_parent = 11 or st.str_category = 11) THEN 'food'
+                WHEN (ac.ct_parent = 10 or st.str_category = 10) THEN 'tour'
+                WHEN (ac.ct_parent = 7 or st.str_category = 7) THEN 'exp'
+                WHEN ac.ct_parent = 3 or st.str_category = 3 THEN 'fest'
+                WHEN ac.ct_parent = 5 or st.str_category = 5 THEN 'hotel'
+            ELSE 'etc'
+                END AS store_type,
+            @user_lng AS user_lng,
+            @user_lat AS user_lat,
             li.like_idx,
             li.mb_idx,
             li.str_idx,
@@ -33,7 +48,7 @@
             st.str_lat,
             st.str_lng,
             st.str_category,
-            IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0) AS review_ave,
+            TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave,
             ac.ct_ko_nm,
             ac.ct_ja_nm,
             ac.ct_zh_nm,
@@ -45,21 +60,33 @@
             IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
             (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
             0.0 AS str_review_ave,
-            0.0 AS str_km
+            TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
         FROM ad_like li
                  LEFT JOIN ad_store st ON st.str_idx = li.str_idx
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
-        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
-          AND li.mb_idx = #{mb_idx}
-        GROUP BY st.str_idx, asd.str_dt_type, li.like_idx
-        ORDER BY IFNULL(#{sorting}, '')
+        WHERE  li.mb_idx = #{mb_idx}
+          AND li.like_status = 'Y'
+        GROUP BY st.str_idx, asd.str_dt_type, li.like_idx, asd.str_dt_name
+        ORDER BY IFNULL(#{sorting}, ''), asd.str_dt_desc DESC
     </select>
     <select id="myReview" resultType="map" parameterType="map">
+        SET @user_lng = IFNULL((SELECT IFNULL(user_lng, 128.729853) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  128.729853);
+        SET @user_lat = IFNULL((SELECT IFNULL(user_lat, 36.568195) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  36.568195);
+
         SELECT DISTINCT
             st.str_idx AS str_idx
+                    ,am.mb_nickname
+                    , CASE
+                          WHEN (ac.ct_parent = 11 or st.str_category = 11) THEN 'food'
+                          WHEN (ac.ct_parent = 10 or st.str_category = 10) THEN 'tour'
+                          WHEN (ac.ct_parent = 7 or st.str_category = 7) THEN 'exp'
+                          WHEN ac.ct_parent = 3 or st.str_category = 3 THEN 'fest'
+                          WHEN ac.ct_parent = 5 or st.str_category = 5 THEN 'hotel'
+                          ELSE 'etc'
+                        END AS store_type
                       , st.str_category
-                      , st.str_like_cnt
+                      , IFNULL(st.str_like_cnt, '') AS str_like_cnt
                       , ac.ct_ko_nm
                       , ac.ct_ja_nm
                       , ac.ct_zh_nm
@@ -67,26 +94,151 @@
                       , ac.ct_eu_nm
                       , asd.str_dt_name AS str_dt_name
                       , (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx ) AS str_review_cnt
-                      , 0.0 AS str_km
+                      , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
                       , IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
                       , rv.rv_contents
                       , rv.rv_idx
-                      , rv.rv_reg_date
-                    ,  IFNULL(rv.rv_reply , '') AS rv_reply
-                        , rv.review_avg
+                       , rv.rv_type
+                        , rv.rv_anonym
+                        , rv.rv_blind
+                      , DATE_FORMAT( rv.rv_reg_date, '%y-%m-%d') AS rv_reg_date
+                        , COALESCE(rv.rv_reply, '') AS rv_reply
+                        , TRUNCATE(rv.review_avg, 1) AS review_ave
+                        , 'Y' AS my_review
         FROM ad_review rv
                  LEFT JOIN ad_store st ON rv.str_idx = st.str_idx
                  LEFT JOIN ad_store_detail asd ON rv.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
-        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
-          AND rv.mb_idx  = #{mb_idx}
-        GROUP BY st.str_idx, asd.str_dt_type, rv_idx
-        ORDER BY IFNULL(#{sorting},'')
+                 LEFT JOIN ad_member am ON rv.mb_idx = am.mb_idx
+        WHERE  rv.mb_idx  = #{mb_idx}
+          AND rv.rv_use = 'Y'
+        GROUP BY st.str_idx, asd.str_dt_type, rv_idx, asd.str_dt_name
+        ORDER BY IFNULL(#{sorting},''), asd.str_dt_desc DESC
     </select>
 
-    <select id="reviewImageList" parameterType="map" resultType="string">
-        SELECT CONCAT(#{url},avi.rv_img_file) from ad_review_image avi WHERE avi.rv_idx = #{rv_idx}
+    <select id="reviewImageList" parameterType="map" resultType="map">
+        SELECT
+            avi.rv_img_idx
+             , CONCAT(#{url},avi.rv_img_file) as rv_img_file
+        FROM ad_review_image avi
+        WHERE avi.rv_idx = #{rv_idx} AND avi.rv_img_use = 'Y'
     </select>
 
+    <select id="bannerList" resultType="map">
+        SELECT
+            bn.bn_title,
+            bn.bn_img,
+            DATE_FORMAT(bn.bn_s_date, '%y-%m-%d') AS bn_s_date,
+            DATE_FORMAT(bn.bn_e_date, '%y-%m-%d') AS bn_e_date,
+            bn.bn_url
+        FROM ad_banner bn
+        WHERE bn.bn_use = 'Y'
+        LIMIT 5
+    </select>
+
+    <select id="storyList" parameterType="map" resultType="map">
+        SELECT
+            tr.tour_idx,
+            tr.tour_title,
+            IFNULL(tr.tour_subtitle, '') AS tour_subtitle,
+            DATE_FORMAT(tr.tour_reg_dt, '%Y-%m-%d') AS tour_reg_dt,
+            CONCAT(#{url},IFNULL(tr.tour_image,'')) AS tour_image,
+            IFNULL(tr.tour_category ,'') AS tour_category,
+            IFNULL(tr.tour_view_cnt, 0) AS tour_view_cnt
+        FROM ad_tour tr
+        WHERE tr.tour_use = 'Y'
+        GROUP BY tr.tour_idx
+        <if test="type = R">
+            ORDER BY RAND() LIMIT 7
+        </if>
+    </select>
+
+    <select id="storyRandom" parameterType="map" resultType="map">
+        SELECT
+        tr.tour_idx,
+        tr.tour_title,
+        IFNULL(tr.tour_subtitle, '') AS tour_subtitle,
+        DATE_FORMAT(tr.tour_reg_dt, '%Y-%m-%d') AS tour_reg_dt,
+        CONCAT(#{url},IFNULL(tr.tour_image,'')) AS tour_image,
+        IFNULL(tr.tour_category ,'') AS tour_category,
+        IFNULL(tr.tour_view_cnt, 0) AS tour_view_cnt
+        FROM ad_tour tr
+        WHERE tr.tour_use = 'Y'
+        GROUP BY tr.tour_idx
+        ORDER BY RAND() LIMIT 7
+    </select>
+
+    <select id="storyView" parameterType="map" resultType="map">
+        SELECT
+            tr.tour_idx,
+            tr.tour_title,
+            IFNULL(tr.tour_subtitle, '') AS tour_subtitle,
+            DATE_FORMAT(tr.tour_reg_dt, '%Y-%m-%d') AS tour_reg_dt,
+            CONCAT(#{url}, IFNULL(tr.tour_image, '')) AS tour_image,
+            IFNULL(tr.tour_category, '') AS tour_category,
+            IFNULL(tr.tour_view_cnt, 0) AS tour_view_cnt,
+            IFNULL(TO_BASE64(CONVERT(tour_contents USING utf8)), '') AS tour_contents
+        FROM ad_tour tr
+        WHERE tr.tour_idx = #{tour_idx}
+        GROUP BY tr.tour_idx
+    </select>
+
+    <select id="passList" parameterType="map" resultType="map">
+        SELECT
+            aps.ps_title
+             , aps.ps_idx as ps_idx
+             , IFNULL(CONCAT(asd.str_dt_name , ' 외 ',
+                             (select COUNT(apl2.psl_idx) from ad_pass_list apl2 WHERE apl2.ps_idx = aps.ps_idx AND apl2.str_idx != 0)
+                 , '곳'), '') AS pass_sub
+            , MAX(apl.day_number) AS max_day
+        FROM ad_pass_set aps
+                 LEFT JOIN ad_pass_list apl on apl.ps_idx = aps.ps_idx
+                 LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
+        WHERE aps.mb_idx = #{mb_idx} AND ps_use = 'Y' and (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
+        GROUP BY aps.ps_idx
+    </select>
+
+    <select id="passImages" parameterType="map" resultType="string">
+        SELECT
+            IFNULL(CONCAT(#{url},st.str_image ) ,'')   AS str_image
+        FROM ad_pass_list apl
+                 LEFT JOIN ad_pass_set aps on apl.ps_idx = aps.ps_idx
+                 LEFT JOIN ad_store st on st.str_idx = apl.str_idx
+                 LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
+        WHERE asd.str_dt_type = 'ko'
+          AND aps.ps_idx = #{ps_idx} AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
+        GROUP BY apl.psl_idx , asd.str_dt_type
+        ORDER BY  apl.day_number ,apl.store_turn
+    </select>
+
+    <select id="passDayList" parameterType="map" resultType="map">
+        SELECT
+            CASE
+                WHEN (ac.ct_parent = 11 or st.str_category = 11) THEN 'food'
+                WHEN (ac.ct_parent = 10 or st.str_category = 10) THEN 'tour'
+                WHEN (ac.ct_parent = 7 or st.str_category = 7) THEN 'exp'
+                WHEN ac.ct_parent = 3 or st.str_category = 3 THEN 'fest'
+                WHEN ac.ct_parent = 5 or st.str_category = 5 THEN 'hotel'
+                ELSE 'etc'
+            END AS store_type
+             , psl.day_number
+             , psl.psl_idx
+             , asd.str_dt_name
+             , IFNULL(asd.str_dt_desc, '') AS str_dt_desc
+             , st.str_idx
+             , IFNULL(CONCAT(#{url},st.str_image ) ,'')   AS str_image
+             , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+        FROM  ad_pass_list psl
+                 LEFT JOIN ad_pass_set ps ON psl.ps_idx = ps.ps_idx
+                 LEFT JOIN ad_store st ON psl.str_idx = st.str_idx
+                 LEFT JOIN ad_store_detail asd ON psl.str_idx = asd.str_idx
+                 LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+        WHERE (asd.str_dt_type = 'ko' OR  #{lang})
+          AND psl.pass_list_use = 'Y'
+          AND ps.ps_idx = #{ps_idx}
+          AND psl.day_number = #{day}
+        GROUP BY psl.psl_idx
+        ORDER BY psl.store_turn
+    </select>
 
 </mapper>

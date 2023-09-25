@@ -3,11 +3,14 @@ package com.tour.user.controller;
 import com.tour.JsonForm;
 import com.tour.user.service.UserStoreServiceImpl;
 import com.tour.user.vo.RequestVO;
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +25,8 @@ import java.util.*;
 @RequestMapping("/store")
 @Controller
 public class UserStoreController {
-
+    @Value("#{address['ip']}")
+    private String ip;
     private final UserStoreServiceImpl storeService;
 
     @Autowired
@@ -120,16 +124,117 @@ public class UserStoreController {
         return storeService.reviewList(vo);
     }
 
+    @PostMapping("/reviewUpdate")
+    @ResponseBody
+    public Map<String, Object> reviewUpdate(MultipartHttpServletRequest multipart ,RequestVO vo) throws Exception{
+        return storeService.reviewUpdate(multipart,vo);
+    }
+
+    @PostMapping("/reviewDelete")
+    @ResponseBody
+    public Map<String, Object> reviewDelete( RequestVO vo) throws Exception{
+        return storeService.reviewDelete(vo);
+    }
+
+    @PostMapping("/rvImgDelete")
+    @ResponseBody
+    public Map<String, Object> rvImageDelete(RequestVO vo) throws Exception{
+        return storeService.rvImageDelete(vo);
+    }
+
+    @PostMapping("/menu")
+    @ResponseBody
+    public Map<String, Object> menuList(RequestVO vo) throws Exception{
+        return storeService.menuList(vo);
+    }
 
 
+    @PostMapping("/menu/one")
+    @ResponseBody
+    public Map<String, Object> menuOne(RequestVO vo) throws Exception{
+        return storeService.menuOne(vo);
+    }
 
+    @PostMapping("/randomBanner")
+    @ResponseBody
+    public Map<String, Object> festivalBanner(RequestVO vo) throws Exception{
+        return storeService.festivalBanner(vo);
+    }
+
+    @PostMapping("/experience")
+    @ResponseBody
+    public Map<String, Object> mainExperience(RequestVO vo) throws Exception{
+        return storeService.mainExperience(vo);
+    }
 
     /*
     * 이미지 조회(해결)/ 메뉴 조회 / 리뷰 별점/ 통계/ 패스 저장 / 패스 추가 / 일정 추가 / 축제체험 조회 /
     *
     * */
 
+    @PostMapping("/andongStoryTest")
+    @ResponseBody
+    public JSONObject andongStoryTest(@RequestParam MultipartFile file) throws Exception {
+        //System.out.println(values);
+        System.out.println(file.getOriginalFilename());
+        String saveFileName = "", saveFilePath = "";
+        String folderName = "/usr/local/tomcat9/webapps/data/file/image/story";
+        MultipartFile multipartFile = file;
+        JSONObject jsonObject = new JSONObject();
 
+        String fileName = multipartFile.getOriginalFilename();
+        String fileCutName = fileName.substring(0, fileName.lastIndexOf("."));
+        String fileExt = fileName.substring(fileName.lastIndexOf(".")+1);
+        saveFilePath = folderName+ File.separator + fileName;
+
+        System.out.println(saveFilePath);
+
+        File fileFolder = new File(folderName);
+
+        if(!fileFolder.exists()){
+            if(fileFolder.mkdirs()){
+                System.out.println("file mkdirs : SUCCESS");
+            }else{
+                System.out.println("file mkdirs : FAIL");
+            }
+        }
+
+        File saveFile = new File(saveFilePath);
+
+        if(saveFile.isFile()){
+            boolean _exist = true;
+
+            int index = 0;
+
+            while(_exist){
+                index ++;
+
+                saveFileName = fileCutName + "(" + index + ")." + fileExt;
+                String dictFile = folderName + File.separator + saveFileName;
+                _exist = new File(dictFile).isFile();
+                if(!_exist){
+                    saveFilePath = dictFile;
+                }
+            }
+            System.out.println(saveFilePath);
+            multipartFile.transferTo(new File(saveFilePath));
+            jsonObject.put("url", ip+"/image/story/"+saveFileName);
+            jsonObject.put("responseCode", "success");
+        }else{
+            System.out.println(saveFile.getPath());
+            multipartFile.transferTo(saveFile);
+            jsonObject.put("url", ip+"/image/story/"+fileName);
+            jsonObject.put("responseCode", "success");
+        }
+        return jsonObject;
+    }
+
+    @PostMapping("/andongStorytext")
+    @ResponseBody
+    public Map<String, Object> textTest(@RequestParam String values, MultipartFile file) throws Exception{
+
+        return storeService.storyTextSave(values, file.getOriginalFilename());
+    }
 
 
 }

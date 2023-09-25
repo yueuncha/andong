@@ -7,4 +7,63 @@
         VALUES(#{mb_id}, #{mb_pw}, CURRENT_TIMESTAMP, 3, 1, #{mb_nickname},  'K')
     </insert>
 
+    <insert id="storeInsert" parameterType="map">
+        INSERT INTO ad_member (
+                                mb_pw
+                              , mb_email
+                              , mb_ci
+                              , mb_gender
+                              , mb_birth
+                              , mb_regdate
+                              , mb_level
+                              , mb_status
+                              , mb_nickname
+                              , mb_foreigner
+        )VALUES(
+                 #{mb_pw}
+               , #{mb_email}
+               , ''
+               , DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s')
+               , 2
+               , 1
+               , #{mb_nickname}
+               , 'K', #{str_idx})
+    </insert>
+
+
+    <update id = "jusoMapping" parameterType="map">
+        UPDATE ad_store
+        SET str_lng = #{str_lng}
+            , str_lat = #{str_lat}
+        WHERE str_idx = #{str_idx}
+    </update>
+
+    <insert id="kkebiInsert" parameterType="map">
+        REPLACE INTO ad_store
+        (str_idx, mb_idx, str_type, str_business_num, str_lat, str_lng, str_like_cnt, str_view_cnt, str_reg_date, str_reg_time, str_update_date, str_update_time, str_use, str_week_e_time, str_week_s_time, str_sat_s_time, str_sat_e_time, str_sun_s_time, str_sun_e_time, str_category, str_phone, str_image, str_website, operating_hour)
+        VALUES(#{str_idx}, 0, 'S', '', #{str_lat}, #{str_lng}, 0, 0, DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s'), DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s')
+        , DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s'), DATE_FORMAT(NOW(), '%Y/%m/%d %H:%i:%s'), 'Y', '', '', '', '', '', '', IFNULL(#{str_category}, 0), #{str_phone}, #{str_image}, '', #{operating_hour})
+
+    </insert>
+
+    <insert id="menuInsert" parameterType="map">
+        REPLACE INTO ad_menu
+        (str_idx, mn_nm, mn_price, mn_contents, mn_reg_date, mn_reg_time, mn_update_date, mn_update_time, mn_use, mn_image)
+        VALUES(#{str_idx}, #{mn_nm}, #{mn_price}, #{mn_content}, DATE_FORMAT(NOW(), '%Y/%m/%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), DATE_FORMAT(NOW(), '%Y/%m/%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), 'Y', #{mn_image})
+    </insert>
+
+    <insert id="detailInsert" parameterType="map">
+        REPLACE INTO andong_test_db.ad_store_detail
+        ( str_idx, str_dt_type, str_dt_name, str_dt_address, str_dt_address_dt, str_dt_desc, str_dt_traffic, str_time)
+        VALUES( #{str_idx}, 'ko', #{str_dt_name}, #{str_dt_address}, '', #{str_dt_desc}, '', '');
+
+    </insert>
+
+    <update id="Updatecontents" parameterType="map">
+        UPDATE ad_menu
+        SET mn_image = #{mn_image}
+        WHERE mn_nm = #{mn_nm} AND str_idx = #{str_idx}
+    </update>
+
+
 </mapper>

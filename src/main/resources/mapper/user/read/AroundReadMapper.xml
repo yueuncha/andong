@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.user.repository.read.AroundReadRepository">
+
+    <select id="aroundView" parameterType="map" resultType="map">
+        SET @user_lng = IFNULL((SELECT user_lng FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')),   128.729853);
+        SET @user_lat = IFNULL((SELECT user_lat FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')), 36.568195);
+
+        SELECT DISTINCT
+            st.str_idx
+                      , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+                      , st.str_lat
+                      , st.str_lng
+                      , ac.ct_ko_nm
+                      , CAST(ac.ct_parent AS SIGNED) AS ct_parent
+                      , (SELECT act.ct_ko_nm FROM ad_category act WHERE act.ct_idx = ac.ct_parent) AS store_type
+                      , ac.ct_ja_nm
+                      , ac.ct_zh_nm
+                      , ac.ct_es_nm
+                      , ac.ct_eu_nm
+                      , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
+                      , st.str_week_s_time
+                      , st.str_week_e_time
+                      , st.str_phone
+                      , st.str_category
+                      , IFNULL(st.str_website, '') AS str_website
+                      , asd.str_dt_name
+                      , asd.str_dt_type
+                      , IFNULL(asd.str_dt_address , '') AS str_dt_address
+                      , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
+                      , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                      , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+                      , IFNULL(st.operating_hour , '') AS operating_hour
+                      , (SELECT COUNT(*)
+                         FROM ad_review
+                         WHERE str_idx = st.str_idx ) AS str_review_cnt
+                      , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+                      , IFNULL(
+                (SELECT like_status
+                 FROM ad_like
+                 WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx GROUP BY mb_idx), 'N') AS like_status
+        FROM ad_store st
+                 LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+                 LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+          <if test="ct_idx != 0">
+              AND (ac.ct_parent = #{ct_idx} OR ac.ct_idx = #{ct_idx})
+          </if>
+        GROUP BY st.str_idx, asd.str_dt_type
+        ORDER BY IFNULL(#{sorting},''), asd.str_dt_desc DESC
+    </select>
+
+    <select id="aroundCategory" resultType="map" parameterType="map">
+        SELECT
+               ct_ko_nm
+            , ct_idx
+        FROM ad_category
+        WHERE ct_parent = 1 and ct_idx != 1
+        GROUP BY ct_ko_nm
+    </select>
+
+    <select id="aroundOne" parameterType="map" resultType="map">
+        SET @user_lng = IFNULL((SELECT user_lng FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')),   128.729853);
+        SET @user_lat = IFNULL((SELECT user_lat FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')), 36.568195);
+
+        SELECT DISTINCT
+        st.str_idx
+        , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+        , st.str_lat
+        , st.str_lng
+        , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
+        , st.str_category
+        , IFNULL(st.str_website, '') AS str_website
+        , asd.str_dt_name
+        , asd.str_dt_type
+        , IFNULL(asd.str_dt_address , '') AS str_dt_address
+        , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
+        , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+        , IFNULL(st.operating_hour , '') AS operating_hour
+        , st.str_like_cnt
+        , TRUNCATE(AVG(rv.review_avg), 1)AS review_ave
+        , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+        FROM ad_store st
+        LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+        LEFT JOIN ad_review rv ON st.str_idx = rv.str_idx
+        WHERE (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+        AND st.str_idx = #{str_idx}
+        GROUP BY st.str_idx, asd.str_dt_type
+        ORDER BY IFNULL(#{sorting},''),asd.str_dt_desc DESC
+    </select>
+
+    <select id="parkingList" resultType="map" parameterType="map">
+        SET @user_lng = IFNULL((SELECT user_lng FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')),   128.729853);
+        SET @user_lat = IFNULL((SELECT user_lat FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')), 36.568195);
+
+        SELECT parking_mng_code
+             , parking_name
+             , parking_category
+             , parking_type
+             , parking_address
+             , parking_lat
+             , parking_lng
+             , parking_hour
+             , CONCAT('평일 : ', week_start_time, '~', week_end_time) AS week_time
+             , week_start_time
+             , week_end_time
+             , CONCAT('토요일 : ', satur_start_time, '~', satur_end_time) AS satur_time
+             , satur_start_time
+             , satur_end_time
+             , CONCAT('공휴일 : ', holiday_start_time, '~', holiday_end_time) AS holiday_time
+             , holiday_start_time
+             , holiday_end_time
+             , parking_base_time
+             , parking_base_fee
+             , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(parking_lng, parking_lat))/1000 , 1) AS parking_km
+             ,CASE
+                  WHEN parking_base_fee = 0 THEN parking_free
+                  WHEN parking_base_fee != 0 THEN CONCAT(parking_free ,' ' ,parking_base_time,'분 ', parking_base_fee, '원 ')
+                  ELSE '현장' END AS parking_fee_info
+             , parking_free
+        FROM ad_parking
+    </select>
+
+    <select id="parkingOne" parameterType="map" resultType="map">
+        SET @user_lng = IFNULL((SELECT user_lng FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')),   128.729853);
+        SET @user_lat = IFNULL((SELECT user_lat FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')), 36.568195);
+
+        SELECT
+            parking_mng_code
+             , parking_name
+             , parking_category
+             , parking_type
+             , parking_address
+             , parking_lat
+             , parking_lng
+             , parking_hour
+             , CONCAT('평일 : ', week_start_time, '~', week_end_time) AS week_time
+             , week_start_time
+             , week_end_time
+             , CONCAT('토요일 : ', satur_start_time, '~', satur_end_time) AS satur_time
+             , satur_start_time
+             , satur_end_time
+             , CONCAT('공휴일 : ', holiday_start_time, '~', holiday_end_time) AS holiday_time
+             , holiday_start_time
+             , holiday_end_time
+             , parking_base_time
+             , parking_base_fee
+             , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(parking_lng, parking_lat))/1000 , 1) AS parking_km
+             ,CASE
+                  WHEN parking_base_fee = 0 THEN parking_free
+                  WHEN parking_base_fee != 0 THEN CONCAT(parking_free ,' ' ,parking_base_time,'분 ', parking_base_fee, '원 ')
+                  ELSE '현장' END AS parking_fee_info
+             , parking_free
+        FROM ad_parking
+        WHERE parking_mng_code = #{parking_mng_code}
+    </select>
+
+
+    <select id="stempTourList" parameterType="map" resultType="map">
+        SELECT *
+        FROM (
+                 SELECT
+                     ass.str_idx,
+                     ass.stp_idx,
+                     ass.stp_nm,
+                     st.str_lat,
+                     st.str_lng,
+                     IFNULL(CONCAT(#{storeUrl}, st.str_image),'') AS  str_image,
+                     ass.stp_contents,
+                     asd.str_dt_name,
+                     asd.str_dt_type,
+                     ass.stp_lang_type,
+                     IFNULL(CONCAT(#{iconUrl}, ass.stp_y_image),'') AS stp_y_image,
+                     IFNULL(CONCAT(#{iconUrl}, ass.stp_n_image),'') AS  stp_n_image,
+                     IF(FIND_IN_SET('26', GROUP_CONCAT(asl.mb_idx)) > 0, 1, 0) AS stp_count,
+                     ass.stp_give,
+                     CASE
+                         WHEN FIND_IN_SET(IFNULL(#{mb_idx}, 0), GROUP_CONCAT(asl.mb_idx)) > 0 THEN 'Y'
+                         ELSE 'N'
+                         END AS stamp_status
+                 FROM ad_stamp_set ass
+                          LEFT JOIN ad_store st ON ass.str_idx = st.str_idx
+                          LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
+                          LEFT JOIN ad_stamp_list asl ON ass.stp_idx = asl.stp_idx
+                 WHERE ass.stp_use = 'Y'
+                   AND (ass.stp_lang_type = 'ko' OR ass.stp_lang_type = #{lang})
+                  AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+                 GROUP BY ass.stp_lang_type, ass.stp_idx
+                 )AS stamp_list
+        <if test='!stamp_status.equals("A")'>
+            WHERE stamp_list.stamp_status = #{stamp_status}
+        </if>
+    </select>
+
+    <select id="stempYesCount" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM ad_stamp_list WHERE mb_idx = #{mb_idx} AND stp_status = 'Y'
+    </select>
+    <select id="stempTotCount" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM ad_stamp_set WHERE stp_lang_type = #{lang}
+    </select>
+
+    <select id="stampOne" parameterType="map" resultType="map">
+        SET @user_lng = IFNULL((SELECT user_lng FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')),   128.729853);
+        SET @user_lat = IFNULL((SELECT user_lat FROM fcm_info WHERE fcm_idx = IFNULL(#{fcm_idx}, '')), 36.568195);
+
+        SELECT *
+        FROM (
+                 SELECT
+                     ass.str_idx,
+                     ass.stp_idx,
+                     ass.stp_nm,
+                     st.str_lat,
+                     st.str_lng,
+                     ass.stp_contents,
+                     asd.str_dt_address,
+                     asd.str_dt_name,
+                     asd.str_dt_type,
+                     IFNULL(CONCAT(#{storeUrl}, st.str_image),'') AS  str_image,
+                     ass.stp_lang_type,
+                     ass.stp_give,
+                     IFNULL(CONCAT(#{iconUrl}, ass.stp_y_image),'') AS stp_y_image,
+                     IFNULL(CONCAT(#{iconUrl}, ass.stp_n_image),'') AS  stp_n_image,
+                     TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = ass.str_idx), 0.0), 1)AS review_ave,
+                     COUNT(IFNULL((SELECT COUNT(*) FROM ad_review WHERE str_idx = ass.str_idx), 0)) AS review_count,
+                     TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km,
+                     CASE
+                         WHEN FIND_IN_SET(IFNULL(#{mb_idx}, 0), GROUP_CONCAT(asl.mb_idx)) > 0 THEN 'Y'
+                         ELSE 'N'
+                         END AS stamp_status
+                 FROM ad_stamp_set ass
+                          LEFT JOIN ad_store st ON ass.str_idx = st.str_idx
+                          LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
+                          LEFT JOIN ad_stamp_list asl ON ass.stp_idx = asl.stp_idx
+                 WHERE ass.stp_use = 'Y'
+                   AND (ass.stp_lang_type = 'ko' OR ass.stp_lang_type = #{lang})
+                   AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang})
+                 GROUP BY ass.stp_lang_type
+             )AS stamp_list
+        WHERE stamp_list.str_idx = #{str_idx}
+    </select>
+
+</mapper>

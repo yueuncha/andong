@@ -11,5 +11,21 @@ public interface UserPageReadRepository {
     List<Map<String, Object>> myReview(Map<String, Object> params) ;
     Map<String, Object> myPageCnt(Map<String, Object> params);
     List<Map<String, Object>> myImageLoad(Map<String, Object> params);
-    List<String> reviewImageList(Map<String, Object> params);
+    List<Map<String, Object>> reviewImageList(Map<String, Object> params);
+    List<Map<String, Object>> bannerList(Map<String, Object> params);
+    List<Map<String, Object>> storyList(Map<String, Object> params);
+
+    List<Map<String, Object>> storyRandom(Map<String, Object> newParams);
+
+    Map<String, Object> storyView(Map<String, Object> newParams);
+
+    /**************************************************************************/
+
+    List<Map<String, Object>> passList(Map<String, Object> params);
+    List<String> passImages(Map<String, Object> params);
+    List<Map<String, Object>> passDayList(Map<String, Object> params);
+
+
+
+
 }

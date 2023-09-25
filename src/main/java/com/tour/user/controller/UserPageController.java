@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -42,7 +43,13 @@ public class UserPageController {
     @ResponseBody
     public Map<String, Object> imageView(RequestVO vo) throws Exception{
         return userPageService.imageView(vo);
-    }{}
+    }
+
+    @PostMapping("/my/imageDelete")
+    @ResponseBody
+    public Map<String, Object> myImageDelete(RequestVO vo) throws Exception{
+        return userPageService.myImageDelete(vo);
+    }
 
 
     @PostMapping("/my/like")
@@ -57,4 +64,83 @@ public class UserPageController {
         return userPageService.myReview(vo);
     }
 
+    @PostMapping("/page/banner")
+    @ResponseBody
+    public Map<String, Object> bannerView(RequestVO vo) throws Exception{
+        return userPageService.bannerView(vo);
+    }
+
+    @PostMapping("/page/storyList")
+    @ResponseBody
+    public Map<String, Object> storyList(RequestVO vo) throws Exception{
+        return userPageService.storyList(vo);
+    }
+
+    @PostMapping("/page/storyView")
+    @ResponseBody
+    public Map<String, Object> storyView(RequestVO vo) throws Exception{
+        return userPageService.storyView(vo);
+    }
+
+
+    @PostMapping("/page/storyRandom")
+    @ResponseBody
+    public Map<String, Object> storyRandom(RequestVO vo) throws Exception{
+        return userPageService.storyRandom(vo);
+    }
+
+    @PostMapping("/pass/list")
+    @ResponseBody
+    public Map<String, Object> passList(RequestVO vo) throws Exception{
+        return userPageService.passList(vo);
+    }
+
+    @PostMapping("/pass/day")
+    @ResponseBody
+    public Map<String, Object> passDayList(RequestVO vo) throws Exception{
+        return userPageService.passDayList(vo);
+    }
+
+    @PostMapping("/pass/save")
+    @ResponseBody
+    public Map<String, Object> passSave(RequestVO vo) throws Exception{
+        return userPageService.passSave(vo);
+    }
+
+    @PostMapping("/pass/daySave")
+    @ResponseBody
+    public Map<String, Object> passDaySave(RequestVO vo) throws Exception{
+        return userPageService.passDaySave(vo);
+    }
+
+    @PostMapping("/pass/storeSave")
+    @ResponseBody
+    public Map<String, Object> passStoreSave(RequestVO vo) throws Exception{
+        return userPageService.passStoreSave(vo);
+    }
+
+    @PostMapping("/pass/delete")
+    @ResponseBody
+    public Map<String, Object> passDelete(RequestVO vo) throws Exception{
+        return userPageService.passDelete(vo);
+    }
+
+    @PostMapping("/pass/dayDelete")
+    @ResponseBody
+    public Map<String, Object> passDayDelete(RequestVO vo) throws Exception{
+        return userPageService.passDayDelete(vo);
+    }
+
+    @PostMapping("/pass/storeDelete")
+    @ResponseBody
+    public Map<String, Object> passStoreDelete(RequestVO vo) throws Exception{
+        return userPageService.passStoreDelete(vo);
+    }
+
+
+    @PostMapping("/pass/update")
+    @ResponseBody
+    public Map<String, Object> passNameUpdate(RequestVO vo) throws Exception{
+        return userPageService.passNameUpdate(vo);
+    }
 }

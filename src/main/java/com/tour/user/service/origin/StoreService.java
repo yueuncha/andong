@@ -24,6 +24,7 @@ public interface StoreService {
     Map<String, Object> categoryNameList(RequestVO vo) throws Exception;
     Map<String, Object> categoryName(RequestVO vo) throws Exception;
 
+    Map<String, Object> mainExperience(RequestVO vo) throws Exception;
     Map<String, Object> experienceList(RequestVO vo) throws Exception;
     Map<String, Object> experienceDetail(RequestVO vo) throws Exception;
 
@@ -35,6 +36,22 @@ public interface StoreService {
     Map<String, Object> chartList(RequestVO vo) throws Exception;
 
     Map<String, Object> reviewList(RequestVO vo) throws Exception;
+    Map<String, Object> reviewUpdate(MultipartHttpServletRequest multipart, RequestVO vo) throws Exception;
+    Map<String, Object> reviewDelete(RequestVO vo) throws Exception;
+
+    Map<String, Object> rvImageDelete(RequestVO vo) throws Exception;
+
+    Map<String, Object> menuList(RequestVO vo) throws Exception;
+    Map<String, Object> festivalBanner(RequestVO vo) throws Exception;
+    
+    Map<String, Object> menuOne(RequestVO vo) throws Exception;
+    
+    
+    
+    /**********************************************************************************/
+    // 안동이야기 테스트
+    Map<String, Object> storyTextSave(String values, String fileName) throws Exception;
+
 
 
 }
