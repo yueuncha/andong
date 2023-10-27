@@ -1,6 +1,7 @@
 package com.tour.user.repository.read;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -16,4 +17,11 @@ public interface AroundReadRepository {
     Map<String, Object> stampOne(Map<String, Object> params);
     int stempYesCount(Map<String, Object> params);
     int stempTotCount(Map<String, Object> params);
+
+
+    Map<String, Object> userStampCalc(Map<String, Object> params);
+    List<Map<String, Object>> postingViewList(Map<String, Object> params);
+    Map<String, Object> postViewOne(Map<String, Object> params);
+    Map<String, Object> pushFCM(Map<String, Object> params);
+
 }

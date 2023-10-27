@@ -12,7 +12,7 @@ public interface UserMemberWriteRepository {
     int fcmInsert(Map<String, Object> param);
     int passwordChange(Map<String, Object> param);
     int sessionChk(Map<String, Object> param);
-
+    int sessionUpdate(Map<String, Object> params);
     int updateEmailChk(Map<String, Object> params);
     int alarmCheck(Map<String, Object> params);
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.admin.repository.write.LoadWriteRepository">
+
+    <insert id="storeInsert" parameterType="map">
+        INSERT INTO andong_test_db.ad_store
+        (str_idx ,mb_idx, str_type, str_business_num, str_lng, str_lat, str_like_cnt, str_view_cnt, str_reg_date, str_reg_time, str_update_date
+        , str_update_time, str_use, str_week_e_time, str_week_s_time, str_sat_s_time, str_sat_e_time, str_sun_s_time, str_sun_e_time, str_category, str_phone, str_image, str_website, operating_hour)
+        VALUES(#{contentid},0, 'S', '', #{mapx},#{mapy}, 0, 0, DATE_FORMAT(NOW(), '%Y-%m-%d '), DATE_FORMAT(NOW(), '%H:%i:%s'), DATE_FORMAT(NOW(), '%Y-%m-%d '), DATE_FORMAT(NOW(), '%H:%i:%s')
+              , 'Y', '', '', '', '', '', '', 58, #{tel}, #{firstimage}, '','')
+    </insert>
+
+    <insert id="detailInsert" parameterType="map">
+        INSERT INTO andong_test_db.ad_store_detail
+        (str_idx, str_dt_type, str_dt_name, str_dt_address, str_dt_address_dt, str_dt_desc, str_dt_traffic, str_time)
+        VALUES(#{contentid}, 'ko', #{title}, CONCAT(#{addr1}, #{addr2}), '', #{overview}, '', '')
+    </insert>
+
+</mapper>

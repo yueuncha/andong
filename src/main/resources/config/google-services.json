@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "andongtour-smart",
+  "private_key_id": "5b8174dfd8982d9daf687188f3e08e308ab909e8",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC6ai0xnqJX6iVw\nnA+J9EDQw7GwrNQpCvOveiSfzoC/KAzA5asZZKP9j45DhRRym61EL5j1A8GVJYL4\nXlTkf7YF1hIkNfi1UUZSnVCIIKsQARomQ5wEM0Y1pS0UcfI9d4F3+u0TOjQud98M\nkqJMu3oA2KWyXnvceYNHa8OiAV26+/ONz0/6GhzC24hIZQ5QJHbDL5qM+ODjC3aG\nSX6wVGxIp0dafpwizl33YwB6I9sMJAbdh/glW3qIMVyUpLmIFbZEr1ErLZZo99da\n10t3sFi2wTkIT5ERfew3VmGHNEIhsLCQ1D8bd9ZGEPgtiMv3R1CWnzB1eEUqH3QN\nmoZYBlv/AgMBAAECggEANBu88VteFwQhHhbJsy7fNVwWngPZtHVWw+z5MuCnFYgs\n9HjeuJTs0FKiGlanbhf9OYuyjn7TzIy1TRcVVOAsMfpyjMO3d3u2FB7cZYj4OFuO\ngzav9G6eyB0ZelcVtz/iJXczcQX6kyi35UxR6PAY/QaSXsdRiUJAQ6UohO8r07ni\nrzZVPzUAEQQQYOZvmxhwiy4vPLmK1WEPyq8yCfctvL70TmrtjmvtZcuZTkzH6EsM\nYxImiNn+KDyQ5vlwet0PnmESgvnS7iv6BOTlYZP4rkwXk9x4c0AmKA61ggLvD3+d\nDQeU6W+KCUi/LMPIYH0g2La55XbqvQ4tOi63JitGbQKBgQDohIpayg/FB8NiVqvt\ntv4unB3uGiBJkkYphm3W0yrJxpEEt0YSYE3xeVMOM2x8YKsSQCBdkj+qp7ShPqxc\nitoSGjo1YzwihFm+ROZcqUVgGEYXT98YbwMCIw4cy8jRswN+UceeQQ4y5FZR7S8d\n1YxX97bpLOSSAe64vQFyM8DaQwKBgQDNPbNDdqYC4R+MjNbSh/JaEqSAYd7Zxx6X\n6V3kV4gP/zWG3H9sKiCejUQo1TW1HPGFsXFyd/3J0qgbDvLYFWE5ntwV9cmrZgba\nTvpaxW1yrgYAe8ijEG9BFGAAshtRNT1//VkNz0MOTsMeS+EtygHirS5SjtlGQa/7\nzsH2ZjWxlQKBgQDO0u6aeXfzg8dJFt1R0t9gKF/7JmQn7SPZ1gin+SfrWWQvdLKw\nr9dE/u1hCV7rd7VTw5TGhst5CjoC39PDcYMubQPv7zhTX7TQKUtbivn50z2tiM9i\nVYSwhuwLsz0LQpfN6gKNA0MVA8TAlSC/AfAXY3HhEZyzP2LQEtdRdTWLLwKBgDiW\n6JSTZFaq594C/0BxR3taZI0Zby6w3liYedD56YQvo/yZU3DpdLEC1mZD01kqr9Vj\nBZrARvOc58j+KCs4SeRvTtOnP4HI0d7jo9ffU7wpC3Karsl3QJW7HnVSpoGPonNl\n0WYjXaPWR6pU1bOgXUC462rMBFCA0Bsn+QcNS4S5AoGAM9AtmlcbmnPPFN7YVMw0\nXp+xZFTNmpfxhyj5Y9fVFWwfwK6n30uUOonBRQBtDU2lZm503aJK7ULNHem4HL1Q\n3Fgsz+heJwAd03cYO3JfUEzj5JpSoYOQ45CcBYr6vSjcXjag852D37IdniDGI/t3\npX72aggGAPFiKQZ4r94+cX0=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-26f2c@andongtour-smart.iam.gserviceaccount.com",
+  "client_id": "104360106250408125590",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-26f2c%40andongtour-smart.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

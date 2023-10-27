@@ -5,7 +5,7 @@
     <insert id="myImageSave" parameterType="map">
         INSERT INTO ad_mypage
             ( mb_idx ,my_regdate, my_regtime, my_image_file)
-        VALUES(#{mb_idx},DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d'), DATE_FORMAT(CURRENT_TIMESTAMP, '%H:%i:%s'), #{my_image_file});
+        VALUES(#{mb_idx},DATE_FORMAT(CURRENT_TIMESTAMP, '%Y-%m-%d'), DATE_FORMAT(CURRENT_TIMESTAMP, '%H:%i:%s'), #{my_image_file});
     </insert>
 
     <update id="myImageDeleteAll" parameterType="map">
@@ -96,6 +96,29 @@
             SET ps_title = #{ps_title}
         WHERE ps_idx = #{ps_idx} AND mb_idx =#{mb_idx}
     </update>
+
+    <insert id="inquiryInsert" parameterType="map">
+        INSERT INTO ad_inquiry
+        (mb_idx, iq_title, iq_content, iq_regdate, iq_status, answer_content, answer_regdate, iq_category)
+        VALUES(#{mb_idx}, #{iq_title}, #{iq_content}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), 'E', '', DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{iq_category})
+
+    </insert>
+
+    <update id="inquiryUpdate" parameterType="map">
+        UPDATE ad_inquiry
+        SET iq_title= #{iq_title}
+            , iq_content= #{iq_content}
+            , iq_category= #{iq_category}
+        WHERE iq_idx = #{iq_idx}
+    </update>
+
+    <update id="inquiryDelete" parameterType="map">
+        UPDATE ad_inquiry
+        SET inquiry_use = 'N'
+        WHERE iq_idx = #{iq_idx} AND mb_idx = #{mb_idx}
+    </update>
+
+
 
 
 </mapper>

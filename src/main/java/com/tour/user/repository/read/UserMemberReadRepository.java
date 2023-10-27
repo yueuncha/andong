@@ -23,6 +23,9 @@ public interface UserMemberReadRepository {
     List<Map<String,Object>> localChoice(String set_1_code);
 
     Map<String , Object> sessionData(Map<String, Object> params);
+    Map<String , Object> snsUserLogin(Map<String, Object> params);
+
+
 
 
 

@@ -30,7 +30,7 @@ public class RequestVO {
             result.put("state", (req != null) ? true : false);
             res = new JSONObject(result).toJSONString();
         }else{
-            res = null;
+            res = result.toString();
         }
         return res;
     }

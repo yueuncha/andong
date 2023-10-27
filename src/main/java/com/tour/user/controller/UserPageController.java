@@ -3,14 +3,17 @@ package com.tour.user.controller;
 
 import com.tour.user.service.UserPageServiceImpl;
 import com.tour.user.vo.RequestVO;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Controller
@@ -49,6 +52,12 @@ public class UserPageController {
     @ResponseBody
     public Map<String, Object> myImageDelete(RequestVO vo) throws Exception{
         return userPageService.myImageDelete(vo);
+    }
+
+    @PostMapping("/my/mark")
+    @ResponseBody
+    public Map<String, Object> myBookMark(RequestVO vo) throws Exception{
+        return userPageService.myBookMark(vo);
     }
 
 
@@ -143,4 +152,55 @@ public class UserPageController {
     public Map<String, Object> passNameUpdate(RequestVO vo) throws Exception{
         return userPageService.passNameUpdate(vo);
     }
+
+    @GetMapping("/pass/best")
+    @ResponseBody
+    public Map<String, Object> bestPassList() throws Exception{
+        RequestVO vo = new RequestVO();
+        vo.setReq("{}");
+        return userPageService.bestPassList(vo);
+    }
+
+    @GetMapping("/quest/category")
+    @ResponseBody
+    public Map<String, Object> questCategory(String type) throws Exception{
+        RequestVO vo = new RequestVO();
+        JSONObject json = new JSONObject();
+        vo.setReq(json.toJSONString(Collections.singletonMap("type",type)));
+        return userPageService.questCategory(vo);
+    }
+
+    @PostMapping("/quest/write")
+    @ResponseBody
+    public Map<String, Object> questInsert(RequestVO vo) throws Exception{
+        return userPageService.questInsert(vo);
+    }
+
+    @PostMapping("/quest/list")
+    @ResponseBody
+    public Map<String, Object> questList(RequestVO vo) throws Exception{
+        return userPageService.questList(vo);
+    }
+
+    @PostMapping("/quest/one")
+    @ResponseBody
+    public Map<String, Object> questOne(RequestVO vo) throws Exception{
+        return userPageService.questOne(vo);
+    }
+
+    @PostMapping("/quest/update")
+    @ResponseBody
+    public Map<String, Object> questUpdate(RequestVO vo) throws Exception{
+        return userPageService.questUpdate(vo);
+    }
+
+    @PostMapping("/quest/delete")
+    @ResponseBody
+    public Map<String, Object> questDelete(RequestVO vo) throws Exception{
+        return userPageService.inquiryDelete(vo);
+    }
+
+
+
+
 }

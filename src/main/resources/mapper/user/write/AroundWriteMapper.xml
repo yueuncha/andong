@@ -1,6 +1,103 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.write.AroundWriteRepository">
-    
+    <insert id="postLike" parameterType="map" >
+        INSERT ad_like ( mb_idx, str_idx, like_type, like_status, post_idx) VALUES ( #{mb_idx}, 0, 'P', #{like_status}, #{post_idx})
+    </insert>
 
+    <update id="postDisLike" parameterType="map">
+        update ad_like set like_status = #{like_status} where post_idx = #{post_idx} and mb_idx = #{mb_idx}
+    </update>
+
+    <update id="likeCntUp" parameterType="map">
+        UPDATE ad_posting
+        SET post_like_cnt = post_like_cnt${cnt}
+        WHERE post_idx = #{post_idx}
+    </update>
+
+    <update id="likeCntDown" parameterType="map">
+        update ad_posting set post_like_cnt = post_like_cnt-1 where post_idx = #{post_idx}
+    </update>
+
+    <update id="postBookmark" parameterType="map">
+        <!-- Check if the record exists -->
+        <selectKey keyProperty="recordExists" resultType="int" order="BEFORE">
+            SELECT COUNT(*) FROM ad_bookmark WHERE post_idx = #{post_idx} AND mb_idx = #{mb_idx}
+        </selectKey>
+        <!-- If the record exists, update it; otherwise, insert a new record -->
+        <if test="recordExists > 0">
+            UPDATE ad_bookmark
+            SET mark_use = #{mark_now}, bmk_regdate = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+            WHERE post_idx = #{post_idx} AND mb_idx = #{mb_idx}
+        </if>
+        <if test="recordExists == 0">
+            INSERT INTO ad_bookmark (post_idx, mb_idx, mark_use, bmk_regdate)
+            VALUES (#{post_idx}, #{mb_idx}, #{mark_now}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'))
+        </if>
+    </update>
+
+    <insert id="postInsert" parameterType="map">
+        <selectKey keyProperty="post_idx" resultType="int" order="AFTER">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+        INSERT INTO ad_posting
+        (mb_idx, post_status, post_reg_date, post_reg_time, post_like_cnt, post_title, post_content, post_update, post_uptime)
+        VALUES(#{mb_idx}, 'Y', DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), 0, #{post_title}, #{post_content}, DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(NOW(), '%H:%i:%s'));
+    </insert>
+
+    <insert id="postImageSave" parameterType="map">
+        INSERT INTO ad_mypage
+            ( mb_idx ,my_regdate, my_regtime, my_image_file, post_idx)
+        VALUES(#{mb_idx},DATE_FORMAT(CURRENT_TIMESTAMP, '%Y-%m-%d'), DATE_FORMAT(CURRENT_TIMESTAMP, '%H:%i:%s'), #{my_image_file}, #{post_idx});
+    </insert>
+
+    <update id="postImageUpdate" parameterType="map">
+        UPDATE ad_mypage
+        SET cpl_use = 'Y'
+        WHERE my_idx = #{my_idx}
+    </update>
+
+    <update id="postImageDeleteAll" parameterType="map">
+        UPDATE ad_mypage
+        SET cpl_use = 'N'
+        WHERE post_idx = #{post_idx} AND mb_idx = #{mb_idx}
+    </update>
+
+    <update id="postUpdate" parameterType="map">
+        UPDATE ad_posting
+        SET  post_title = #{post_title}
+          , post_content = #{post_content}
+          , post_update = DATE_FORMAT(NOW(), '%Y-%m-%d')
+          , post_uptime = DATE_FORMAT(NOW(), '%H:%i:%s')
+        WHERE post_idx= #{post_idx} AND mb_idx = #{mb_idx}
+    </update>
+
+    <update id="postDelete" parameterType="map">
+        UPDATE ad_mypage
+        SET cpl_use = 'N'
+        WHERE post_idx = #{post_idx} AND mb_idx = #{mb_idx};
+
+        UPDATE ad_posting
+        SET post_status = 'N'
+        WHERE post_idx = #{post_idx} AND mb_idx = #{mb_idx};
+    </update>
+
+    <insert id="stampInsert" parameterType="map">
+        INSERT INTO andong_test_db.ad_stamp_list
+        (stp_idx, mb_idx, stp_status, stp_s_date, stp_s_time, stp_e_date, stp_e_time)
+        VALUES(#{stp_idx}, #{mb_idx}, 'Y', DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), DATE_FORMAT(NOW(), '%Y-%m-%d '), DATE_FORMAT(NOW(), '%H:%i:%s'));
+    </insert>
+
+    <insert id="reportPost" parameterType="map">
+        INSERT INTO ad_report
+            (mb_idx, report_content, report_date, post_idx, report_category)
+        VALUES(#{mb_idx}, #{report_content}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{post_idx}, #{report_category})
+    </insert>
+
+    <insert id="fcmLogInsert" parameterType="map">
+        INSERT INTO ad_fcm_logs
+            (fcm_type, push_title, push_content, push_token, push_log_time, fcm_idx)
+        VALUES(
+               #{type}, #{title}, #{content}, #{token}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{fcm_idx})
+    </insert>
 </mapper>

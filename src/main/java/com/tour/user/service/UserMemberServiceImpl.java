@@ -1,35 +1,22 @@
 package com.tour.user.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tour.AES128;
 import com.tour.user.repository.read.UserMemberReadRepository;
 import com.tour.user.repository.write.UserMemberWriteRepository;
 import com.tour.user.service.origin.MemberService;
 import com.tour.user.vo.RequestVO;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.ibatis.ognl.ObjectElementsAccessor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.util.*;
 
 @Service
@@ -329,6 +316,7 @@ public class UserMemberServiceImpl implements MemberService {
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
 
+
             oldParams.replace("result", true);
 
             String mb_param = (newParams.containsKey("mb_param")) ? String.valueOf(newParams.get("mb_param")) : null;
@@ -391,28 +379,35 @@ public class UserMemberServiceImpl implements MemberService {
             newParams = (Map<String, Object>) oldParams.get("result");
             int dupNum = 0;
             oldParams.replace("result", true);
-            newParams.put("cryptkey", cryptkey);
 
+            System.out.println(newParams);
             if(newParams.containsKey("mb_email") && newParams.containsKey("mb_pw")  &&
                     newParams.containsKey("mb_gender") && newParams.containsKey("mb_birth") && newParams.containsKey("mb_nickname") &&
                     newParams.containsKey("mb_local") && newParams.containsKey("mb_local2") && newParams.containsKey("mb_foreigner") &&
-                    newParams.containsKey("fcm_token") && newParams.containsKey("app_ver") && newParams.containsKey("fcm_idx")
-                    && newParams.containsKey("app_type") && newParams.containsKey("device_name") && newParams.containsKey("device_os_ver")){
+                    newParams.containsKey("fcm_token") && newParams.containsKey("app_ver") && newParams.containsKey("app_type") && newParams.containsKey("device_name") && newParams.containsKey("device_os_ver")){
 
                 Map<String, Object> chk = dupChk(newParams);
-
+                newParams.put("cryptkey", cryptkey);
                 if((boolean)chk.get("check")){
+                    boolean res = false;
+                    writeRepository.userJoin(newParams);
 
-                    boolean temp = (writeRepository.userJoin(newParams) != 0
-                            && writeRepository.sessionChk(newParams) != 0) ? true : false;
+                    if(Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) != 0){
+                        res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
+                    }
 
-                    newParams.remove("cryptKey");
+                    newParams = readRepository.selectUserOne(newParams);
+
+                    if(newParams.containsKey("mb_email") && newParams.containsKey("mb_pw")){
+                        newParams.replace("mb_email", Decrypt(String.valueOf(newParams.get("mb_email"))));
+                        newParams.replace("mb_pw", Decrypt(String.valueOf(newParams.get("mb_pw"))));
+                    }
 
                     if((boolean)oldParams.get("cryption")){
-                        newParams.put("insert" , temp);
+                        newParams.put("insert" , res);
                         oldParams.put("data", Encrypt(new JSONObject(newParams).toJSONString()));
                     }else{
-                        newParams.put("insert" , temp);
+                        newParams.put("insert" , res);
                         oldParams.put("data", newParams);
                     }
                 }else{
@@ -667,34 +662,43 @@ public class UserMemberServiceImpl implements MemberService {
 
         boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
                 ? (boolean) oldParams.get("state") : false;
+
         if(state){
+
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
 
             if(newParams.containsKey("user_lat") && newParams.containsKey("user_lng")){
-
                 if(newParams.get("user_lat").equals("")){
                     newParams.replace("user_lat", 0);
                     newParams.replace("user_lng", 0);
                 }
+            }
+                boolean res = false;
 
-                if(newParams.containsKey("fcm_idx") && !newParams.get("fcm_idx").equals("") && newParams.containsKey("mb_idx")){
+                if(newParams.containsKey("fcm_idx") && newParams.containsKey("mb_idx") && !newParams.get("mb_idx").equals("")){
                     // 기존회원 or 게스트
+                    if(newParams.get("fcm_idx").equals("")){
+                       res = (!readRepository.sessionData(newParams).isEmpty()) ? true : false;
+                    }
+
                     if(newParams.get("mb_idx").equals("")){
                         newParams.put("mb_idx", 0);
+                        res = (writeRepository.sessionUpdate(newParams) != 0) ? true : false;
                     }
-                    boolean res = (writeRepository.sessionChk(newParams) != 0) ? true : false;
 
-                }else if(newParams.get("fcm_idx").equals("") || newParams.get("fcm_idx").equals(null)){
+                }else if((newParams.get("fcm_idx").equals("") || newParams.get("fcm_idx").equals(null)) &&  newParams.get("mb_idx").equals("")){
                     // 신규 게스트
-                    newParams.put("mb_idx", 0);
-                    boolean  res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
+                    if(newParams.get("mb_idx").equals("")){
+                        newParams.put("mb_idx", 0);
+                        newParams.put("fcm_idx", 0);
+                    }
+                    res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
 
                 }else {
                     oldParams.replace("result", false);
-                    oldParams.put("msg", "파라미터 확인");
+                    oldParams.put("msg", res);
                 }
-
                 Map<String, Object> result = readRepository.sessionData(newParams);
 
                 if((boolean) oldParams.get("cryption")){
@@ -703,7 +707,7 @@ public class UserMemberServiceImpl implements MemberService {
                 }else{
                     oldParams.put("data",  result);
                 }
-            }
+
 
         }else {
             oldParams.replace("result", false);
@@ -832,6 +836,53 @@ public class UserMemberServiceImpl implements MemberService {
             oldParams.replace("result", false);
             oldParams.put("msg", oldParams);
         }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> snsUserLogin(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+
+            if(newParams.containsKey("mb_ci") && !newParams.get("mb_ci").equals("") && newParams.containsKey("mb_sns") ){
+                ObjectMapper objectMapper = new ObjectMapper();
+                System.out.println(newParams);
+
+                Map<String, Object> login = readRepository.snsUserLogin(newParams);
+
+                System.out.println(login);
+
+                if(Integer.parseInt(String.valueOf(login.get("login_result"))) != 0){
+                    login.replace("login_result", true);
+                }else{
+                    login.replace("login_result", false);
+                }
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(login)));
+                }else{
+                    oldParams.put("data", login);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
         return oldParams;
     }
 }

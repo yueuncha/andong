@@ -32,6 +32,13 @@ public interface PageService {
     Map<String, Object> passDayDelete(RequestVO vo) throws Exception;
     Map<String, Object> passStoreUpdate(RequestVO vo) throws Exception;
     Map<String, Object> passStoreDelete(RequestVO vo) throws Exception;
+    Map<String, Object> bestPassList(RequestVO vo) throws Exception;
+    Map<String, Object> questCategory(RequestVO vo) throws Exception;
 
-
+    Map<String, Object> questInsert(RequestVO vo) throws Exception;
+    Map<String, Object> questList(RequestVO vo) throws Exception;
+    Map<String, Object> questOne(RequestVO vo) throws Exception;
+    Map<String, Object> questUpdate(RequestVO vo) throws Exception;
+    Map<String, Object> inquiryDelete(RequestVO vo) throws Exception;
+    Map<String, Object> myBookMark(RequestVO vo) throws Exception;
 }

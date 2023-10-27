@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserPageServiceImpl implements PageService {
@@ -107,6 +104,7 @@ public class UserPageServiceImpl implements PageService {
         return json;
     }
 
+
     public String Encrypt(String params) throws Exception{
         AES128 aes = new AES128(key, cryptkey);
         return aes.javaEncrypt(params);
@@ -133,7 +131,6 @@ public class UserPageServiceImpl implements PageService {
             newParams.put("url", ip + "/image/mypage/");
 
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
-                newParams.put("count", 3);
                 paramRes.put("count", userPageReadRepository.myPageCnt(newParams));
                 paramRes.put("images", userPageReadRepository.myImageLoad(newParams));
 
@@ -304,7 +301,7 @@ public class UserPageServiceImpl implements PageService {
             oldParams.replace("result", true);
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
                 newParams.put("url", ip+"/image/mypage/");
-                newParams.put("count", 0);
+                //newParams.put("count", 0);
                 paramRes.put("images", userPageReadRepository.myImageLoad(newParams));
 
                 if((boolean)oldParams.get("cryption")){
@@ -624,7 +621,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(newParams.containsKey("ps_title") && newParams.get("ps_title") != ""
                 && newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
@@ -704,7 +701,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""
                     && newParams.containsKey("str_idx") && newParams.get("str_idx") != ""){
@@ -744,7 +741,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(true){
 
@@ -781,7 +778,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(true){
 
@@ -816,7 +813,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(newParams.containsKey("day_number") && newParams.get("day_number") != ""
                     && newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""){
@@ -855,7 +852,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(true){
 
@@ -890,7 +887,7 @@ public class UserPageServiceImpl implements PageService {
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
-            newParams.put("url", ip + "/image/story/");
+            newParams.put("url", ip + "/image/place/");
 
             if(newParams.containsKey("str_idx") && newParams.get("str_idx") != ""
                     && newParams.containsKey("day_number") && newParams.get("day_number") != ""
@@ -954,6 +951,298 @@ public class UserPageServiceImpl implements PageService {
             oldParams.replace("result", false);
             oldParams.put("msg", oldParams);
         }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> bestPassList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : (vo.getEreq() != null) ? vo.getEreq() : null;
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = new HashMap<>();
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/place/");
+
+            if(true){
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<Map<String, Object>> list = userPageReadRepository.bestPassList(newParams);
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                }else{
+                    oldParams.put("data", list);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> questCategory(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, Object>> list = userPageReadRepository.inquiryCategory(newParams);
+            if((boolean)oldParams.get("cryption")){
+                oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+            }else{
+                oldParams.put("data", list);
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> questInsert(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                int testNumber = userPageWriteRepository.inquiryInsert(newParams);
+                boolean res = (testNumber != 0) ? true : false;
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
+                }else{
+                    oldParams.put("data", Collections.singletonMap("update", res));
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> questList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                List<Map<String, Object>> list = userPageReadRepository.inquiryList(newParams);
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                }else{
+                    oldParams.put("data", list);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> questOne(RequestVO vo) throws Exception {
+
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("iq_idx") && newParams.get("iq_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                List<Map<String, Object>> list = userPageReadRepository.inquiryOne(newParams);
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                }else{
+                    oldParams.put("data", list);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> questUpdate(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") && !newParams.get("mb_idx").equals("")
+                && newParams.containsKey("iq_idx") && !newParams.get("iq_idx").equals("")){
+
+                if(newParams.get("iq_status").equals("E")){
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    boolean res = (userPageWriteRepository.inquiryUpdate(newParams) != 0) ? true : false;
+
+                    if((boolean)oldParams.get("cryption")){
+                        oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update",res))));
+                    }else{
+                        oldParams.put("data", Collections.singletonMap("update", res));
+                    }
+                }else{
+                    oldParams.put("result", false);
+                    oldParams.put("msg", " 답변이 완료된 게시글입니다. ");
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> myBookMark(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+            newParams.put("url", ip + "/image/mypage/");
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<Map<String, Object>> list = userPageReadRepository.myBookMark(newParams);
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(list)));
+                }else{
+                    oldParams.put("data", list);
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+
+    @Override
+    public Map<String, Object> inquiryDelete(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") && newParams.containsKey("iq_idx")){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                boolean res = (userPageWriteRepository.inquiryDelete(newParams) != 0) ? true : false;
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
+                }else{
+                    oldParams.put("data", Collections.singletonMap("update", res));
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
         return oldParams;
     }
 

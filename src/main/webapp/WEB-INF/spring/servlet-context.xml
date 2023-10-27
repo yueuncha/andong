@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -11,7 +12,9 @@
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/util
-        https://www.springframework.org/schema/util/spring-util.xsd">
+        https://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/websocket
+        http://www.springframework.org/schema/websocket/spring-websocket-4.3.xsd">
 
     <!-- This tag registers the DefaultAnnotationHandlerMapping and
          AnnotationMethodHandlerAdapter beans that are required for Spring MVC  -->
@@ -24,10 +27,16 @@
 
     </context:component-scan>
 
+
     <mvc:resources mapping="resources/" location="/mapper/" />
     <mvc:resources mapping="/image/**" location="file:/data/file/image" />
+    <mvc:resources mapping="/config/**" location="file:/data/file/config" />
     <util:properties id="aesConfig" >
         <prop key="key">key1234567891234</prop>
+    </util:properties>
+
+    <util:properties id="fcm" >
+        <prop key="url">https://fcm.googleapis.com/v1/projects//messages:send</prop>
     </util:properties>
 
     <util:properties id="aesCrypt" >
@@ -37,7 +46,6 @@
     <util:properties id="address" >
         <prop key="ip">http://133.186.135.80</prop>
     </util:properties>
-
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSizePerFile" value="3145728"></property>

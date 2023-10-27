@@ -18,9 +18,10 @@
         , mb_local
         , mb_local2
         , mb_foreigner
+        , mb_sns
         )VALUES(
-        HEX(AES_ENCRYPT(#{mb_pw}, #{cryptkey}))
-        , HEX(AES_ENCRYPT(#{mb_email}, #{cryptkey}))
+        HEX(AES_ENCRYPT(IFNULL(#{mb_pw}, ''), #{cryptkey}))
+        , HEX(AES_ENCRYPT(IFNULL(#{mb_email}, ''), #{cryptkey}))
         , #{mb_ci}
         , #{mb_gender}
         , #{mb_birth}
@@ -30,7 +31,8 @@
         , #{mb_nickname}
         , #{mb_local}
         , #{mb_local2}
-        , #{mb_foreigner})
+        , #{mb_foreigner}
+        , IFNULL(#{mb_sns}, 'E'))
     </insert>
 
 
@@ -38,7 +40,7 @@
         <selectKey resultType="int" keyProperty="fcm_idx" order="AFTER">
             SELECT LAST_INSERT_ID();
         </selectKey>
-        INSERT INTO fcm_info  (
+        REPLACE INTO fcm_info  (
             mb_idx
             , fcm_token
             , app_type
@@ -49,10 +51,9 @@
             , marketing_use
             , user_lat
             , user_lng
-        )VALUES (#{mb_idx},#{fcm_token}, #{app_type}, #{app_ver}, #{device_os_ver}, #{device_name}, #{push_use}, #{marketing_use}
-        , #{user_lat} , #{user_lng})
+        )VALUES (#{mb_idx},IFNULL(#{fcm_token}, ''), IFNULL(#{app_type}, ''), IFNULL(#{app_ver}, ''), IFNULL(#{device_os_ver}, ''), IFNULL(#{device_name}, ''), IFNULL(#{push_use}, ''), IFNULL(#{marketing_use}, '')
+        ,IFNULL( #{user_lat}, 0) , IFNULL(#{user_lng}, 0))
     </insert>
-
 
     <update id="passwordChange" parameterType="map">
         UPDATE ad_member
@@ -62,8 +63,7 @@
 
     <update id="sessionChk" parameterType="map">
         UPDATE fcm_info
-        SET mb_idx = #{mb_idx}
-          , fcm_token = #{fcm_token}
+        SET fcm_token = #{fcm_token}
           , device_os_ver = #{device_os_ver}
           , device_name = #{device_name}
           , app_type = #{app_type}
@@ -73,7 +73,23 @@
             , marketing_use = IFNULL(#{marketing_use}, 'Y')
          , user_lng = #{user_lng}
         , user_lat = #{user_lat}
-        WHERE fcm_idx = #{fcm_idx}
+        WHERE fcm_idx = #{fcm_idx} OR mb_idx = #{mb_idx}
+    </update>
+
+    <update id="sessionUpdate" parameterType="map">
+        UPDATE fcm_info
+        SET
+           fcm_token = #{fcm_token}
+          , device_os_ver = #{device_os_ver}
+          , device_name = #{device_name}
+          , app_type = #{app_type}
+          , app_ver = #{app_ver}
+          , fcm_date = DATE_FORMAT(CURRENT_TIMESTAMP, '%Y/%m/%d %H:%i:%s')
+          , push_use = IFNULL(#{push_use}, 'Y')
+          , marketing_use = IFNULL(#{marketing_use}, 'Y')
+          , user_lng = #{user_lng}
+          , user_lat = #{user_lat}
+        WHERE mb_idx = #{mb_idx} OR fcm_idx = #{fcm_idx}
     </update>
 
     <update id="updateEmailChk" parameterType="map">

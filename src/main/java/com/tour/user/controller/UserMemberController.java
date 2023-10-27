@@ -165,4 +165,10 @@ public class UserMemberController {
     public Map<String, Object> alarmCheck(RequestVO vo) throws Exception{
         return userMemberService.alarmCheck(vo);
     }
+
+    @PostMapping("/login/sns")
+    @ResponseBody
+    public Map<String, Object> snsUserLogin(RequestVO vo) throws Exception{
+        return userMemberService.snsUserLogin(vo);
+    }
 }

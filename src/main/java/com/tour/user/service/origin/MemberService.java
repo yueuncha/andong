@@ -35,4 +35,5 @@ public interface MemberService {
     Map<String, Object> memberEmailChk (RequestVO vo) throws Exception;
 
     Map<String, Object> alarmCheck(RequestVO vo) throws Exception;
+    Map<String, Object> snsUserLogin(RequestVO vo) throws Exception;
 }

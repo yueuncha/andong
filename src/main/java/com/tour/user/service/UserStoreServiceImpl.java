@@ -164,6 +164,7 @@ public class UserStoreServiceImpl implements StoreService {
             newParams.put("url",ip+"/image/place/");
 
             if(newParams.containsKey("ct_parent")){
+
                 List<Map<String, Object>> arr = readRepository.categoryList(newParams);
                 paramRes.put("tot_cnt", arr.size());
                 paramRes.put("category", readRepository.categoryName(newParams));

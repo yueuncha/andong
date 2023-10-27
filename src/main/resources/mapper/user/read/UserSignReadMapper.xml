@@ -21,6 +21,7 @@
              , am.mb_foreigner
              , IFNULL(fi.app_type , '') AS app_type
              , IFNULL(fi.app_ver , '') AS app_ver
+             , IFNULL(am.mb_sns, 'E') AS mb_sns
         FROM ad_member am
                  LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
@@ -39,13 +40,22 @@
              , CAST(am.mb_level AS SIGNED) AS mb_level
              , CAST(am.mb_status AS SIGNED) AS mb_status
              , am.mb_nickname
+             , CASE
+                   WHEN mb_birth IS NULL THEN NULL
+                   ELSE FLOOR(DATEDIFF(NOW(), mb_birth) / 3650)*10
+                END AS member_age_group
+             , CASE
+                   WHEN am.mb_birth IS NULL THEN 0
+                   ELSE FLOOR(DATEDIFF(NOW(), am.mb_birth) / 365)
+                END AS member_age
              , (SELECT ls.set_1_name FROM local_set_1 ls
                 WHERE ls.set_1_code = am.mb_local ) AS mb_local
-             , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+             , IFNULL((SELECT lss.set_2_name FROM local_set_2  lss
+                       WHERE lss.set_2_code = am.mb_local2 ), '') AS mb_local2
              , am.mb_foreigner
              , IFNULL(fi.app_type , '') AS app_type
              , IFNULL(fi.app_ver , '') AS app_ver
+             , IFNULL(am.mb_sns, 'E') AS mb_sns
         FROM ad_member am
                  LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
@@ -80,18 +90,32 @@
              , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
              , CAST(am.mb_level AS SIGNED) AS mb_level
              , CAST(am.mb_status AS SIGNED) AS mb_status
+             , CASE
+                   WHEN am.mb_birth IS NULL THEN 0
+                   ELSE FLOOR(DATEDIFF(NOW(), am.mb_birth) / 365)
+                END AS member_age
+             , CASE
+                     WHEN mb_birth IS NULL THEN NULL
+                     ELSE FLOOR(DATEDIFF(NOW(), mb_birth) / 3650)*10
+                END AS member_age_group
              , am.mb_nickname
              , (SELECT ls.set_1_name FROM local_set_1 ls
                 WHERE ls.set_1_code = am.mb_local ) AS mb_local
-             , (SELECT lss.set_2_name FROM local_set_2  lss
-                WHERE lss.set_2_code = am.mb_local2 ) AS mb_local2
+             , IFNULL((SELECT lss.set_2_name FROM local_set_2  lss
+                       WHERE lss.set_2_code = am.mb_local2 ), '') AS mb_local2
              , am.mb_foreigner
              , IFNULL(fi.app_type , '') AS app_type
              , IFNULL(fi.app_ver , '') AS app_ver
+             , fi.fcm_idx
+             , fi.push_use
+             , fi.marketing_use
+             , IFNULL(am.mb_sns, 'E') AS mb_sns
         FROM ad_member am
                  LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
         WHERE mb_status = 1
           AND mb_email = #{mb_email}
+          ORDER BY fi.fcm_date DESC
+          LIMIT 1
     </select>
 
     <select id="localCategory" parameterType="String" resultType="map">
@@ -129,7 +153,87 @@
             , IFNULL(user_lat, 0) AS user_lat
             , IFNULL(user_lng, 0 ) AS user_lng
         FROM fcm_info
-            WHERE fcm_idx = #{fcm_idx}
+        WHERE
+            <choose>
+                <when test="mb_idx != 0">
+                    mb_idx = #{mb_idx}
+                </when>
+                 <otherwise>
+                     fcm_idx = #{fcm_idx}
+                 </otherwise>
+            </choose>
+    </select>
+
+    <select id="snsUserLogin" resultType="map" parameterType="map">
+        SELECT * FROM
+        (
+            SELECT
+                am.mb_idx
+                 , IFNULL(am.mb_id, '') AS mb_id
+                 , IFNULL(am.mb_pw, '') AS mb_pw
+                 , IFNULL(am.mb_email, '') AS mb_email
+                 , IFNULL(am.mb_ci, '') AS mb_ci
+                 , IFNULL(am.mb_gender, '') AS mb_gender
+                 , IFNULL(am.mb_birth, '') AS mb_birth
+                 , DATE_FORMAT(am.mb_regdate, '%Y/%m/%d %H:%i:%s') AS mb_regdate
+                 , CAST(am.mb_level AS SIGNED) AS mb_level
+                 , CAST(am.mb_status AS SIGNED) AS mb_status
+                 , CASE
+                       WHEN am.mb_birth IS NULL THEN 0
+                       ELSE FLOOR(DATEDIFF(NOW(), am.mb_birth) / 365)
+                END AS member_age
+                 , CASE
+                       WHEN mb_birth IS NULL THEN NULL
+                       ELSE FLOOR(DATEDIFF(NOW(), mb_birth) / 3650)*10
+                END AS member_age_group
+                 , am.mb_nickname
+                 , (SELECT ls.set_1_name FROM local_set_1 ls
+                    WHERE ls.set_1_code = am.mb_local ) AS mb_local
+                 , IFNULL((SELECT lss.set_2_name FROM local_set_2  lss
+                           WHERE lss.set_2_code = am.mb_local2 ), '') AS mb_local2
+                 , am.mb_foreigner
+                 , IFNULL(fi.app_type , '') AS app_type
+                 , IFNULL(fi.app_ver , '') AS app_ver
+                 , fi.fcm_idx
+                 , fi.push_use
+                 , fi.marketing_use
+                 , fi.fcm_date
+                 , IFNULL(am.mb_sns, 'E') AS mb_sns
+                 , true AS login_result
+            FROM ad_member am
+                     LEFT JOIN fcm_info fi ON am.mb_idx = fi.mb_idx
+            WHERE mb_status = 1
+              AND am.mb_ci = #{mb_ci}
+              AND am.mb_sns = #{mb_sns}
+            UNION
+            SELECT
+                '' AS mb_idx
+                 , '' AS mb_id
+                 , '' AS mb_pw
+                 , '' AS mb_email
+                 , '' AS mb_ci
+                 , '' AS mb_gender
+                 , '' AS mb_birth
+                 , '' AS mb_regdate
+                 , 0 AS mb_level
+                 , 0 AS mb_status
+                 , 0 AS member_age
+                 , 0 AS member_age_group
+                 , '' AS mb_nickname
+                 , '' AS mb_local
+                 , '' AS mb_local2
+                 , '' AS mb_foreigner
+                 , '' AS app_type
+                 , '' AS app_ver
+                 , 0 AS fcm_idx
+                 , '' AS push_use
+                 , '' AS marketing_use
+                 , 'E' AS mb_sns
+                 , '' AS fcm_date
+                 , false AS login_result
+            ) AS sns
+            ORDER BY sns.fcm_date
+            LIMIT 1
     </select>
 
 

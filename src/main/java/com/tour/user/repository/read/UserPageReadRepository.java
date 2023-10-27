@@ -25,6 +25,11 @@ public interface UserPageReadRepository {
     List<String> passImages(Map<String, Object> params);
     List<Map<String, Object>> passDayList(Map<String, Object> params);
 
+    List<Map<String, Object>> bestPassList(Map<String, Object> params);
+    List<Map<String, Object>> inquiryCategory(Map<String, Object> params);
+    List<Map<String, Object>> inquiryList(Map<String, Object> params);
+    List<Map<String, Object>> inquiryOne(Map<String, Object> params);
+    List<Map<String, Object>> myBookMark(Map<String, Object> params);
 
 
 

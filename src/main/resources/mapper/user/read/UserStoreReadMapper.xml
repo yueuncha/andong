@@ -14,7 +14,7 @@
                             WHEN ac.ct_parent = 5 or st.str_category = 5 THEN 'hotel'
                             ELSE 'etc'
                             END AS store_type,
-                        IFNULL(st.str_like_cnt, 0) AS str_like_cnt,
+                        IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt,
                         st.str_lat,
                         st.str_lng,
                         st.str_category,
@@ -30,7 +30,10 @@
                         IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
                         (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
                         0.0 AS str_review_ave,
-                        TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km ,
+                        TRUNCATE(
+                                (6371 * acos(
+                                                cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                                sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km ,
                         IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
@@ -47,38 +50,41 @@
 
         SELECT
             DISTINCT st.str_idx AS str_idx
-                    , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
-                    , st.str_lat
-                    , st.str_lng
-                    , st.str_category
-                    , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
-                    , ac.ct_ko_nm
-                    , ac.ct_ja_nm
-                    , ac.ct_zh_nm
-                    , ac.ct_es_nm
-                    , ac.ct_eu_nm
-                    , asd.str_dt_type AS str_dt_type
-                    , asd.str_dt_name AS str_dt_name
-                    , IFNULL(asd.str_dt_address, '') AS str_dt_address
-                    , IFNULL(st.operating_hour, '') AS operating_hour
-                    , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
-                    , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
-                    , (SELECT COUNT(*)
+                   , IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt
+                   , st.str_lat
+                   , st.str_lng
+                   , st.str_category
+                   , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+                   , ac.ct_ko_nm
+                   , ac.ct_ja_nm
+                   , ac.ct_zh_nm
+                   , ac.ct_es_nm
+                   , ac.ct_eu_nm
+                   , asd.str_dt_type AS str_dt_type
+                   , asd.str_dt_name AS str_dt_name
+                   , IFNULL(asd.str_dt_address, '') AS str_dt_address
+                   , IFNULL(st.operating_hour, '') AS operating_hour
+                   , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
+                   , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                   , (SELECT COUNT(*)
                       FROM ad_review
                       WHERE str_idx = st.str_idx ) AS str_review_cnt
-                    , 0.0 AS str_review_ave
-                    , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
-                    , IFNULL(
-                        (SELECT like_status
-                         FROM ad_like
-                         WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
+                   , 0.0 AS str_review_ave
+                   , TRUNCATE(
+                (6371 * acos(
+                                cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
+                   , IFNULL(
+                (SELECT like_status
+                 FROM ad_like
+                 WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
         WHERE (ac.ct_parent = #{ct_parent} OR st.str_category = #{ct_parent})
           AND asd.str_dt_type = #{lang}
         GROUP BY st.str_idx, asd.str_dt_type, asd.str_dt_name
-        ORDER BY IFNULL(#{sorting},''), asd.str_dt_desc DESC
+        ORDER BY IFNULL(CONCAT(#{sorting}),''),asd.str_dt_desc DESC
     </select>
 
     <select id="categoryDetail"  parameterType="map" resultType="map">
@@ -87,7 +93,7 @@
 
         SELECT DISTINCT
             st.str_idx AS str_idx
-                      , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+        , IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt
                       , st.str_lat
                       , st.str_lng
                       , st.str_category
@@ -104,7 +110,10 @@
                       , IFNULL(CONCAT(#{url},st.str_image), st.str_image)  AS str_image
                       , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
                       , (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx ) AS str_review_cnt
-                      , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+                      , TRUNCATE(
+                            (6371 * acos(
+                            cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                            sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
                       , IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
         FROM ad_store st
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
@@ -128,7 +137,7 @@
 
         SELECT DISTINCT
             st.str_idx
-            , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+                      , IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt
             , st.str_lat
             , st.str_lng
             , ac.ct_ko_nm
@@ -147,7 +156,10 @@
             , IFNULL(asd.str_dt_address , '') AS str_dt_address
             , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
             , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
-            , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+            , TRUNCATE(
+                (6371 * acos(
+                                cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
             , IFNULL(st.operating_hour , '가게 문의') AS operating_hour
             , (SELECT COUNT(*)
                FROM ad_review
@@ -198,7 +210,7 @@
 
         SELECT
             DISTINCT st.str_idx AS str_idx
-                      , IFNULL(st.str_like_cnt, 0) AS str_like_cnt
+                    , IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt
                     , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
                    , st.str_lat
                    , st.str_lng
@@ -216,7 +228,10 @@
                       FROM ad_review
                       WHERE str_idx = st.str_idx ) AS str_review_cnt
                    , 0.0 AS str_review_ave
-                   , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+                   , TRUNCATE(
+                        (6371 * acos(
+                        cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                        sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
                    , IFNULL(
                 (SELECT like_status
                  FROM ad_like
@@ -245,7 +260,7 @@
             am.mb_nickname,
             av.mb_idx,
             av.rv_idx,
-            TRUNCATE(av.review_avg, 1) AS review_ave,
+            TRUNCATE(AVG(review_avg), 1) AS review_ave,
             COALESCE((SELECT 'Y' FROM dual WHERE av.mb_idx = #{mb_idx}), 'N') AS my_review,
             COUNT(ar.str_idx) AS review_cnt,
             COALESCE(al.like_status, 'N') AS like_status,
@@ -313,7 +328,10 @@
             IFNULL(asd.str_dt_address, '') AS str_dt_address,
             IFNULL(CONCAT(#{url}, st.str_image), st.str_image) AS str_image,
             IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
-            TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+            TRUNCATE(
+                    (6371 * acos(
+                                    cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                    sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
         FROM ad_use_chart ch
                  LEFT JOIN ad_store st ON ch.str_idx = st.str_idx
                  LEFT JOIN ad_store_detail asd ON ch.str_idx = asd.str_idx
@@ -330,7 +348,6 @@
         GROUP BY st.str_idx, asd.str_dt_type
         ORDER BY COUNT(ch.chrt_idx) DESC
             LIMIT 0, #{count}
-
     </select>
 
     <select id="menuList" parameterType="map" resultType="map">

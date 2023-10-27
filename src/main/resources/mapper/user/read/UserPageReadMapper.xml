@@ -3,28 +3,37 @@
 <mapper namespace="com.tour.user.repository.read.UserPageReadRepository">
     <select id="myImageLoad" resultType="map" parameterType="map">
         SELECT
-            my_idx,
-            mb_idx,
-            CONCAT(DATE_FORMAT(my_regdate, '%Y/%m/%d '),DATE_FORMAT(my_regtime, '%H:%i:%s')) AS my_regdate,
-            IFNULL(CONCAT(#{url},my_image_file), '') AS my_image_file
-        FROM ad_mypage
-        WHERE cpl_use  = 'Y'
-          AND mb_idx = #{mb_idx}
-        ORDER BY my_regdate
-        <if test="count != 0">
-            LIMIT #{count}
-        </if>
+            IFNULL(mp.my_idx, 0) AS my_idx,
+            pt.mb_idx,
+            IFNULL(pt.post_idx, '') AS post_idx,
+            CONCAT(DATE_FORMAT(pt.post_reg_date, '%Y-%m-%d '), DATE_FORMAT(pt.post_reg_time, '%H:%i:%s')) AS post_regdate,
+            IFNULL((SELECT mark_use FROM ad_bookmark ad WHERE ad.mb_idx = #{mb_idx} AND ad.post_idx = pt.post_idx), 'N') AS mark_now,
+            IFNULL(CONCAT(#{url}, mp.my_image_file), '') AS first_post_image,
+            pt.post_title,
+            pt.post_content,
+            IF(NULL, '', GROUP_CONCAT(CONCAT(#{url}, IFNULL(mp.my_image_file, '')))) AS images
+        FROM ad_posting pt
+                 LEFT JOIN ad_mypage mp ON mp.post_idx = pt.post_idx
+        WHERE (mp.cpl_use = 'Y' OR mp.my_idx IS NULL)
+          AND pt.mb_idx = #{mb_idx}
+        GROUP BY pt.post_idx
+        ORDER BY mp.my_regdate
     </select>
 
     <select id="myPageCnt" resultType="map" parameterType="map">
         SELECT
-                (SELECT am.mb_nickname FROM ad_member am WHERE am.mb_idx = #{mb_idx}) AS mb_nickname,
-                (SELECT COUNT(like_idx) FROM ad_like li WHERE li.mb_idx = #{mb_idx} AND li.like_status = 'Y') AS like_cnt,
-                (SELECT COUNT(rv_idx) FROM ad_review rv WHERE rv.mb_idx = #{mb_idx} AND rv.rv_use = 'Y') AS review_cnt,
-                (SELECT COUNT(my_image_file) FROM ad_mypage mp WHERE mp.mb_idx = #{mb_idx}) AS image_cnt,
-                (SELECT COUNT(rv_idx) FROM ad_review rv WHERE rv.mb_idx = #{mb_idx} AND rv.rv_use = 'Y') AS review_cnt
-        FROM DUAL
+            am.mb_nickname,
+            IFNULL(am.mb_sns, 'E') AS mb_sns,
+            COUNT(DISTINCT li.like_idx) AS like_cnt,
+            COUNT(DISTINCT rv.rv_idx) AS review_cnt,
+            COUNT(DISTINCT mp.post_idx) AS image_cnt
+        FROM ad_member am
+                 LEFT JOIN ad_like li ON am.mb_idx = li.mb_idx AND li.like_status = 'Y' AND li.like_type = 'S'
+                 LEFT JOIN ad_review rv ON am.mb_idx = rv.mb_idx AND rv.rv_use = 'Y'
+                 LEFT JOIN ad_mypage mp ON am.mb_idx = mp.mb_idx
+        WHERE am.mb_idx = #{mb_idx}
     </select>
+
     <select id="myLike" resultType="map" parameterType="map">
         SET @user_lng = IFNULL((SELECT IF(user_lng != 0.0, user_lng, 128.729853) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  128.729853);
         SET @user_lat = IFNULL((SELECT IF(user_lng != 0.0, user_lat, 36.568195) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  36.568195);
@@ -60,14 +69,17 @@
             IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
             (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
             0.0 AS str_review_ave,
-            TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+            TRUNCATE(
+                    (6371 * acos(
+                                    cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                    sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
         FROM ad_like li
                  LEFT JOIN ad_store st ON st.str_idx = li.str_idx
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
         WHERE  li.mb_idx = #{mb_idx}
-          AND li.like_status = 'Y'
-        GROUP BY st.str_idx, asd.str_dt_type, li.like_idx, asd.str_dt_name
+          AND li.like_status = 'Y' AND like_type = 'S'
+        GROUP BY st.str_idx, li.like_idx
         ORDER BY IFNULL(#{sorting}, ''), asd.str_dt_desc DESC
     </select>
     <select id="myReview" resultType="map" parameterType="map">
@@ -94,7 +106,10 @@
                       , ac.ct_eu_nm
                       , asd.str_dt_name AS str_dt_name
                       , (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx ) AS str_review_cnt
-                      , TRUNCATE(ST_DISTANCE_SPHERE(POINT(@user_lng, @user_lat),POINT(st.str_lng, st.str_lat))/1000 , 1) AS str_km
+                      , TRUNCATE(
+                            (6371 * acos(
+                                cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
+                                sin(radians(@user_lat)) * sin(radians(st.str_lat)))),1) AS str_km
                       , IFNULL((SELECT like_status FROM ad_like WHERE mb_idx = IFNULL(#{mb_idx}, '') and str_idx = st.str_idx), 'N') AS like_status
                       , rv.rv_contents
                       , rv.rv_idx
@@ -187,15 +202,19 @@
         SELECT
             aps.ps_title
              , aps.ps_idx as ps_idx
-             , IFNULL(CONCAT(asd.str_dt_name , ' 외 ',
-                             (select COUNT(apl2.psl_idx) from ad_pass_list apl2 WHERE apl2.ps_idx = aps.ps_idx AND apl2.str_idx != 0)
-                 , '곳'), '') AS pass_sub
+             ,  CASE
+                    WHEN  (0 = apl.str_idx) THEN '패스를 추가해주세요'
+                    ELSE CONCAT(IFNULL(asd.str_dt_name, ''), ' 외 ',(SELECT COUNT(psl_idx) FROM ad_pass_list WHERE str_idx > 0 AND ps_idx = aps.ps_idx), '곳')
+                    END AS pass_sub
             , MAX(apl.day_number) AS max_day
         FROM ad_pass_set aps
                  LEFT JOIN ad_pass_list apl on apl.ps_idx = aps.ps_idx
                  LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
-        WHERE aps.mb_idx = #{mb_idx} AND ps_use = 'Y' and (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
+        WHERE aps.mb_idx = #{mb_idx} AND aps.ps_use = 'Y' and (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
         GROUP BY aps.ps_idx
+        <if test='type.equals("A")'>
+            ORDER BY RAND() LIMIT 4
+        </if>
     </select>
 
     <select id="passImages" parameterType="map" resultType="string">
@@ -206,6 +225,7 @@
                  LEFT JOIN ad_store st on st.str_idx = apl.str_idx
                  LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
         WHERE asd.str_dt_type = 'ko'
+          AND apl.str_idx > 0
           AND aps.ps_idx = #{ps_idx} AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
         GROUP BY apl.psl_idx , asd.str_dt_type
         ORDER BY  apl.day_number ,apl.store_turn
@@ -226,6 +246,8 @@
              , asd.str_dt_name
              , IFNULL(asd.str_dt_desc, '') AS str_dt_desc
              , st.str_idx
+             , st.str_lat
+             , st.str_lng
              , IFNULL(CONCAT(#{url},st.str_image ) ,'')   AS str_image
              , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
         FROM  ad_pass_list psl
@@ -236,9 +258,86 @@
         WHERE (asd.str_dt_type = 'ko' OR  #{lang})
           AND psl.pass_list_use = 'Y'
           AND ps.ps_idx = #{ps_idx}
+          AND psl.str_idx > 0
           AND psl.day_number = #{day}
         GROUP BY psl.psl_idx
         ORDER BY psl.store_turn
+    </select>
+
+    <select id="bestPassList" parameterType="map" resultType="map">
+        SELECT
+            st.str_idx
+             , ass.ps_idx
+             , MAX(psl.day_number) AS day_count
+             , IFNULL(CONCAT(#{url},st.str_image),'') AS str_image
+             , ass.ps_title
+             , ass.ps_content
+        FROM ad_pass_set ass
+                 LEFT JOIN ad_pass_list psl ON ass.ps_idx = psl.ps_idx
+                 LEFT JOIN ad_store st ON psl.str_idx = st.str_idx
+                 LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+        WHERE ass.mb_idx = 0
+        GROUP BY ass.ps_idx
+        ORDER BY RAND()
+        LIMIT 4
+    </select>
+
+    <select id="inquiryCategory" resultType="map" parameterType="map">
+        SELECT
+               inq_category_idx
+             , inq_category
+             , inq_type
+        FROM ad_inquiry_category
+        WHERE inq_type = #{type}
+    </select>
+
+    <select id="inquiryList" resultType="map" parameterType="map">
+        SELECT
+            iq.iq_idx
+             , iq.mb_idx
+             , iq.iq_title
+             , DATE_FORMAT(iq.iq_regdate, '%Y-%m-%d') AS iq_regdate
+             , iq.iq_status
+             , IF(iq.iq_status != 'E' , '답변완료', '답변대기') AS status_text
+        FROM ad_inquiry iq
+        WHERE mb_idx = #{mb_idx}
+        AND iq.inquiry_use = 'Y'
+    </select>
+
+    <select id="inquiryOne" resultType="map" parameterType="map">
+        SELECT
+            iq.iq_idx
+             , iq.mb_idx
+             , iq.iq_category
+             , aic.inq_category
+             , iq.iq_title
+             , iq.iq_content
+             , DATE_FORMAT(iq.iq_regdate, '%Y-%m-%d') AS iq_regdate
+             , iq.iq_status
+             , IF(iq.iq_status != 'E' , '답변완료', '답변대기') AS status_text
+             , iq.answer_content
+        FROM ad_inquiry iq
+                 LEFT JOIN ad_inquiry_category aic ON iq.iq_category = aic.inq_category_idx
+        WHERE iq.iq_idx = #{iq_idx}
+          AND iq.inquiry_use = 'Y'
+    </select>
+
+    <select id="myBookMark" resultType="map" parameterType="map">
+        SELECT
+              ab.mark_use AS mark_now
+             , ab.post_idx
+             , pt.post_title
+             , pt.post_content
+             , IFNULL(CONCAT(#{url},mp.my_image_file), '') AS first_post_image
+             , IF( NULL , '' ,GROUP_CONCAT(CONCAT(#{url}, mp.my_image_file))) AS images
+             , IF(pt.mb_idx != #{mb_idx}, 'N', 'Y') AS my_post
+             , (SELECT COUNT(like_idx) FROM ad_like WHERE post_idx = pt.post_idx AND like_type = 'P') AS post_like_cnt
+             , IFNULL((SELECT like_status FROM ad_like WHERE post_idx = pt.post_idx AND like_type = 'P' AND mb_idx = #{mb_idx}), 'N') AS like_status
+        FROM ad_bookmark ab
+                 LEFT JOIN ad_posting pt ON pt.post_idx = ab.post_idx
+                 LEFT JOIN ad_mypage mp ON pt.post_idx = mp.post_idx
+        WHERE ab.mb_idx = #{mb_idx} AND pt.post_status = 'Y' AND ab.mark_use = 'Y'
+        GROUP BY pt.post_idx
     </select>
 
 </mapper>
