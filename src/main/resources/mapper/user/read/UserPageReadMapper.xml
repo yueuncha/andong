@@ -204,7 +204,7 @@
              , aps.ps_idx as ps_idx
              ,  CASE
                     WHEN  (0 = apl.str_idx) THEN '패스를 추가해주세요'
-                    ELSE CONCAT(IFNULL(asd.str_dt_name, ''), ' 외 ',(SELECT COUNT(psl_idx) FROM ad_pass_list WHERE str_idx > 0 AND ps_idx = aps.ps_idx), '곳')
+                    ELSE CONCAT(IFNULL(asd.str_dt_name, ''), ' 외 ',(SELECT COUNT(psl_idx) FROM ad_pass_list WHERE str_idx > 0 AND ps_idx = aps.ps_idx AND pass_list_use = 'Y'), '곳')
                     END AS pass_sub
             , MAX(apl.day_number) AS max_day
         FROM ad_pass_set aps
@@ -226,7 +226,7 @@
                  LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
         WHERE asd.str_dt_type = 'ko'
           AND apl.str_idx > 0
-          AND aps.ps_idx = #{ps_idx} AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
+          AND aps.ps_idx = #{ps_idx} AND (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL) AND apl.pass_list_use = 'Y'
         GROUP BY apl.psl_idx , asd.str_dt_type
         ORDER BY  apl.day_number ,apl.store_turn
     </select>

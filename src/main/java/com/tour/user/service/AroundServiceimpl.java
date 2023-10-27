@@ -367,8 +367,10 @@ public class AroundServiceimpl implements AroundService {
             if(newParams.containsKey("post_idx") && !newParams.get("post_idx").equals("")){
                 ObjectMapper objectMapper = new ObjectMapper();
                 paramRes = readRepository.postViewOne(newParams);
-                paramRes.replace("images",Arrays.asList(String.valueOf(paramRes.get("images")).split(",")));
-                paramRes.replace("images_id",Arrays.asList(String.valueOf(paramRes.get("images_id")).split(",")));
+                if(paramRes.containsKey("images") && paramRes.containsKey("images_id") ){
+                    paramRes.replace("images",Arrays.asList(String.valueOf(paramRes.get("images")).split(",")));
+                    paramRes.replace("images_id",Arrays.asList(String.valueOf(paramRes.get("images_id")).split(",")));
+                }
 
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));

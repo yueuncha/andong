@@ -54,7 +54,7 @@
                    , st.str_lat
                    , st.str_lng
                    , st.str_category
-                   , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+                   , IFNULL((SELECT TRUNCATE(AVG(review_avg), 1) FROM ad_review WHERE str_idx = st.str_idx), 0.0)AS review_ave
                    , ac.ct_ko_nm
                    , ac.ct_ja_nm
                    , ac.ct_zh_nm
@@ -97,7 +97,7 @@
                       , st.str_lat
                       , st.str_lng
                       , st.str_category
-                      , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+                      , IFNULL((SELECT TRUNCATE(AVG(review_avg), 1) FROM ad_review WHERE str_idx = st.str_idx), 0.0)AS review_ave
                       , ac.ct_ko_nm
                       , ac.ct_ja_nm
                       , ac.ct_zh_nm
@@ -164,7 +164,7 @@
             , (SELECT COUNT(*)
                FROM ad_review
                WHERE str_idx = st.str_idx ) AS str_review_cnt
-            , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
+            , IFNULL((SELECT TRUNCATE(AVG(review_avg), 1) FROM ad_review WHERE str_idx = st.str_idx), 0.0)AS review_ave
             , IFNULL(
                 (SELECT like_status
                 FROM ad_like
@@ -260,7 +260,7 @@
             am.mb_nickname,
             av.mb_idx,
             av.rv_idx,
-            TRUNCATE(AVG(review_avg), 1) AS review_ave,
+            TRUNCATE(AVG(av.review_avg), 1) AS review_ave,
             COALESCE((SELECT 'Y' FROM dual WHERE av.mb_idx = #{mb_idx}), 'N') AS my_review,
             COUNT(ar.str_idx) AS review_cnt,
             COALESCE(al.like_status, 'N') AS like_status,
