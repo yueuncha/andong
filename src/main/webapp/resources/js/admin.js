@@ -21,10 +21,27 @@
         return result;
     }
 
+
     function ajaxReturn(type, url, params){
         let result = ajax(type, url, params);
         console.log(result)
+
     }
+
+    $('#userFilter').change(function(){
+        let type = this.options[this.selectedIndex].value;
+        let result = ajax("POST", "/admin/user/filter",{"type":type})
+        $('#dataTable')._fnAjaxUpdateDraw(settings, result)
+        //console.log($('#dataTable'))
+        //let listData = JSON.parse($('#dataTable').attr('data-list'))
+
+        /*for (let i = 0; i < listData.length; i++) {
+            console.log(listData[i])
+        }*/
+
+
+
+    })
 
 
 
@@ -233,6 +250,68 @@
             $('input[name='+key+']').val('')
 
         })
+
+
+
     })
+
+
+    $('#storyContents').ready(function (){
+        $('#storyContents > p > img').css("width", "50%")
+    })
+
+    function fnBannerView(value) {
+        let imageTag = document.getElementById('bannerImage');
+        imageTag.setAttribute('src',value.dataset['image'])
+        $('#bannerUrl').text(value.dataset['url'])
+    }
+
+    function fnBannerUpdate(obj, idx){
+        let tr = obj.parentNode.parentNode;
+
+        for (let i = 0; i <tr.childElementCount; i++) {
+            let td = tr.children.item(i)
+            if(i < 3){
+                let tdText = td.textContent
+                let inputTag = document.createElement('input')
+                td.textContent = ''
+                inputTag.setAttribute('id', 'banner'+i)
+                inputTag.setAttribute('type', 'text')
+                inputTag.setAttribute('class', 'form-control mb-2')
+                inputTag.setAttribute('name', td.getAttribute('name'))
+                inputTag.setAttribute('value', tdText)
+                td.append(inputTag)
+            }else{
+                td.textContent = ''
+                let bannerSaveBtn = document.createElement('a')
+                let bannerSaveBtnSpan = document.createElement('span')
+                bannerSaveBtnSpan.setAttribute('class', 'text')
+                bannerSaveBtnSpan.innerText = '저장'
+                bannerSaveBtn.setAttribute('class', 'btn btn-dark btn-icon-split')
+                bannerSaveBtn.setAttribute('onclick', 'fnBannerSave(this, '+idx+')')
+                bannerSaveBtn.append(bannerSaveBtnSpan)
+                td.append(bannerSaveBtn)
+            }
+        }
+    }
+
+    function fnBannerSave(obj, idx){
+        let bannerValues = obj.parentNode.parentNode;
+        let dataValues = {
+            "bn_idx" : idx
+            , "bn_title" : $('input[name="bn_title"]').val()
+            , "bn_img" : $('input[name="bn_img"]').val()
+            , "bn_url" : $('input[name="bn_url"]').val()
+        }
+
+        let result = ajax('POST', '/admin/banner/update', dataValues)
+
+        if(result > 0){
+            alert('배너가 수정되었습니다.')
+        }else{
+            alert('오류! 관리자에게 문의.')
+        }
+        location.href = '/admin/banner'
+    }
 
 

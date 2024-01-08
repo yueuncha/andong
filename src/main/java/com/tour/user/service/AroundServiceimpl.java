@@ -238,6 +238,8 @@ public class AroundServiceimpl implements AroundService {
             newParams.put("storeUrl", ip + "/image/place/");
             newParams.put("iconUrl", ip + "/image/stamp/android/");
 
+            System.out.println("stamp : "+ newParams.toString());
+
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Map<String,Object>> list = readRepository.stempTourList(newParams);
@@ -325,6 +327,7 @@ public class AroundServiceimpl implements AroundService {
                 int page = (Integer.parseInt(String.valueOf(newParams.get("page")))-1 ) * 10;
                 newParams.replace("page", page);
                 ObjectMapper objectMapper = new ObjectMapper();
+                System.out.println(newParams);
                 List<Map<String, Object>> list = readRepository.postingViewList(newParams);
 
                 for (Map<String, Object> values : list) {
@@ -367,7 +370,9 @@ public class AroundServiceimpl implements AroundService {
             if(newParams.containsKey("post_idx") && !newParams.get("post_idx").equals("")){
                 ObjectMapper objectMapper = new ObjectMapper();
                 paramRes = readRepository.postViewOne(newParams);
-                if(paramRes.containsKey("images") && paramRes.containsKey("images_id") ){
+
+                if(paramRes.containsKey("images") && paramRes.containsKey("images_id")
+                    && !paramRes.get("images").equals("") && !paramRes.get("images_id").equals("")){
                     paramRes.replace("images",Arrays.asList(String.valueOf(paramRes.get("images")).split(",")));
                     paramRes.replace("images_id",Arrays.asList(String.valueOf(paramRes.get("images_id")).split(",")));
                 }
@@ -453,6 +458,7 @@ public class AroundServiceimpl implements AroundService {
                 newParams.put("push_type", "like");
 
                 Map<String, Object> fcmParams = readRepository.pushFCM(newParams);
+                System.out.println(fcmParams);
                 if(!fcmParams.isEmpty()){
                     if(fcmParams.get("push_use").equals("Y")){
                         fcmService.pushFCM(fcmParams);
@@ -507,6 +513,9 @@ public class AroundServiceimpl implements AroundService {
                 newParams.put("push_type", "mark");
 
                 Map<String, Object> fcmParams = readRepository.pushFCM(newParams);
+
+                System.out.println(fcmParams);
+
                 if(!fcmParams.isEmpty()){
                     if(fcmParams.get("push_use").equals("Y")){
                         fcmService.pushFCM(fcmParams);

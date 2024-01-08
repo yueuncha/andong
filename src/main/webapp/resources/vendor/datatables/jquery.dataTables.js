@@ -2430,10 +2430,10 @@
 			src: nTr ? 'dom' : 'data',
 			idx: iRow
 		} );
-	
+
 		oData._aData = aDataIn;
 		oSettings.aoData.push( oData );
-	
+
 		/* Create the cells */
 		var nTd, sThisType;
 		var columns = oSettings.aoColumns;
@@ -2446,9 +2446,11 @@
 	
 		/* Add to the display array */
 		oSettings.aiDisplayMaster.push( iRow );
-	
+
+
 		var id = oSettings.rowIdFn( aDataIn );
 		if ( id !== undefined ) {
+
 			oSettings.aIds[ id ] = oData;
 		}
 	
@@ -3859,7 +3861,7 @@
 	 * parameters can have multiple forms, and backwards compatibility.
 	 *
 	 * @param {object} oSettings dataTables settings object
-	 * @param {array} data Data to send to the server, required by
+	 * @param {{type: *}} data Data to send to the server, required by
 	 *     DataTables - may be augmented by developer callbacks
 	 * @param {function} fn Callback function to run when data is obtained
 	 */

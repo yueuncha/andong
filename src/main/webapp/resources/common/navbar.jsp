@@ -14,7 +14,7 @@
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-3 d-none d-lg-inline text-gray-600 small"  style="font-size: 1.0rem;">관리자</span>
                 <img class="img-profile rounded-circle"
-                     src="../../resources/image/undraw_profile.svg">
+                     src="/resources/image/undraw_profile.svg">
             </a>
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -32,7 +32,7 @@
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" >
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">LOGOUT</h5>

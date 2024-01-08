@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.admin.repository.read.AdminStoreReadRepository">
+
+    <select id="storeListAll" resultType="map" parameterType="map">
+        SELECT
+               asd.str_dt_name
+             , st.str_idx
+             , asd.str_dt_address
+        FROM ad_store st
+            LEFT JOIN ad_store_detail asd ON asd.str_idx = st.str_idx
+            LEFT JOIN ad_category ct ON st.str_category = ct.ct_idx
+        WHERE asd.str_dt_type  = 'ko'
+             AND ct.ct_parent = #{type}
+        GROUP BY st.str_idx , asd.str_dt_type
+    </select>
+
+    <select id="storeViewOne" parameterType="int" resultType="map">
+        SELECT
+            st.str_idx
+             , st.str_lng
+             , st.str_lat
+             , st.str_image AS str_image
+             , st.str_phone
+             , st.str_website
+             , (SELECT COUNT(*) FROM ad_like li WHERE li.str_idx = st.str_idx) AS str_like_cnt
+             , st.operating_hour
+             , asd.str_dt_name
+             , asd.str_dt_type
+             , IFNULL(asd.str_dt_desc, '내용 없음') AS str_dt_desc
+             , asd.str_dt_address
+        FROM ad_store st
+                 LEFT JOIN ad_store_detail asd ON asd.str_idx = st.str_idx
+        WHERE str_use = 'Y'
+          AND st.str_idx = #{str_idx}
+        GROUP BY asd.str_dt_type, st.str_idx
+    </select>
+
+    <select id="adminCategoryStepList" resultType="map" parameterType="map">
+        SELECT
+            rw.ct_idx
+             , (SELECT ct_ko_nm FROM ad_category high WHERE high.ct_idx = rw.ct_parent) AS ct_parent_nm
+             , rw.ct_use
+             , rw.ct_ko_nm
+             , rw.ct_es_nm
+             , rw.ct_eu_nm
+             , rw.ct_zh_nm
+             , rw.ct_de_nm
+             , rw.ct_ja_nm
+             , rw.ct_reg_dt
+             , rw.ct_update_dt
+        FROM ad_category rw
+        WHERE rw.ct_idx > 1
+        <choose>
+          <when test="type != 1">
+              AND rw.ct_parent > 1
+          </when>
+          <otherwise>
+              AND rw.ct_parent = 1
+          </otherwise>
+        </choose>
+    </select>
+
+    <select id="adminCategoryOne" resultType="map">
+        SELECT
+            ac.ct_idx
+             , ac.ct_ko_nm
+             , ac.ct_ja_nm
+             , ac.ct_es_nm
+             , ac.ct_eu_nm
+             , ac.ct_zh_nm
+             , ac.ct_de_nm
+             , DATE_FORMAT(ac.ct_reg_dt, '%Y-%m-%d %H:%i:%s') AS ct_reg_dt
+        FROM ad_category ac
+        WHERE ac.ct_idx = #{ct_idx}
+    </select>
+
+
+
+
+</mapper>

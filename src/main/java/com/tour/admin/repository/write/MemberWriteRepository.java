@@ -18,4 +18,11 @@ public interface MemberWriteRepository {
     int detailInsert(Map<String, Object> params);
     int Updatecontents(Map<String, Object> params);
 
+    /***********************************************************/
+
+    int inquiryAnswer(Map<String, Object> params);
+
+
+
+
 }

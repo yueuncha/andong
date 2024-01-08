@@ -10,7 +10,7 @@ public interface MemberService {
     //암호화테스트
     Map<String, Object> test(RequestVO vo) throws Exception;
     //이용약관
-    Map<String, String> userAgreement();
+    Map<String, Object> userAgreement();
     //회원가입
     Map<String, Object> userJoin(RequestVO vo) throws Exception;
     //전체회원조회
@@ -36,4 +36,5 @@ public interface MemberService {
 
     Map<String, Object> alarmCheck(RequestVO vo) throws Exception;
     Map<String, Object> snsUserLogin(RequestVO vo) throws Exception;
+    Map<String, Object> userPushList(RequestVO vo) throws Exception;
 }

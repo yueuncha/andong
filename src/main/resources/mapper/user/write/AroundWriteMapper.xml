@@ -83,15 +83,16 @@
     </update>
 
     <insert id="stampInsert" parameterType="map">
-        INSERT INTO andong_test_db.ad_stamp_list
+        INSERT INTO ad_stamp_list
         (stp_idx, mb_idx, stp_status, stp_s_date, stp_s_time, stp_e_date, stp_e_time)
-        VALUES(#{stp_idx}, #{mb_idx}, 'Y', DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), DATE_FORMAT(NOW(), '%Y-%m-%d '), DATE_FORMAT(NOW(), '%H:%i:%s'));
+        VALUES(#{stp_idx}, #{mb_idx}, 'Y', DATE_FORMAT(NOW(), '%Y-%m-%d'), DATE_FORMAT(NOW(), '%H:%i:%s'), DATE_FORMAT(NOW(), '%Y-%m-%d '), DATE_FORMAT(NOW(), '%H:%i:%s'))
     </insert>
 
     <insert id="reportPost" parameterType="map">
         INSERT INTO ad_report
             (mb_idx, report_content, report_date, post_idx, report_category)
-        VALUES(#{mb_idx}, #{report_content}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{post_idx}, #{report_category})
+        VALUES(
+               #{mb_idx}, #{report_content}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{post_idx}, #{report_category})
     </insert>
 
     <insert id="fcmLogInsert" parameterType="map">

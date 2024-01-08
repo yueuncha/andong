@@ -9,6 +9,7 @@ import java.util.Map;
 public interface UserMemberReadRepository {
 
     List<Map<String,Object>> selectUserList();
+    Map<String, Object> agreementView();
 
     Map<String, Object> selectUserOne(Map<String, Object> params);
 
@@ -24,6 +25,7 @@ public interface UserMemberReadRepository {
 
     Map<String , Object> sessionData(Map<String, Object> params);
     Map<String , Object> snsUserLogin(Map<String, Object> params);
+    List<Map<String,Object>> userPushList(Map<String, Object> params);
 
 
 

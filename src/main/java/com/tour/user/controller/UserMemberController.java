@@ -1,21 +1,16 @@
 package com.tour.user.controller;
 
-import com.tour.AES128;
 import com.tour.JsonForm;
 import com.tour.user.service.UserMemberServiceImpl;
 import com.tour.user.vo.RequestVO;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +50,7 @@ public class UserMemberController {
 
     @RequestMapping("/testStory")
     public String andongStory(){
-        return "user/summerNote";
+        return "admin/manage/summerNote";
     }
 
     /**
@@ -170,5 +165,11 @@ public class UserMemberController {
     @ResponseBody
     public Map<String, Object> snsUserLogin(RequestVO vo) throws Exception{
         return userMemberService.snsUserLogin(vo);
+    }
+
+    @PostMapping("/push/list")
+    @ResponseBody
+    public Map<String, Object> userPushList(RequestVO vo) throws Exception{
+        return userMemberService.userPushList(vo);
     }
 }

@@ -121,6 +121,10 @@ public class UserStoreServiceImpl implements StoreService {
                     newParams.put("lang", "ko");
                     writeRepository.searchKeyword(newParams);
                 }
+
+                String keyword = String.valueOf(newParams.get("keyword")).replaceAll(" ", "");
+                newParams.replace("keyword", keyword);
+
                 List<Map<String, Object>> arr = readRepository.storeSearch(newParams);
                 paramRes.put("search", arr);
                 paramRes.put("tot_cnt", arr.size());
@@ -208,6 +212,17 @@ public class UserStoreServiceImpl implements StoreService {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
             newParams.put("url", ip+"/image/place/");
+
+
+            if(newParams.get("sorting").equals("L")){
+                newParams.put("sorting", "str_like_cnt");
+            }else if(newParams.get("sorting").equals("R")){
+                newParams.put("sorting", "str_review_cnt");
+            }else if(newParams.get("sorting").equals("A")){
+                newParams.put("sorting", "str_idx");
+            }else{
+                newParams.put("sorting", "str_idx");
+            }
 
             if(newParams.containsKey("str_category")){
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -378,6 +393,7 @@ public class UserStoreServiceImpl implements StoreService {
 
                 int index = 0;
 
+
                 while(_exist){
                     index ++;
 
@@ -538,7 +554,19 @@ public class UserStoreServiceImpl implements StoreService {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
             newParams.put("ct_parent", 7);
+            newParams.put("random", null);
             newParams.put("url", ip+"/image/place/");
+
+            if(newParams.get("sorting").equals("L")){
+                newParams.put("sorting", "str_like_cnt");
+            }else if(newParams.get("sorting").equals("R")){
+                newParams.put("sorting", "str_review_cnt");
+            }else if(newParams.get("sorting").equals("A")){
+                newParams.put("sorting", "str_idx");
+            }else{
+                newParams.put("sorting", "str_idx");
+            }
+
 
             List<Map<String, Object>> arrList = readRepository.experienceList(newParams);
             paramRes.put("tot_cnt", arrList.size());
@@ -607,6 +635,17 @@ public class UserStoreServiceImpl implements StoreService {
 
                 if(newParams.containsKey("str_category") && newParams.get("str_category") != ""){
                     newParams.put("url", ip+"/image/place/");
+
+                    if(newParams.get("sorting").equals("L")){
+                        newParams.put("sorting", "str_like_cnt");
+                    }else if(newParams.get("sorting").equals("R")){
+                        newParams.put("sorting", "str_review_cnt");
+                    }else if(newParams.get("sorting").equals("A")){
+                        newParams.put("sorting", "str_idx");
+                    }else{
+                        newParams.put("sorting", "str_idx");
+                    }
+
                     List<Map<String, Object>> temp = readRepository.categoryDetail(newParams);
                     paramRes.put("tot_cnt", temp.size());
                     paramRes.put("experience", temp);
@@ -684,7 +723,17 @@ public class UserStoreServiceImpl implements StoreService {
             newParams.put("url", ip+"/image/place/");
             newParams.put("str_category", 3);
 
-            List<Map<String, Object>> arr = readRepository.categoryDetail(newParams);
+            if(newParams.get("sorting").equals("L")){
+                newParams.put("sorting", "str_like_cnt");
+            }else if(newParams.get("sorting").equals("R")){
+                newParams.put("sorting", "str_review_cnt");
+            }else if(newParams.get("sorting").equals("A")){
+                newParams.put("sorting", "str_idx");
+            }else{
+                newParams.put("sorting", "str_idx");
+            }
+
+            List<Map<String, Object>> arr = readRepository.addBanner(newParams);
             paramRes.put("tot_cnt", arr.size());
             paramRes.put("festival", arr);
 
@@ -752,13 +801,8 @@ public class UserStoreServiceImpl implements StoreService {
             oldParams.replace("result", true);
             newParams.put("url", ip + "/image/place/");
 
-            if(newParams.get("chrt_gender") == "A"){
-                newParams.replace("chrt_gender", "");
-            }else if(newParams.get("chrt_age_group") == "0"){
-                newParams.replace("chrt_age_group", "");
-            }
-
-            newParams.put("count", 7);
+            newParams.put("count", 6);
+            System.out.println("chart list : " + newParams);
             List<Map<String, Object>> chart = readRepository.chartList(newParams);
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -1086,12 +1130,9 @@ public class UserStoreServiceImpl implements StoreService {
 /*************************************************************************************/
 
     @Override
-    public Map<String, Object> storyTextSave(String values, String fileName) throws Exception {
-        Map<String, Object> params = new HashMap<>();
-        params.put("values",values);
-        String [] str = fileName.split("/");
-        params.put("fileName",str[str.length]);
-        writeRepository.storyTextSave(params);
+    public Map<String, Object> storyTextSave(Map<String, Object> values) throws Exception {
+
+        writeRepository.storyTextSave(values);
         return null;
     }
 }

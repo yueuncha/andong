@@ -31,6 +31,9 @@ public interface UserPageReadRepository {
     List<Map<String, Object>> inquiryOne(Map<String, Object> params);
     List<Map<String, Object>> myBookMark(Map<String, Object> params);
 
+    List<Map<String, Object>> userFaqCategoryList(Map<String, Object> params);
+    List<Map<String, Object>> userFaqList(Map<String, Object> params);
+
 
 
 }

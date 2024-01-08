@@ -22,6 +22,7 @@ public interface UserPageWriteRepository {
     int inquiryUpdate (Map<String, Object> params);
     int inquiryDelete (Map<String, Object> params);
 
+    int userSecession(Map<String, Object> params);
 
 
 }

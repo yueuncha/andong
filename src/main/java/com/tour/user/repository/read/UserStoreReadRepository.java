@@ -25,4 +25,5 @@ public interface UserStoreReadRepository {
     List<String> menuImageList(String mn_idx);
     List<Map<String, Object>> festivalBanner(Map<String, Object> params);
     Map<String, Object> menuOne(Map<String, Object> params);
+    List<Map<String, Object>> addBanner(Map<String, Object> params);
 }

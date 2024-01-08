@@ -11,7 +11,7 @@
     </insert>
 
     <insert id="detailInsert" parameterType="map">
-        INSERT INTO andong_test_db.ad_store_detail
+        INSERT INTO andong_test_db.ad_store_detail_1
         (str_idx, str_dt_type, str_dt_name, str_dt_address, str_dt_address_dt, str_dt_desc, str_dt_traffic, str_time)
         VALUES(#{contentid}, 'ko', #{title}, CONCAT(#{addr1}, #{addr2}), '', #{overview}, '', '')
     </insert>

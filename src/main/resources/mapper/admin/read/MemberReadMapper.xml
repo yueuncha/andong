@@ -100,4 +100,117 @@
         SELECT str_idx from ad_store where str_idx > 3000
     </select>
 
+    <select id="userList" parameterType="map" resultType="map">
+        SELECT
+            IF(fi.mb_idx != 0 and fi.mb_idx is not null, IFNULL(am.mb_nickname, '') ,CONCAT('비회원',fi.fcm_idx))AS user_name
+             ,IF(fi.mb_idx != 0, '회원', '게스트') AS user_type
+             , fi.marketing_use
+             , fi.push_use
+             , IFNULL(am.mb_sns , 'E') AS mb_sns
+             , IFNULL(am.mb_email, '') AS mb_email
+             ,  IFNULL(am.mb_gender, '') AS mb_gender
+             , IFNULL(am.mb_birth , '') AS mb_birth
+             , IFNULL(am.mb_regdate, '') AS mb_regdate
+             , IFNULL(ls.set_1_name, '') AS mb_local
+             , IFNULL(ls2.set_2_name, '') AS mb_local2
+             , IF(am.mb_foreigner != 'K' , '외국인', '내국인') AS mb_foreigner
+        FROM fcm_info fi
+                 LEFT JOIN ad_member am ON fi.mb_idx = am.mb_idx
+                 LEFT JOIN local_set_1 ls ON am.mb_local = ls.set_1_code
+                 LEFT JOIN local_set_2 ls2 ON am.mb_local2 = ls2.set_2_code
+        <choose>
+            <when test="type == 1">
+                WHERE am.mb_status != 3 OR am.mb_status is null
+                AND fi.mb_idx != 0
+            </when>
+            <when test="type == 2">
+                WHERE am.mb_status != 3 OR am.mb_status is null
+                AND fi.mb_idx = 0
+            </when>
+            <otherwise>
+                WHERE am.mb_status != 3 OR am.mb_status is null
+            </otherwise>
+        </choose>
+    </select>
+
+
+    <select id="inquiryList" parameterType="map" resultType="map">
+        SELECT
+             ai.iq_idx
+            , IFNULL(am.mb_nickname, '탈퇴한 회원') AS mb_nickname
+             , ai.iq_title
+             , ai.iq_content
+             , DATE_FORMAT(ai.iq_regdate, '%Y-%m-%d') AS iq_regdate
+             , ai.inquiry_use
+             , aic.inq_category
+             , IF(ai.iq_status != 'E' , '답변 후', '답변 전') AS iq_status_text
+             , ai.iq_status
+            , ai.answer_content
+            , ai.answer_regdate
+        FROM ad_inquiry ai
+                 LEFT JOIN ad_member am ON am.mb_idx = ai.mb_idx
+                 LEFT JOIN ad_inquiry_category aic ON aic.inq_category_idx = ai.iq_category
+        WHERE ai.inquiry_use != 'N'
+        ORDER BY ai.iq_status
+    </select>
+
+    <select id="inquiryView" parameterType="int" resultType="map">
+        SELECT
+            ai.iq_idx
+             , IFNULL(am.mb_nickname, '탈퇴한 회원') AS mb_nickname
+             , ai.iq_title
+             , ai.iq_content
+             , DATE_FORMAT(ai.iq_regdate, '%Y-%m-%d') AS iq_regdate
+             , ai.inquiry_use
+             , aic.inq_category
+             , ai.iq_status
+             , IF(ai.iq_status != 'E' , '답변완료', '대기') AS iq_status_text
+             , ai.answer_content
+             , ai.answer_regdate
+        FROM ad_inquiry ai
+                 LEFT JOIN ad_member am ON am.mb_idx = ai.mb_idx
+                 LEFT JOIN ad_inquiry_category aic ON aic.inq_category_idx = ai.iq_category
+        WHERE ai.inquiry_use != 'N'
+            AND ai.iq_idx = #{iq_idx}
+        ORDER BY ai.iq_status
+    </select>
+
+    <select id="reportList" resultType="map">
+        SELECT
+            am.mb_nickname AS report_nickname
+             , ar.report_idx
+             , ar.report_content
+             , DATE_FORMAT(ar.report_date, '%Y-%m-%d') AS report_date
+             , ap.post_title
+             , aic.inq_category
+        FROM ad_report ar
+                 LEFT JOIN ad_member am ON am.mb_idx = ar.mb_idx
+                 LEFT JOIN ad_posting ap ON ap.post_idx = ar.post_idx
+                 LEFT JOIN ad_member am2 ON am2.mb_idx = ap.mb_idx
+                 LEFT JOIN ad_inquiry_category aic ON aic.inq_category_idx = ar.report_category
+    </select>
+
+    <select id="reportView" parameterType="int" resultType="map">
+        SELECT
+            am.mb_nickname AS report_nickname
+             , ar.report_idx
+             , ar.report_content
+             , DATE_FORMAT(ar.report_date, '%Y-%m-%d') AS report_date
+             , am2.mb_nickname AS post_nickname
+             , ar.post_idx
+             , ap.post_title
+             , ap.post_content
+             , aic.inq_category
+        FROM ad_report ar
+                 LEFT JOIN ad_member am ON am.mb_idx = ar.mb_idx
+                 LEFT JOIN ad_posting ap ON ap.post_idx = ar.post_idx
+                 LEFT JOIN ad_member am2 ON am2.mb_idx = ap.mb_idx
+                 LEFT JOIN ad_inquiry_category aic ON aic.inq_category_idx = ar.report_category
+        WHERE report_idx = #{report_idx};
+    </select>
+
+
+
+
+
 </mapper>

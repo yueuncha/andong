@@ -44,7 +44,7 @@
         INSERT INTO ad_pass_list (ps_idx, day_number, str_idx, store_turn, pass_list_use)
         SELECT
             #{ps_idx} AS ps_idx,
-            IFNULL(MAX(day_number) + 1, 1)AS day_number,
+            IFNULL(MAX(day_number)+1, 1)AS day_number,
             0 AS str_idx,
             1 AS store_turn,
             'Y' AS pass_list_use
@@ -74,6 +74,7 @@
     <update id="passDayDelete" parameterType="map">
         UPDATE ad_pass_list
         SET pass_list_use = 'N'
+            , day_number = day_number -1
         WHERE ps_idx = #{ps_idx} AND day_number = #{day_number};
 
         UPDATE ad_pass_list
@@ -116,6 +117,18 @@
         UPDATE ad_inquiry
         SET inquiry_use = 'N'
         WHERE iq_idx = #{iq_idx} AND mb_idx = #{mb_idx}
+    </update>
+
+    <update id="userSecession" parameterType="map">
+        UPDATE ad_member
+            SET mb_pw = ''
+              ,mb_email = ''
+              , mb_ci = ''
+              , mb_gender = ''
+              , mb_birth = '0000-00-00'
+              , mb_nickname = ''
+              , mb_status = '3'
+        WHERE mb_idx = #{mb_idx}
     </update>
 
 

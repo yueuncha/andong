@@ -65,5 +65,14 @@
         WHERE mn_nm = #{mn_nm} AND str_idx = #{str_idx}
     </update>
 
+    <update id="inquiryAnswer" parameterType="map">
+        UPDATE ad_inquiry
+            SET answer_content = #{inquiry_content}
+            , iq_status = 'A'
+            , answer_regdate = DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s')
+        WHERE iq_idx = #{iq_idx}
+    </update>
+
+
 
 </mapper>

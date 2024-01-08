@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tour.admin.repository.read.AppManageReadRepository">
+
+    <select id="andongStoryList" resultType="map">
+        SELECT
+            atr.tour_idx
+             ,atr.tour_title
+             , atr.tour_view_cnt
+             , DATE_FORMAT(atr.tour_reg_dt, '%Y-%m-%d') AS tour_reg_dt
+             , IF(atr.tour_use != 'N', '사용', '미사용') AS tour_use
+        FROM ad_tour atr
+    </select>
+
+    <select id="andongStoryView" resultType="map">
+        SELECT
+            atr.tour_idx
+             ,atr.tour_title
+             , atr.tour_subtitle
+             , atr.tour_contents
+             , atr.tour_image
+             , atr.tour_view_cnt
+             , DATE_FORMAT(atr.tour_reg_dt, '%Y-%m-%d') AS tour_reg_dt
+             , IF(atr.tour_use != 'N', '사용', '미사용') AS tour_use
+        FROM ad_tour atr
+        WHERE atr.tour_idx = #{tour_idx}
+    </select>
+
+    <select id="bannerLoad" resultType="map">
+        SELECT
+            ab.bn_idx
+             , ab.bn_img
+             , ab.bn_title
+             , ab.bn_url
+        FROM ad_banner ab
+        WHERE (DATE_FORMAT(ab.bn_reg_dt, '%Y-%m-%d')) = (SELECT MAX(DATE_FORMAT(bn2.bn_reg_dt, '%Y-%m-%d')) FROM ad_banner bn2)
+          AND ab.bn_use = 'Y'
+        ORDER BY DATE_FORMAT(ab.bn_reg_dt, '%Y-%m-%d')
+    </select>
+
+    <select id="stampList" resultType="map">
+        SELECT
+            ass.stp_nm
+             , IF(ass.stp_use != 'N', '사용', '미사용') AS stp_use
+             , ass.stp_give
+             , ass.stp_contents
+        FROM ad_stamp_set ass
+                 LEFT JOIN ad_store st ON ass.str_idx = st.str_idx
+        WHERE stp_lang_type = 'ko'
+    </select>
+
+    <select id="stampUserList" resultType="map">
+        SELECT
+            am.mb_nickname
+             , ass.stp_nm
+             , asl.stp_status
+             , asl.stp_s_date
+             , asl.stp_e_date
+        FROM ad_stamp_list asl
+                 LEFT JOIN ad_stamp_set ass ON ass.stp_idx = asl.stp_idx
+                 LEFT JOIN ad_member am ON asl.mb_idx = am.mb_idx
+        GROUP BY ass.str_idx , am.mb_idx
+    </select>
+
+    <select id="pushSendList" parameterType="map" resultType="map">
+        SELECT
+            afl.fcm_type
+             , DATE_FORMAT(afl.push_log_time, '%Y-%m-%d %H:%i:%s') AS push_log_time
+             , push_content
+             , IF(fi.mb_idx != 0,'회원', '비회원') AS user_type
+        FROM ad_fcm_logs afl
+                 LEFT JOIN fcm_info fi ON fi.fcm_idx = afl.fcm_idx
+        WHERE afl.fcm_type = 'push'
+        GROUP BY DATE_FORMAT(afl.push_log_time , '%Y-%m-%d')
+    </select>
+
+    <select id="recommendTourList" resultType="map">
+        SELECT
+            ps_idx
+             , ps_title
+             , ps_regdate
+             , ps_use
+             , ps_content
+        FROM ad_pass_set aps
+        WHERE mb_idx = 0
+    </select>
+
+    <select id="boardUserList" resultType="map">
+        SELECT
+            am.mb_nickname
+             , ap.post_title
+             , ap.post_content
+             , ap.post_reg_date
+             , ap.post_reg_time
+             , ap.post_update
+             , ap.post_uptime
+        FROM ad_posting ap
+                 LEFT JOIN ad_member am ON am.mb_idx = ap.mb_idx
+        WHERE ap.post_status = 'Y'
+    </select>
+
+
+</mapper>

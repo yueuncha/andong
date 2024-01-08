@@ -102,10 +102,10 @@
     <insert id="storyTextSave" parameterType="map">
         INSERT INTO andong_test_db.ad_tour
         (tour_title, tour_view_cnt, tour_reg_dt, tour_reg_time, tour_update_dt, tour_update_time, tour_use, tour_subtitle, tour_contents, tour_category, tour_image)
-        VALUES('제목', 0,DATE_FORMAT(NOW(), '%y-%m-%d'),
+        VALUES(#{tour_title}, 0,DATE_FORMAT(NOW(), '%y-%m-%d'),
                DATE_FORMAT(NOW(), '%h:%i:%s'),
                DATE_FORMAT(NOW(), '%y-%m-%d'),
-               DATE_FORMAT(NOW(), '%h:%i:%s'), 'Y', '부제목', #{values}, '카테고리', #{fileName});
+               DATE_FORMAT(NOW(), '%h:%i:%s'), 'Y', #{tour_subtitle}, #{tour_contents}, #{tour_category}, #{fileName});
 
     </insert>
 

@@ -17,5 +17,8 @@
     <link href="/resources/css/sb-admin-2.css" rel="stylesheet" type="text/css">
     <!-- Custom styles for this page -->
     <link href="/resources/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/resources/vendor/summernote/summernote-lite.css">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 
 </head>

@@ -153,11 +153,9 @@ public class UserPageController {
         return userPageService.passNameUpdate(vo);
     }
 
-    @GetMapping("/pass/best")
+    @PostMapping("/pass/best")
     @ResponseBody
-    public Map<String, Object> bestPassList() throws Exception{
-        RequestVO vo = new RequestVO();
-        vo.setReq("{}");
+    public Map<String, Object> bestPassList(RequestVO vo) throws Exception{
         return userPageService.bestPassList(vo);
     }
 
@@ -198,6 +196,18 @@ public class UserPageController {
     @ResponseBody
     public Map<String, Object> questDelete(RequestVO vo) throws Exception{
         return userPageService.inquiryDelete(vo);
+    }
+
+    @PostMapping("/user/secession")
+    @ResponseBody
+    public Map<String, Object> userSecession(RequestVO vo) throws Exception{
+        return userPageService.userSecession(vo);
+    }
+
+    @PostMapping("/my/faq")
+    @ResponseBody
+    public Map<String, Object> userFaqView(RequestVO vo) throws Exception{
+        return userPageService.faqList(vo);
     }
 
 

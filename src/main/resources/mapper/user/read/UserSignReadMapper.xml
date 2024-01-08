@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserMemberReadRepository">
+    <select id="agreementView" resultType="map">
+        SELECT
+            fq.faq_idx
+             , fq.faq_type
+             , fq.faq_title
+             , fq.faq_contents
+             , DATE_FORMAT(fq.faq_regdate, '%Y-%m-%d %H:%i:%s') AS faq_regdate
+             , DATE_FORMAT(fq.faq_update, '%Y-%m-%d %H:%i:%s') AS faq_update
+        FROM ad_faq fq
+        WHERE faq_use = 'Y'
+          AND faq_type = 'T'
+        ORDER BY fq.faq_regdate
+        LIMIT 1
+    </select>
+
+
     <select id="selectUserList" resultType="map">
         SELECT
             am.mb_idx
@@ -234,6 +250,39 @@
             ) AS sns
             ORDER BY sns.fcm_date
             LIMIT 1
+    </select>
+
+    <select id="userPushList" parameterType="map" resultType="map">
+        SELECT
+            fcm_type
+             , fcm_idx
+             , push_title
+             , push_content
+             , DATE_FORMAT(push_log_time, '%Y-%m-%d %H:%i:%s') AS push_log_time
+             , CASE
+                   WHEN  DATE_FORMAT(push_log_time, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d') THEN
+                       CASE
+                           WHEN TIMESTAMPDIFF(MINUTE, push_log_time, NOW()) >= 60 THEN
+                               CONCAT(
+                                       FLOOR(TIMESTAMPDIFF(MINUTE,push_log_time, NOW()) / 60),
+                                       '시간 전'
+                                   )
+                           ELSE
+                               CONCAT(
+                                       TIMESTAMPDIFF(MINUTE, CONCAT(push_log_time, ' '), NOW()),
+                                       '분 전'
+                                   )
+                           END
+                   ELSE
+                       CASE
+                           WHEN DATEDIFF(CURDATE(), push_log_time) = 1 THEN '어제'
+                           ELSE
+                               CONCAT(DATEDIFF(CURDATE(), push_log_time), '일 전')
+                           END
+                       END AS push_time
+        FROM ad_fcm_logs
+        WHERE fcm_idx = #{fcm_idx}
+        ORDER BY push_log_time
     </select>
 
 

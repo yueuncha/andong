@@ -5,7 +5,7 @@
         SELECT
             IFNULL(mp.my_idx, 0) AS my_idx,
             pt.mb_idx,
-            IFNULL(pt.post_idx, '') AS post_idx,
+            IFNULL(pt.post_idx, 0) AS post_idx,
             CONCAT(DATE_FORMAT(pt.post_reg_date, '%Y-%m-%d '), DATE_FORMAT(pt.post_reg_time, '%H:%i:%s')) AS post_regdate,
             IFNULL((SELECT mark_use FROM ad_bookmark ad WHERE ad.mb_idx = #{mb_idx} AND ad.post_idx = pt.post_idx), 'N') AS mark_now,
             IFNULL(CONCAT(#{url}, mp.my_image_file), '') AS first_post_image,
@@ -65,7 +65,7 @@
             ac.ct_eu_nm,
             asd.str_dt_type AS str_dt_type,
             asd.str_dt_name AS str_dt_name,
-            IFNULL(CONCAT(#{url}, st.str_image), st.str_image) AS str_image,
+            IFNULL(CONCAT( st.str_image), st.str_image) AS str_image,
             IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
             (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
             0.0 AS str_review_ave,
@@ -79,8 +79,9 @@
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
         WHERE  li.mb_idx = #{mb_idx}
           AND li.like_status = 'Y' AND like_type = 'S'
+          AND asd.str_dt_type = #{lang}
         GROUP BY st.str_idx, li.like_idx
-        ORDER BY IFNULL(#{sorting}, ''), asd.str_dt_desc DESC
+        ORDER BY IFNULL(#{sorting}, '')
     </select>
     <select id="myReview" resultType="map" parameterType="map">
         SET @user_lng = IFNULL((SELECT IFNULL(user_lng, 128.729853) FROM fcm_info WHERE mb_idx = IFNULL(#{mb_idx}, '')),  128.729853);
@@ -127,8 +128,9 @@
                  LEFT JOIN ad_member am ON rv.mb_idx = am.mb_idx
         WHERE  rv.mb_idx  = #{mb_idx}
           AND rv.rv_use = 'Y'
+          AND asd.str_dt_type = #{lang}
         GROUP BY st.str_idx, asd.str_dt_type, rv_idx, asd.str_dt_name
-        ORDER BY IFNULL(#{sorting},''), asd.str_dt_desc DESC
+        ORDER BY IFNULL(#{sorting},'')
     </select>
 
     <select id="reviewImageList" parameterType="map" resultType="map">
@@ -139,16 +141,33 @@
         WHERE avi.rv_idx = #{rv_idx} AND avi.rv_img_use = 'Y'
     </select>
 
-    <select id="bannerList" resultType="map">
-        SELECT
-            bn.bn_title,
-            bn.bn_img,
-            DATE_FORMAT(bn.bn_s_date, '%y-%m-%d') AS bn_s_date,
-            DATE_FORMAT(bn.bn_e_date, '%y-%m-%d') AS bn_e_date,
-            bn.bn_url
-        FROM ad_banner bn
-        WHERE bn.bn_use = 'Y'
-        LIMIT 5
+    <select id="bannerList" resultType="map" parameterType="map">
+        SELECT * FROM (
+                          SELECT
+                              st.str_idx AS str_idx
+                               , IFNULL(st.str_image, '')  AS str_image
+                               , asd.str_dt_name AS str_dt_name
+                               , '' AS banner_url
+                               , 'FASTIVAL' AS banner_type
+                          FROM ad_store st
+                                   LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
+                                   LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
+                          WHERE asd.str_dt_type = #{lang}
+                            AND (st.str_category = 3 OR st.str_category = 3)
+                          GROUP BY st.str_idx, asd.str_dt_type
+                          UNION ALL
+                          SELECT
+                              ab.bn_idx AS str_idx
+                               , ab.bn_img AS str_image
+                               , ab.bn_title AS str_dt_name
+                               , ab.bn_url AS banner_url
+                               , 'BANNER' AS banner_type
+                          FROM ad_banner ab
+                          WHERE ab.bn_use = 'Y'
+                          AND (DATE_FORMAT(ab.bn_reg_dt, '%Y-%m-%d')) = (SELECT MAX(DATE_FORMAT(bn2.bn_reg_dt, '%Y-%m-%d')) FROM ad_banner bn2)
+                          GROUP BY ab.bn_reg_dt
+                      ) AS banner_list
+        ORDER BY RAND()
     </select>
 
     <select id="storyList" parameterType="map" resultType="map">
@@ -210,7 +229,10 @@
         FROM ad_pass_set aps
                  LEFT JOIN ad_pass_list apl on apl.ps_idx = aps.ps_idx
                  LEFT JOIN ad_store_detail asd on asd.str_idx = apl.str_idx
-        WHERE aps.mb_idx = #{mb_idx} AND aps.ps_use = 'Y' and (asd.str_dt_type = 'ko' OR asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
+        WHERE aps.mb_idx = #{mb_idx}
+          AND aps.ps_use = 'Y'
+          AND apl.pass_list_use = 'Y'
+          AND (asd.str_dt_type = #{lang} OR asd.str_dt_type IS NULL)
         GROUP BY aps.ps_idx
         <if test='type.equals("A")'>
             ORDER BY RAND() LIMIT 4
@@ -219,7 +241,7 @@
 
     <select id="passImages" parameterType="map" resultType="string">
         SELECT
-            IFNULL(CONCAT(#{url},st.str_image ) ,'')   AS str_image
+            IFNULL(CONCAT(st.str_image ) ,'')   AS str_image
         FROM ad_pass_list apl
                  LEFT JOIN ad_pass_set aps on apl.ps_idx = aps.ps_idx
                  LEFT JOIN ad_store st on st.str_idx = apl.str_idx
@@ -248,14 +270,14 @@
              , st.str_idx
              , st.str_lat
              , st.str_lng
-             , IFNULL(CONCAT(#{url},st.str_image ) ,'')   AS str_image
+             , IFNULL(CONCAT(st.str_image ) ,'')   AS str_image
              , TRUNCATE(IFNULL((SELECT AVG(review_avg) FROM ad_review WHERE str_idx = st.str_idx), 0.0), 1)AS review_ave
         FROM  ad_pass_list psl
                  LEFT JOIN ad_pass_set ps ON psl.ps_idx = ps.ps_idx
                  LEFT JOIN ad_store st ON psl.str_idx = st.str_idx
                  LEFT JOIN ad_store_detail asd ON psl.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
-        WHERE (asd.str_dt_type = 'ko' OR  #{lang})
+        WHERE (asd.str_dt_type = #{lang})
           AND psl.pass_list_use = 'Y'
           AND ps.ps_idx = #{ps_idx}
           AND psl.str_idx > 0
@@ -269,14 +291,14 @@
             st.str_idx
              , ass.ps_idx
              , MAX(psl.day_number) AS day_count
-             , IFNULL(CONCAT(#{url},st.str_image),'') AS str_image
+             , st.str_image AS str_image
              , ass.ps_title
              , ass.ps_content
         FROM ad_pass_set ass
                  LEFT JOIN ad_pass_list psl ON ass.ps_idx = psl.ps_idx
                  LEFT JOIN ad_store st ON psl.str_idx = st.str_idx
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
-        WHERE ass.mb_idx = 0
+        WHERE ass.mb_idx = 0 AND asd.str_dt_type = #{lang}
         GROUP BY ass.ps_idx
         ORDER BY RAND()
         LIMIT 4
@@ -338,6 +360,29 @@
                  LEFT JOIN ad_mypage mp ON pt.post_idx = mp.post_idx
         WHERE ab.mb_idx = #{mb_idx} AND pt.post_status = 'Y' AND ab.mark_use = 'Y'
         GROUP BY pt.post_idx
+    </select>
+
+    <select id="userFaqList" parameterType="map" resultType="map">
+        SELECT
+            af.faq_idx
+             , af.faq_title
+             , af.faq_contents
+             , aic.inq_category
+             , aic.inq_category_idx
+        FROM ad_faq af
+                 LEFT JOIN ad_inquiry_category aic ON aic.inq_category_idx = af.faq_category
+        WHERE aic.inq_type = 'F' AND af.faq_use = 'Y'
+        <if test="!faq_category.equals('')">
+            AND af.faq_category = #{faq_category}
+        </if>
+    </select>
+
+    <select id="userFaqCategoryList" parameterType="map" resultType="map">
+        SELECT
+            aic.inq_category_idx
+             , aic.inq_category
+        FROM  ad_inquiry_category aic
+        WHERE aic.inq_type = 'F'
     </select>
 
 </mapper>

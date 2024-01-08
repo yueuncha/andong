@@ -3,7 +3,7 @@
 <mapper namespace="com.tour.admin.repository.read.LoadReadRepository">
 
     <select id="cotentidSelect" resultType="string">
-        SELECT str_idx FROM ad_store
+        SELECT str_idx FROM ad_store_1
     </select>
 
 </mapper>

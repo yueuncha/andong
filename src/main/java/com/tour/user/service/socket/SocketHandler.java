@@ -81,17 +81,23 @@ public class SocketHandler extends TextWebSocketHandler {
                     System.out.println(String.valueOf(stamp.get("stamp_status")));
 
                     if(userCheck){
-                        if(!String.valueOf(stamp.get("stamp_status")).equals("Y")){
+                        if(String.valueOf(stamp.get("stamp_status")).equals("N")){
                             boolean insertResult = writeRepository.stampInsert(stamp) != 0;
                             if(insertResult){
                                 /// 스탬프 획득
-                                s.getBasicRemote().sendText(Collections.singletonMap("fcm_send_result", fcmService.stampFCM(stamp)).toString());
+                                if(!stamp.get("token").equals("") || stamp.get("token") != null){
+                                    s.getBasicRemote().sendText(Collections.singletonMap("fcm_send_result", fcmService.stampFCM(stamp)).toString());
+                                }
                             }
                         }
-                    }else if(!userCheck){
+                    }else if(userCheck){
                         /// @@@에서 스탬프를 획득할 수 있습니다. 로그인하고 더 많은 스탬프와 경품을 획득하세요
-                        s.getBasicRemote().sendText(Collections.singletonMap("fcm_send_result", fcmService.stampFCM(stamp)).toString());
+                        if(!stamp.get("token").equals("") || stamp.get("token") != null){
+                            s.getBasicRemote().sendText(Collections.singletonMap("fcm_send_result", fcmService.stampFCM(stamp)).toString());
+                        }
                     }
+                }else{
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();

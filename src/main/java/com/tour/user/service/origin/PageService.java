@@ -41,4 +41,8 @@ public interface PageService {
     Map<String, Object> questUpdate(RequestVO vo) throws Exception;
     Map<String, Object> inquiryDelete(RequestVO vo) throws Exception;
     Map<String, Object> myBookMark(RequestVO vo) throws Exception;
+
+    Map<String, Object> userSecession(RequestVO vo) throws Exception;
+
+    Map<String, Object> faqList(RequestVO vo) throws Exception;
 }

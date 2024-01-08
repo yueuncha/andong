@@ -17,4 +17,12 @@ public interface MemberReadRepository {
     Map<String, Object> storeOne(int str_idx);
     List<String> dbCodeList();
 
+
+    /***************************************************************************************/
+
+    List<Map<String, Object>> userList(Map<String, Object> params);
+    List<Map<String, Object>> inquiryList(Map<String, Object> params);
+    Map<String, Object> inquiryView(int inq_idx);
+    List<Map<String, Object>> reportList();
+    Map<String, Object> reportView(int report_idx);
 }

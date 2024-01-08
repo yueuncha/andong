@@ -26,3 +26,7 @@
 
 <!-- @@ -->
 <script src="/resources/js/admin.js"></script>
+<!-- summernote -->
+<script src="/resources/vendor/summernote/summernote-lite.min.js"></script>
+<script src="/resources/vendor/summernote/lang/summernote-ko-KR.min.js"></script>
+<%--<script  src="http://code.jquery.com/jquery-latest.min.js"></script>--%>

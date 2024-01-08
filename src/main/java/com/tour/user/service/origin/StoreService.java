@@ -50,7 +50,7 @@ public interface StoreService {
     
     /**********************************************************************************/
     // 안동이야기 테스트
-    Map<String, Object> storyTextSave(String values, String fileName) throws Exception;
+    Map<String, Object> storyTextSave(Map<String, Object> values) throws Exception;
 
 
 

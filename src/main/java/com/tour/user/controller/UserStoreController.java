@@ -5,6 +5,7 @@ import com.tour.user.service.UserStoreServiceImpl;
 import com.tour.user.vo.RequestVO;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -185,7 +186,7 @@ public class UserStoreController {
         String fileName = multipartFile.getOriginalFilename();
         String fileCutName = fileName.substring(0, fileName.lastIndexOf("."));
         String fileExt = fileName.substring(fileName.lastIndexOf(".")+1);
-        saveFilePath = folderName+ File.separator + fileName;
+        saveFilePath = folderName+'/' + fileName;
 
         System.out.println(saveFilePath);
 
@@ -210,7 +211,7 @@ public class UserStoreController {
                 index ++;
 
                 saveFileName = fileCutName + "(" + index + ")." + fileExt;
-                String dictFile = folderName + File.separator + saveFileName;
+                String dictFile = folderName + '/'+ saveFileName;
                 _exist = new File(dictFile).isFile();
                 if(!_exist){
                     saveFilePath = dictFile;
@@ -229,11 +230,15 @@ public class UserStoreController {
         return jsonObject;
     }
 
-    @PostMapping("/andongStorytext")
+    @RequestMapping("/andongStorytext")
     @ResponseBody
-    public Map<String, Object> textTest(@RequestParam String values, MultipartFile file) throws Exception{
+    public Map<String, Object> textTest(@RequestBody Map<String, Object> values) throws Exception{
+//        JSONParser parser = new JSONParser();
+//        JSONObject json = (JSONObject) parser.parse(values);
+//        System.out.println(json);
+        System.out.println(values);
 
-        return storeService.storyTextSave(values, file.getOriginalFilename());
+        return storeService.storyTextSave(values);
     }
 
 

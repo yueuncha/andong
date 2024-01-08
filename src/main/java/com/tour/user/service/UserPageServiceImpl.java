@@ -957,7 +957,7 @@ public class UserPageServiceImpl implements PageService {
     @Override
     public Map<String, Object> bestPassList(RequestVO vo) throws Exception {
         Map<String, Object> newParams;
-        String str = (vo.getReq() != null) ? vo.getReq() : (vo.getEreq() != null) ? vo.getEreq() : null;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
@@ -965,7 +965,7 @@ public class UserPageServiceImpl implements PageService {
                 ? (boolean) oldParams.get("state") : false;
 
         if(state) {
-            newParams = new HashMap<>();
+            newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
             newParams.put("url", ip + "/image/place/");
 
@@ -1246,4 +1246,75 @@ public class UserPageServiceImpl implements PageService {
         return oldParams;
     }
 
+    public Map<String, Object> userSecession(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") ){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                boolean res = (userPageWriteRepository.userSecession(newParams) != 0) ? true : false;
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
+                }else{
+                    oldParams.put("data", Collections.singletonMap("update", res));
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> faqList(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
+
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("faq_category")){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                paramRes.put("faq", userPageReadRepository.userFaqList(newParams));
+                paramRes.put("category", userPageReadRepository.userFaqCategoryList(null));
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
+                }else{
+                    oldParams.put("data", Collections.singletonMap("data", paramRes));
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
 }

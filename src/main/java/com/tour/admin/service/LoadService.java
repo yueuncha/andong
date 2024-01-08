@@ -29,7 +29,7 @@ public class LoadService {
         this.loadReadRepository = loadReadRepository;
     }
 
-    public boolean detailInsert(JSONArray arr) throws Exception{
+    public boolean detailInsert() throws Exception{
 
         List<String> list = loadReadRepository.cotentidSelect();
 
