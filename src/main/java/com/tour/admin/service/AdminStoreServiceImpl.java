@@ -37,7 +37,11 @@ public class AdminStoreServiceImpl implements AdminStoreService{
 
     @Override
     public Map<String, Object> adminCategoryOne(int ct_idx) throws Exception {
-
         return readRepository.adminCategoryOne(ct_idx);
+    }
+
+    @Override
+    public List<Map<String, Object>> adminCategoryEtc() throws Exception {
+        return null;
     }
 }

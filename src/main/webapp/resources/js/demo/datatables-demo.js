@@ -92,6 +92,7 @@ function fnLangChange(idx, type, change){
 function fnLoadCategory(value){
   let result = ajax("POST", "/admin/category/view" , {"ct_idx" : value});
   console.log(result)
+  console.log(result['ct_ko_nm'])
 }
 
 

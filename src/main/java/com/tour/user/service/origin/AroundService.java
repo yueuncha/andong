@@ -23,4 +23,6 @@ public interface AroundService {
     Map<String, Object> postUpdate(MultipartHttpServletRequest multipart,RequestVO vo) throws Exception;
     Map<String, Object> postDelete(RequestVO vo) throws Exception;
     Map<String, Object> reportPost(RequestVO vo) throws Exception;
+
+    Map<String, Object> stampGiveCheck(RequestVO vo) throws Exception;
 }

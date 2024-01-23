@@ -547,7 +547,7 @@
                                         <option>선택4</option>
                                     </select>
                                 </div>
-                                <div class="form-group" >
+                                <div class="form-group">
                                     <label for="exampleFormControlTextarea1">내용</label>
                                     <textarea class="form-control" id="exampleFormControlTextarea1" rows="10"></textarea>
                                 </div>

@@ -186,13 +186,13 @@
                  SELECT
                      ass.str_idx,
                      ass.stp_idx,
-                     ass.stp_nm,
+                     asd.str_dt_name AS stp_nm,
                      st.str_lat,
                      st.str_lng,
                      IFNULL(CONCAT(st.str_image),'') AS  str_image,
-                     ass.stp_contents,
+                     asd.str_dt_desc AS stp_contents,
                      asd.str_dt_name,
-                     ass.stp_lang_type,
+                     asd.str_dt_type AS stp_lang_type,
                      IFNULL(CONCAT(#{iconUrl}, ass.stp_y_image),'') AS stp_y_image,
                      IFNULL(CONCAT(#{iconUrl}, ass.stp_n_image),'') AS  stp_n_image,
                      IF(FIND_IN_SET(#{mb_idx}, GROUP_CONCAT(asl.mb_idx)) > 0, 1, 0) AS stp_count,
@@ -206,7 +206,6 @@
                           LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
                           LEFT JOIN ad_stamp_list asl ON ass.stp_idx = asl.stp_idx
                  WHERE ass.stp_use = 'Y'
-                   AND ass.stp_lang_type = #{lang}
                    AND asd.str_dt_type = #{lang}
                  GROUP BY ass.stp_idx
                  )AS stamp_list
@@ -231,14 +230,14 @@
                  SELECT
                      ass.str_idx,
                      ass.stp_idx,
-                     ass.stp_nm,
+                     asd.str_dt_name AS stp_nm,
                      st.str_lat,
                      st.str_lng,
-                     ass.stp_contents,
+                     asd.str_dt_desc AS stp_contents,
                      asd.str_dt_address,
                      asd.str_dt_name,
                      IFNULL(CONCAT(st.str_image),'') AS  str_image,
-                     ass.stp_lang_type,
+                     asd.str_dt_type AS stp_lang_type,
                      ass.stp_give,
                      IFNULL(CONCAT(#{iconUrl}, ass.stp_y_image),'') AS stp_y_image,
                      IFNULL(CONCAT(#{iconUrl}, ass.stp_n_image),'') AS  stp_n_image,
@@ -260,7 +259,7 @@
                           LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
                           LEFT JOIN ad_stamp_list asl ON ass.stp_idx = asl.stp_idx
                  WHERE ass.stp_use = 'Y'
-                   AND ass.stp_lang_type = #{lang}
+                   AND ass.stp_lang_type = 'ko'
                    AND asd.str_dt_type = #{lang}
                    AND ass.str_idx = #{str_idx}
              )AS stamp_list
@@ -270,6 +269,7 @@
         SELECT * FROM (
             SELECT
                 ass.stp_idx,
+                ass.stp_lang_type ,
                 'stamp' AS type,
                 st.str_idx,
                 st.str_lat,
@@ -300,6 +300,7 @@
             GROUP BY ass.stp_lang_type, ass.stp_idx
             HAVING str_km > 10
         ) AS stamp_list
+        GROUP BY stamp_list.stp_lang_type
         ORDER BY stamp_list.str_km
         LIMIT 1
     </select>

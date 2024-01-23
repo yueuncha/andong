@@ -49,9 +49,9 @@
                                             <th>카테고리명(중국)</th>
                                             <th>카테고리명(일본)</th>
                                             <th>카테고리명(스페인)</th>
-                                            <th>카테고리명(독일어)</th>
-                                            <th>등록일시</th>
-                                            <th>수정일시</th>
+                                            <th>카테고리명(독일)</th>
+                                            <th>등록일자</th>
+                                            <th>수정일자</th>
                                             <th>사용여부</th>
                                         </tr>
                                         </thead>
@@ -68,9 +68,9 @@
                                             <th>카테고리명(중국)</th>
                                             <th>카테고리명(일본)</th>
                                             <th>카테고리명(스페인)</th>
-                                            <th>카테고리명(독일어)</th>
-                                            <th>등록일시</th>
-                                            <th>수정일시</th>
+                                            <th>카테고리명(독일)</th>
+                                            <th>등록일자</th>
+                                            <th>수정일자</th>
                                             <th>사용여부</th>
                                         </tr>
                                         </tfoot>
@@ -116,9 +116,51 @@
                                 <h6 class="m-0 font-weight-bold text-primary">카테고리 변경</h6>
                             </div>
                             <div class="card-body">
-
+                                <div style=" width : 100%">
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block; ">
+                                        <label>카테고리명</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                        <label>카테고리명(영문)</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                        <label>카테고리명(중국)</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                        <label>카테고리명(일본)</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                        <label>카테고리명(스페인)</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                        <label>카테고리명(독일)</label>
+                                        <input class="form-control mb-2" type="text" disabled>
+                                    </div>
+                                    <div class="form-group" style="width: 13%; display: inline-block;">
+                                        <label for="exampleFormControlSelect1">사용여부</label>
+                                        <select class="form-control" id="exampleFormControlSelect1" disabled>
+                                            <option>사용</option>
+                                            <option>미사용</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="float : right">
+                                    <a class="btn btn-primary btn-icon-split">
+                                        <span class="text">1</span>
+                                    </a>
+                                    <a class="btn btn-dark btn-icon-split">
+                                        <span class="text">1</span>
+                                    </a>
+                                    <a class="btn btn-circle btn-icon-split">
+                                        <span class="text">1</span>
+                                    </a>
+                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

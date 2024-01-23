@@ -773,6 +773,39 @@ public class AroundServiceimpl implements AroundService {
         return oldParams;
     }
 
+    @Override
+    public Map<String, Object> stampGiveCheck(RequestVO vo) throws Exception {
+        Map<String, Object> newParams;
+        String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
+        Map<String, Object> oldParams = stringToJson(str);
+        Map<String, Object> paramRes = new HashMap<>();
 
+        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
+                ? (boolean) oldParams.get("state") : false;
+
+        if(state) {
+            newParams = (Map<String, Object>) oldParams.get("result");
+            oldParams.replace("result", true);
+
+            if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                if((boolean)oldParams.get("cryption")){
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("give", "힝"))));
+                }else{
+                    oldParams.put("data", Collections.singletonMap("give", "힝"));
+                }
+
+            }else{
+                oldParams.put("result", false);
+                oldParams.put("msg", " 파라미터 확인 ");
+            }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
 }
 

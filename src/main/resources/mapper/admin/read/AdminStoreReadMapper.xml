@@ -47,8 +47,8 @@
              , rw.ct_zh_nm
              , rw.ct_de_nm
              , rw.ct_ja_nm
-             , rw.ct_reg_dt
-             , rw.ct_update_dt
+             , DATE_FORMAT(rw.ct_reg_dt, '%Y-%m-%d ') AS ct_reg_dt
+             , DATE_FORMAT(rw.ct_update_dt, '%Y-%m-%d ') AS ct_updtae_dt
         FROM ad_category rw
         WHERE rw.ct_idx > 1
         <choose>

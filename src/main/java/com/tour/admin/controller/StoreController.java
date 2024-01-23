@@ -56,6 +56,13 @@ public class StoreController {
         return mv;
     }
 
+    @RequestMapping("/admin/category/etc")
+    public ModelAndView categoryEtc() throws Exception{
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("admin/store/categoryEtc");
+        return mv;
+    }
+
 
 
 

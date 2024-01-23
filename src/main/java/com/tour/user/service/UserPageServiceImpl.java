@@ -539,6 +539,10 @@ public class UserPageServiceImpl implements PageService {
                 List<Map<String, Object>> list = userPageReadRepository.passList(newParams);
                 ObjectMapper objectMapper = new ObjectMapper();
 
+                if(newParams.get("mb_idx").equals("") && newParams.get("type").equals("U")){
+                    list = new ArrayList<>();
+                }
+
                 for (Map<String, Object> params: list) {
                     newParams.put("ps_idx",params.get("ps_idx"));
                     params.put("images", userPageReadRepository.passImages(newParams));
@@ -1300,10 +1304,11 @@ public class UserPageServiceImpl implements PageService {
 
                 paramRes.put("faq", userPageReadRepository.userFaqList(newParams));
                 paramRes.put("category", userPageReadRepository.userFaqCategoryList(null));
+
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
                 }else{
-                    oldParams.put("data", Collections.singletonMap("data", paramRes));
+                    oldParams.put("data",paramRes);
                 }
 
             }else{

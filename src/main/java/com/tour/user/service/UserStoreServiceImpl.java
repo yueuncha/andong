@@ -265,6 +265,7 @@ public class UserStoreServiceImpl implements StoreService {
                 newParams.put("url", ip+"/image/place/");
                 writeRepository.storeChrt(newParams);
                 writeRepository.storeView(String.valueOf(newParams.get("str_idx")));
+
                 List<Map<String, Object>> temp = readRepository.storeDetail(newParams);
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(new ObjectMapper().writeValueAsString(temp)));

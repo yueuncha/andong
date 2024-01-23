@@ -172,6 +172,7 @@
                       , IFNULL((SELECT COUNT(al.like_status) FROM ad_like al WHERE al.str_idx = st.str_idx AND al.like_type = 'S' AND al.like_status = 'Y'), 0) AS str_like_cnt
             , st.str_lat
             , st.str_lng
+            , CONCAT('ct_', IF(#{lang} = 'en', 'eu', #{lang}), '_nm') AS category_lang
             , ac.ct_ko_nm
             , ac.ct_ja_nm
             , ac.ct_zh_nm
@@ -312,7 +313,7 @@
             av.str_idx = #{str_idx} AND av.rv_use = 'Y'
         GROUP BY
             av.rv_idx
-        ORDER BY av.rv_reg_date
+        ORDER BY CONCAT(av.rv_reg_date, av.rv_reg_time) DESC
     </select>
 
     <select id="reviewImageList" parameterType="map" resultType="map">
