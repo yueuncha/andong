@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="egovframework-all-in-one.war">
+    <root id="archive" name="ROOT.war">
       <element id="artifact" artifact-name="andong:war exploded" />
     </root>
   </artifact>

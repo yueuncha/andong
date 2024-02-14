@@ -23,7 +23,7 @@
     </parent>
 
 	<properties>
-	    <spring.maven.artifact.version>4.3.5</spring.maven.artifact.version>
+	    <spring.maven.artifact.version>3.0.5</spring.maven.artifact.version>
 		<org.egovframe.rte.version>4.0.0</org.egovframe.rte.version>
 	</properties>
 
@@ -281,7 +281,7 @@
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<directory>${basedir}/target</directory>
-		<finalName>egovframework-all-in-one</finalName>
+		<finalName>ROOT</finalName>
 		<pluginManagement>
 			<plugins>
 				<plugin>
