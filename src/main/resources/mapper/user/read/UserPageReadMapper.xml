@@ -66,7 +66,7 @@
             asd.str_dt_type AS str_dt_type,
             asd.str_dt_name AS str_dt_name,
             IFNULL(CONCAT( st.str_image), st.str_image) AS str_image,
-            IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
+            IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc,
             (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx) AS str_review_cnt,
             0.0 AS str_review_ave,
             TRUNCATE(
@@ -266,7 +266,7 @@
              , psl.day_number
              , psl.psl_idx
              , asd.str_dt_name
-             , IFNULL(asd.str_dt_desc, '') AS str_dt_desc
+             , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
              , st.str_idx
              , st.str_lat
              , st.str_lng

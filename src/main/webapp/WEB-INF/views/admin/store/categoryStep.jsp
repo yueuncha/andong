@@ -117,47 +117,58 @@
                             </div>
                             <div class="card-body">
                                 <div style=" width : 100%">
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block; ">
+                                    <c:choose>
+                                        <c:when test="${category != null}">
+                                            <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
+                                                <label for="exampleFormControlSelect2">상위 카테고리명</label>
+                                                <select class="form-control" id="exampleFormControlSelect2" name="ct_parent" disabled>
+                                                </select>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise></c:otherwise>
+                                    </c:choose>
+
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block; ">
                                         <label>카테고리명</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_ko_nm" disabled>
                                     </div>
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
                                         <label>카테고리명(영문)</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_eu_nm" disabled>
                                     </div>
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
                                         <label>카테고리명(중국)</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_zh_nm" disabled>
                                     </div>
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
                                         <label>카테고리명(일본)</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_ja_nm" disabled>
                                     </div>
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
                                         <label>카테고리명(스페인)</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_es_nm" disabled>
                                     </div>
-                                    <div class="form-group mb-3 p-3" style="width: 13%; display: inline-block;">
+                                    <div class="form-group mb-3 p-3" style="width: auto; display: inline-block;">
                                         <label>카테고리명(독일)</label>
-                                        <input class="form-control mb-2" type="text" disabled>
+                                        <input class="form-control mb-2" type="text" name="ct_de_nm" disabled>
                                     </div>
-                                    <div class="form-group" style="width: 13%; display: inline-block;">
+                                    <div class="form-group" style="width: auto; display: inline-block;">
                                         <label for="exampleFormControlSelect1">사용여부</label>
-                                        <select class="form-control" id="exampleFormControlSelect1" disabled>
-                                            <option>사용</option>
-                                            <option>미사용</option>
+                                        <select class="form-control" id="exampleFormControlSelect1" name="ct_use" disabled>
+                                            <option value="Y">사용</option>
+                                            <option value="N">미사용</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div style="float : right">
-                                    <a class="btn btn-primary btn-icon-split">
-                                        <span class="text">1</span>
+                                    <a class="btn btn-primary btn-icon-split" onclick="fnCreate()">
+                                        <span class="text">신규</span>
                                     </a>
                                     <a class="btn btn-dark btn-icon-split">
-                                        <span class="text">1</span>
+                                        <span class="text">저장</span>
                                     </a>
-                                    <a class="btn btn-circle btn-icon-split">
-                                        <span class="text">1</span>
+                                    <a class="btn btn-circle btn-icon-split" style="width: auto;" onclick="fnClear('ct_use')">
+                                        <span class="text">초기화</span>
                                     </a>
                                 </div>
                             </div>

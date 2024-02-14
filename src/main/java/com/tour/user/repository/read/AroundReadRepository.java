@@ -24,4 +24,8 @@ public interface AroundReadRepository {
     Map<String, Object> postViewOne(Map<String, Object> params);
     Map<String, Object> pushFCM(Map<String, Object> params);
 
+
+    Map<String, Object> stampGiveCheck(Map<String, Object> params);
+    List<Map<String, Object>> stampGiveList(Map<String, Object> params);
+    Map<String, Object> stampBoardView();
 }

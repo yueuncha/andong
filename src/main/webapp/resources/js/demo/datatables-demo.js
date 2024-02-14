@@ -91,8 +91,27 @@ function fnLangChange(idx, type, change){
 
 function fnLoadCategory(value){
   let result = ajax("POST", "/admin/category/view" , {"ct_idx" : value});
-  console.log(result)
-  console.log(result['ct_ko_nm'])
+
+  //$('select[name="ct_parent"]').val(result['ct_parent']);
+  $('select[name="ct_parent"]').removeAttr("disabled");
+  $('input[name="ct_ko_nm"]').val(result['ct_ko_nm']);
+  $('input[name="ct_ko_nm"]').removeAttr("disabled");
+  $('input[name="ct_eu_nm"]').val(result['ct_eu_nm']);
+  $('input[name="ct_eu_nm"]').removeAttr("disabled");
+  $('input[name="ct_zh_nm"]').val(result['ct_zh_nm']);
+  $('input[name="ct_zh_nm"]').removeAttr("disabled");
+  $('input[name="ct_ja_nm"]').val(result['ct_ja_nm']);
+  $('input[name="ct_ja_nm"]').removeAttr("disabled");
+  $('input[name="ct_es_nm"]').val(result['ct_es_nm']);
+  $('input[name="ct_es_nm"]').removeAttr("disabled");
+  $('input[name="ct_de_nm"]').val(result['ct_de_nm']);
+  $('input[name="ct_de_nm"]').removeAttr("disabled");
+  $('select[name="ct_use"]').val(result['ct_use']).prop("selected", "true");
+  $('select[name="ct_use"]').removeAttr("disabled");
+  console.log($('select[name="ct_parent"]').val())
+  console.log(result['ct_parent'])
+
+
 }
 
 

@@ -314,4 +314,17 @@
         location.href = '/admin/banner'
     }
 
+    function fnCreate(){
+        console.log($('input[type="text"]').val())
+        $('input[type="text"]').removeAttr("disabled");
+        $('select').removeAttr("disabled");
+    }
+
+    function fnClear(selectedName){
+        $('input[type="text"]').val('');
+        $('input[type="text"]').attr("disabled", "true");
+        $('select').attr("disabled", "true");
+    }
+
+
 

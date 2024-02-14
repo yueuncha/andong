@@ -41,9 +41,9 @@
                  LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx
                  LEFT JOIN ad_category ac ON st.str_category = ac.ct_idx
         WHERE asd.str_dt_type = #{lang}
-          AND asd.str_dt_name LIKE CONCAT('%', #{keyword}, '%')
+          AND (asd.str_dt_name LIKE CONCAT('%', #{keyword}, '%') OR asd.str_dt_desc LIKE CONCAT('%', #{keyword}, '%'))
         GROUP BY st.str_idx, asd.str_dt_type, asd.str_dt_name
-        ORDER BY IFNULL(#{sorting},''), asd.str_dt_desc DESC
+        ORDER BY IFNULL(#{sorting},''), ac.ct_idx DESC
     </select>
 
     <select id="categoryList" parameterType="map" resultType="map">
@@ -68,7 +68,7 @@
                    , IFNULL(asd.str_dt_address, '') AS str_dt_address
                    , IFNULL(st.operating_hour, '') AS operating_hour
                    , IFNULL(CONCAT(st.str_image), st.str_image)  AS str_image
-                   , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                   , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
                    , (SELECT COUNT(*)
                       FROM ad_review
                       WHERE str_idx = st.str_idx ) AS str_review_cnt
@@ -113,7 +113,7 @@
                 , IFNULL(asd.str_dt_address, '') AS str_dt_address
                 , IFNULL(st.operating_hour, '') AS operating_hour
                 , IFNULL(CONCAT(st.str_image), st.str_image)  AS str_image
-                , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
                 , (SELECT COUNT(*) FROM ad_review WHERE str_idx = st.str_idx ) AS str_review_cnt
                 , TRUNCATE(
                 (6371 * acos(
@@ -187,7 +187,7 @@
             , asd.str_dt_type
             , IFNULL(asd.str_dt_address , '') AS str_dt_address
             , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
-            , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+            , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
             , TRUNCATE(
                 (6371 * acos(
                                 cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
@@ -256,7 +256,7 @@
                    , asd.str_dt_type AS str_dt_type
                    , asd.str_dt_name AS str_dt_name
                    , IFNULL(CONCAT(st.str_image), st.str_image)  AS str_image
-                   , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                    , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
                    , (SELECT COUNT(*)
                       FROM ad_review
                       WHERE str_idx = st.str_idx ) AS str_review_cnt
@@ -362,7 +362,7 @@
             asd.str_dt_name AS str_dt_name,
             IFNULL(asd.str_dt_address, '') AS str_dt_address,
             IFNULL(CONCAT( st.str_image), st.str_image) AS str_image,
-            IFNULL(asd.str_dt_desc, '') AS str_dt_desc,
+             IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc ,
             TRUNCATE(
                     (6371 * acos(
                                     cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
@@ -420,7 +420,7 @@
             , asd.str_dt_type AS str_dt_type
             , asd.str_dt_name AS str_dt_name
             , IFNULL(CONCAT(st.str_image), st.str_image)  AS str_image
-            , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+            , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
             , IFNULL(asd.str_time, '') AS str_time
         FROM ad_store st
         LEFT JOIN ad_store_detail asd ON st.str_idx = asd.str_idx

@@ -20,4 +20,6 @@ public interface AroundWriteRepository {
     int reportPost (Map<String, Object> params);
     int postDelete(Map<String, Object> params);
     int fcmLogInsert(Map<String, Object> params);
+
+    int stampCodeInsert(Map<String, Object> params);
 }

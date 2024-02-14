@@ -25,4 +25,5 @@ public interface AroundService {
     Map<String, Object> reportPost(RequestVO vo) throws Exception;
 
     Map<String, Object> stampGiveCheck(RequestVO vo) throws Exception;
+    Map<String, Object> stampInformation() throws Exception;
 }

@@ -26,7 +26,7 @@
                       , asd.str_dt_type
                       , IFNULL(asd.str_dt_address , '') AS str_dt_address
                       , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
-                      , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+                      , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
                         , TRUNCATE(
                         (6371 * acos(
                         cos(radians(@user_lat)) * cos(radians(st.str_lat)) * cos(radians(st.str_lng) - radians(@user_lng)) +
@@ -76,7 +76,7 @@
         , asd.str_dt_type
         , IFNULL(asd.str_dt_address , '') AS str_dt_address
         , IFNULL(asd.str_dt_address_dt , '') AS str_dt_address_dt
-        , IFNULL(asd.str_dt_desc , '') AS str_dt_desc
+        , IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS str_dt_desc
         , IFNULL(st.operating_hour , '') AS operating_hour
         , st.str_like_cnt
         , TRUNCATE(AVG(rv.review_avg), 1)AS review_ave
@@ -190,7 +190,7 @@
                      st.str_lat,
                      st.str_lng,
                      IFNULL(CONCAT(st.str_image),'') AS  str_image,
-                     asd.str_dt_desc AS stp_contents,
+                     IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS stp_contents,
                      asd.str_dt_name,
                      asd.str_dt_type AS stp_lang_type,
                      IFNULL(CONCAT(#{iconUrl}, ass.stp_y_image),'') AS stp_y_image,
@@ -233,7 +233,7 @@
                      asd.str_dt_name AS stp_nm,
                      st.str_lat,
                      st.str_lng,
-                     asd.str_dt_desc AS stp_contents,
+                     IFNULL(REGEXP_REPLACE(asd.str_dt_desc, '&lt;[^>]+>', '')  , '') AS stp_contents,
                      asd.str_dt_address,
                      asd.str_dt_name,
                      IFNULL(CONCAT(st.str_image),'') AS  str_image,
@@ -296,9 +296,9 @@
                 LEFT JOIN ad_store st ON ass.str_idx = st.str_idx
                 LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
             WHERE ass.stp_use = 'Y'
-                AND ass.stp_lang_type = #{lang}
+                AND ass.stp_lang_type = 'ko'
             GROUP BY ass.stp_lang_type, ass.stp_idx
-            HAVING str_km > 10
+            HAVING 1 > str_km
         ) AS stamp_list
         GROUP BY stamp_list.stp_lang_type
         ORDER BY stamp_list.str_km
@@ -411,6 +411,46 @@
              , (SELECT IFNULL(fi.push_use, 'N') FROM fcm_info fi WHERE fi.mb_idx = pt.mb_idx LIMIT 1) AS push_use
         FROM ad_posting pt
         WHERE pt.post_idx  = #{post_idx}
+    </select>
+
+    <select id="stampGiveCheck" resultType="map" parameterType="map">
+        SELECT
+            IF(COUNT(asl.stp_list_idx) >= (SELECT asb.stp_give_count FROM ad_stamp_board asb), 'Y', 'N') AS give_user
+             , IF(((SELECT COUNT(*) FROM ad_stamp_give WHERE mb_idx =  #{mb_idx})
+                       = (SELECT COUNT(*) FROM ad_stamp_list list WHERE list.mb_idx = #{mb_idx} AND list.stp_status = 'Y')/(SELECT asb.stp_give_count FROM ad_stamp_board asb) DIV 1)
+            , 'STAY', 'UPDATE') AS mb_give_status
+             , (SELECT COUNT(*) FROM ad_stamp_give WHERE mb_idx =  #{mb_idx}) AS give_now_code
+             , (SELECT COUNT(*) FROM ad_stamp_set ass WHERE ass.stp_lang_type = 'ko') AS tot_stamp
+             , COUNT(asl.stp_list_idx) AS tot_user_stamp
+             , (SELECT asb2.stp_give_count FROM ad_stamp_board asb2) AS give_default_code
+             , (SELECT asb3.stp_board_content FROM ad_stamp_board asb3) AS give_board_content
+             , COUNT(asl.stp_list_idx)/(SELECT asb.stp_give_count FROM ad_stamp_board asb) DIV 1 AS user_code_count
+        FROM ad_stamp_list asl
+                 LEFT JOIN ad_stamp_give asg ON asg.mb_idx  = asl.mb_idx
+        WHERE asl.mb_idx  = #{mb_idx}
+          AND asl.stp_status = 'Y'
+    </select>
+
+    <select id="stampGiveList" resultType="map" parameterType="map">
+        SELECT
+            asg.give_idx
+             , DATE_FORMAT(asg.give_s_date, '%Y-%m-%d %H:%i:%s') AS give_s_date
+             , asg.give_now
+             , IF(asg.give_now = 'N', '경품미지급', '경품지급') AS give_now_text
+             , COUNT(*) OVER() AS user_tot_give_count
+             , asg.give_number
+        FROM ad_stamp_give asg
+        WHERE asg.mb_idx = #{mb_idx}
+          AND asg.give_use = 'Y'
+        GROUP BY asg.give_idx
+    </select>
+
+    <select id="stampBoardView" resultType="map">
+        SELECT
+            asb.stp_board_content
+             , asb.stp_give_count
+             , asb.stp_board_image
+        FROM ad_stamp_board asb
     </select>
 
 </mapper>

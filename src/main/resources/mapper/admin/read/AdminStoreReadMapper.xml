@@ -70,6 +70,9 @@
              , ac.ct_eu_nm
              , ac.ct_zh_nm
              , ac.ct_de_nm
+             , ac.ct_use
+             , CAST(ac.ct_parent AS SIGNED) as ct_parent
+             , (SELECT ct_ko_nm FROM ad_category high WHERE high.ct_idx = ac.ct_parent) AS ct_parent_nm
              , DATE_FORMAT(ac.ct_reg_dt, '%Y-%m-%d %H:%i:%s') AS ct_reg_dt
         FROM ad_category ac
         WHERE ac.ct_idx = #{ct_idx}

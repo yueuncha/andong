@@ -101,4 +101,16 @@
         VALUES(
                #{type}, #{title}, #{content}, #{token}, DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), #{fcm_idx})
     </insert>
+
+    <insert id="stampCodeInsert" parameterType="map">
+        <selectKey keyProperty="result" resultType="int"  order="BEFORE">
+            SELECT COUNT(*) FROM ad_stamp_give WHERE give_number = #{give_number}
+        </selectKey>
+        <if test="result == 0">
+            INSERT INTO ad_stamp_give
+            (mb_idx, give_use, give_s_date, give_type, give_now, give_number)
+            VALUES
+            (#{mb_idx}, 'Y', DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i:%s'), 0, 'N', #{give_number})
+        </if>
+    </insert>
 </mapper>

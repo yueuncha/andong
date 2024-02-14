@@ -120,5 +120,11 @@ public class AroundController {
         return serviceimpl.stampGiveCheck(vo);
     }
 
+    @PostMapping("/stamp/info")
+    @ResponseBody
+    public Map<String, Object> stampInformation() throws Exception{
+        return serviceimpl.stampInformation();
+    }
+
 
 }

@@ -788,18 +788,52 @@ public class AroundServiceimpl implements AroundService {
             oldParams.replace("result", true);
 
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
+                Map<String, Object> check_value = readRepository.stampGiveCheck(newParams);
+                if(check_value.get("mb_give_status").equals("UPDATE")){
+                    int insert_count = Integer.parseInt(String.valueOf(check_value.get("user_code_count")))
+                            - Integer.parseInt(String.valueOf(check_value.get("give_now_code")));
+
+                    System.out.println("insert_count : " + insert_count);
+
+                    for (int i = 0; i < insert_count; i++) {
+                        newParams.put("give_number", new Random().nextInt(888888)+111111);
+                        if(writeRepository.stampCodeInsert(newParams) == 0){
+                            System.out.println(newParams);
+                        }
+                    }
+                }
+                List<Map<String, Object>> give_list = readRepository.stampGiveList(newParams);
+                check_value.put("list", give_list);
+
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 if((boolean)oldParams.get("cryption")){
-                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("give", "힝"))));
+                    oldParams.put("data", Encrypt(objectMapper.writeValueAsString(check_value)));
                 }else{
-                    oldParams.put("data", Collections.singletonMap("give", "힝"));
+                    oldParams.put("data", check_value);
                 }
+
+                System.out.println(check_value);
 
             }else{
                 oldParams.put("result", false);
                 oldParams.put("msg", " 파라미터 확인 ");
             }
+        }else{
+            oldParams.replace("result", false);
+            oldParams.put("msg", oldParams);
+        }
+
+        return oldParams;
+    }
+
+    @Override
+    public Map<String, Object> stampInformation() throws Exception {
+        Map<String, Object> oldParams = stringToJson(new RequestVO().getReq());
+
+        if(true) {
+            oldParams.replace("result", true);
+            oldParams.put("data", readRepository.stampBoardView());
         }else{
             oldParams.replace("result", false);
             oldParams.put("msg", oldParams);
