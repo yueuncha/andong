@@ -12,17 +12,17 @@ import java.util.Base64.*;
 
 public class AES128 extends Exception{
 
-    private String key;
-    private String cryptKey;
-    private SecretKeySpec keySpec;
-    private Cipher cipher;
+    private final String key;
+    private final String cryptKey;
+    private final SecretKeySpec keySpec;
+    private final Cipher cipher;
 
     /**
      * key set
      * */
     public AES128(String key, String cryptKey) throws Exception{
         byte [] keyBytes = new byte[16];
-        byte [] obj = cryptKey.getBytes("UTF-8");
+        byte [] obj = cryptKey.getBytes(StandardCharsets.UTF_8);
 
         System.arraycopy(obj, 0, keyBytes,0, keyBytes.length);
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
@@ -39,7 +39,7 @@ public class AES128 extends Exception{
     public String javaEncrypt(String str) throws Exception{
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(key.getBytes()));
         Encoder encoder = Base64.getEncoder();
-        String res =encoder.encodeToString(cipher.doFinal(str.getBytes("UTF-8")));
+        String res =encoder.encodeToString(cipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
 
         return res;
     }
@@ -52,7 +52,7 @@ public class AES128 extends Exception{
         byte[] strBytes = decoder.decode(str);
 
         cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(key.getBytes()));
-        String res = new String(cipher.doFinal(strBytes), "UTF-8");
+        String res = new String(cipher.doFinal(strBytes), StandardCharsets.UTF_8);
 
         return res;
     }

@@ -9,7 +9,7 @@ import java.util.Map;
 public interface UserMemberReadRepository {
 
     List<Map<String,Object>> selectUserList();
-    Map<String, Object> agreementView();
+    List<Map<String, Object>> agreementOne(Map<String, Object> param);
 
     Map<String, Object> selectUserOne(Map<String, Object> params);
 

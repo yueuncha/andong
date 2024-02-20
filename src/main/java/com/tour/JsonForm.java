@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class JsonForm {
 
-    private LocalDateTime time;
+    private final LocalDateTime time;
 
     public JsonForm(LocalDateTime time) {
         this.time = time;

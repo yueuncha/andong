@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tour.user.repository.read.UserMemberReadRepository">
-    <select id="agreementView" resultType="map">
+    <select id="agreementOne" resultType="map" parameterType="map">
         SELECT
-            fq.faq_idx
-             , fq.faq_type
-             , fq.faq_title
-             , fq.faq_contents
-             , DATE_FORMAT(fq.faq_regdate, '%Y-%m-%d %H:%i:%s') AS faq_regdate
-             , DATE_FORMAT(fq.faq_update, '%Y-%m-%d %H:%i:%s') AS faq_update
+             fq.faq_title
+             <choose>
+                 <when test="idx != null">
+                     , fq.faq_contents
+                 </when>
+                <otherwise>
+                    , CONCAT(#{ip}) AS url
+                </otherwise>
+             </choose>
         FROM ad_faq fq
         WHERE faq_use = 'Y'
           AND faq_type = 'T'
-        ORDER BY fq.faq_regdate
-        LIMIT 1
+          <if test="idx != null" >
+              AND faq_idx = #{idx}
+              LIMIT 1
+          </if>
     </select>
-
 
     <select id="selectUserList" resultType="map">
         SELECT

@@ -207,7 +207,7 @@
                           LEFT JOIN ad_stamp_list asl ON ass.stp_idx = asl.stp_idx
                  WHERE ass.stp_use = 'Y'
                    AND asd.str_dt_type = #{lang}
-                 GROUP BY ass.stp_idx
+                 GROUP BY st.str_idx
                  )AS stamp_list
         <if test='!stamp_status.equals("A")'>
             WHERE stamp_list.stamp_status = #{stamp_status}
@@ -297,7 +297,7 @@
                 LEFT JOIN ad_store_detail asd ON ass.str_idx = asd.str_idx
             WHERE ass.stp_use = 'Y'
                 AND ass.stp_lang_type = 'ko'
-            GROUP BY ass.stp_lang_type, ass.stp_idx
+            GROUP BY ass.stp_lang_type, st.str_idx
             HAVING 1 > str_km
         ) AS stamp_list
         GROUP BY stamp_list.stp_lang_type

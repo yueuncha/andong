@@ -12,6 +12,11 @@
       <option name="url" value="https://maven.egovframe.go.kr/maven/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="timeframe" />
+      <option name="name" value="timeframe" />
+      <option name="url" value="https://maven.egovframe.go.kr/maven/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="mvn2s" />
       <option name="name" value="mvn2s" />
       <option name="url" value="https://repo1.maven.org/maven2/" />

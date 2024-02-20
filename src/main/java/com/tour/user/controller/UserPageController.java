@@ -164,7 +164,7 @@ public class UserPageController {
     public Map<String, Object> questCategory(String type) throws Exception{
         RequestVO vo = new RequestVO();
         JSONObject json = new JSONObject();
-        vo.setReq(json.toJSONString(Collections.singletonMap("type",type)));
+        vo.setReq(JSONObject.toJSONString(Collections.singletonMap("type",type)));
         return userPageService.questCategory(vo);
     }
 

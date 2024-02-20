@@ -24,7 +24,7 @@ import java.util.Map;
 @Controller
 public class AppManageController {
 
-    private AppManageServiceImpl service;
+    private final AppManageServiceImpl service;
     @Value("#{address['ip']}")
     private String ip;
 

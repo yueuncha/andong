@@ -18,7 +18,7 @@ public class RequestVO {
             result.put("data", req);
             result.put("msg", "");
             result.put("cryption", false);
-            result.put("state", (req != null) ? true : false);
+            result.put("state", req != null);
         }else{
             result = null;
         }
@@ -31,7 +31,7 @@ public class RequestVO {
             result.put("data", ereq);
             result.put("msg", "");
             result.put("cryption", false);
-            result.put("state", (req != null) ? true : false);
+            result.put("state", req != null);
         }else{
             result = null;
         }

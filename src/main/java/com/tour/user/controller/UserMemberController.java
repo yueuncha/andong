@@ -9,8 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ public class UserMemberController {
     private String key;
 
     private final UserMemberServiceImpl userMemberService;
-    private Map<String, Object> setForm;
+    private final Map<String, Object> setForm;
 
     @Autowired
     public UserMemberController(UserMemberServiceImpl userMemberService) {
@@ -40,13 +42,27 @@ public class UserMemberController {
     /**
      *이용약관
      */
-    @RequestMapping("/agreement")
-    public ModelAndView userAgreement(){
+    @GetMapping("/agreement")
+    @ResponseBody
+    public List<Map<String, Object>> userAgreement(HttpServletRequest request){
+        Map<String, Object> param = new HashMap<>();
+        param.put("idx", null);
+        param.put("ip", request.getRequestURL());
+        return userMemberService.userAgreement(param);
+    }
+
+
+    @RequestMapping("/agreement/view")
+    public ModelAndView userAgreementView(String idx){
         ModelAndView mv = new ModelAndView();
+        Map<String, Object> param = new HashMap<>();
+        param.put("idx", idx);
         mv.setViewName("user/userAgreement");
-        mv.addObject("agreement",userMemberService.userAgreement());
+        mv.addObject("agreement",userMemberService.userAgreement(param).get(0));
         return mv;
     }
+
+
 
     @RequestMapping("/testStory")
     public String andongStory(){

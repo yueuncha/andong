@@ -24,7 +24,7 @@ import java.util.Map;
 
 @RestControllerAdvice(annotations = Controller.class)
 public abstract class ExceptionController extends AbstractController {
-    private Map<String, Object> setForm;
+    private final Map<String, Object> setForm;
 
     public ExceptionController() {
         this.setForm = new JsonForm(LocalDateTime.now()).setData();

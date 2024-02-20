@@ -86,8 +86,8 @@ public class UserMemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Map<String, Object>  userAgreement(){
-        return readRepository.agreementView();
+    public List<Map<String, Object>> userAgreement(Map<String, Object> param){
+        return readRepository.agreementOne(param);
     }
 
     @Override
@@ -96,8 +96,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramsRes = new HashMap<>();
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -147,8 +146,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         int mb_idx = 0;
 
@@ -187,8 +185,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -205,8 +202,8 @@ public class UserMemberServiceImpl implements MemberService {
                 if(login != null){
                     login.replace("mb_email", Decrypt(String.valueOf(login.get("mb_email"))));
                     login.replace("mb_pw", Decrypt(String.valueOf(login.get("mb_pw"))));
-                    loginResult = (login.get("mb_pw") != String.valueOf(newParams.get("mb_pw"))
-                            && login.isEmpty() || login == null) ? false : true;
+                    loginResult = (login.get("mb_pw") == String.valueOf(newParams.get("mb_pw"))
+                            || !login.isEmpty()) && login != null;
                 }
 
 
@@ -226,7 +223,7 @@ public class UserMemberServiceImpl implements MemberService {
                 }
 
 
-                System.out.println("user param" + newParams.toString());
+                System.out.println("user param" + newParams);
                 System.out.println("login result" + oldParams.get("login"));
 
 
@@ -255,8 +252,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             int resNum = 0;
@@ -295,8 +291,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -357,8 +352,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -381,7 +375,7 @@ public class UserMemberServiceImpl implements MemberService {
                     writeRepository.userJoin(newParams);
 
                     if(Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) != 0){
-                        res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
+                        res = writeRepository.fcmInsert(newParams) != 0;
                     }
 
                     newParams = readRepository.selectUserOne(newParams);
@@ -425,8 +419,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         boolean emailCheckResult = false;
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         Random random = new Random();
         int resNum = random.nextInt(888888)+111111;
@@ -500,7 +493,7 @@ public class UserMemberServiceImpl implements MemberService {
                     e.printStackTrace();
                 }*/
 
-                boolean res = (writeRepository.updateEmailChk(newParams) != 0 && emailCheckResult) ? true : false;
+                boolean res = writeRepository.updateEmailChk(newParams) != 0 && emailCheckResult;
                 newParams.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -531,8 +524,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
         boolean temp =false;
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -543,7 +535,7 @@ public class UserMemberServiceImpl implements MemberService {
 
             if(mb_pw != null) {
                 newParams.replace("mb_pw", mySqlEncrypt(String.valueOf(newParams.get("mb_pw"))));
-                temp = (writeRepository.passwordChange(newParams) != 0) ? true : false;
+                temp = writeRepository.passwordChange(newParams) != 0;
                 newParams.put("update", temp);
 
 
@@ -573,8 +565,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -612,8 +603,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> newParams = new HashMap<>();
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams =(Map<String, Object>) oldParams.get("result");
@@ -652,8 +642,7 @@ public class UserMemberServiceImpl implements MemberService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
 
@@ -671,12 +660,12 @@ public class UserMemberServiceImpl implements MemberService {
                 if(!newParams.get("fcm_idx").equals("")){
                     // 기존회원 or 게스트
                     if(newParams.get("fcm_idx").equals("")){
-                       res = (!readRepository.sessionData(newParams).isEmpty()) ? true : false;
+                       res = !readRepository.sessionData(newParams).isEmpty();
                     }else if((newParams.get("mb_idx").equals("") || Integer.parseInt(String.valueOf(newParams.get("mb_idx"))) == 0) && newParams.get("mb_idx").equals("")){
                         newParams.put("mb_idx", 0);
-                        res = (writeRepository.sessionUpdate(newParams) != 0) ? true : false;
+                        res = writeRepository.sessionUpdate(newParams) != 0;
                     }else{
-                        res = (writeRepository.sessionUpdate(newParams) != 0) ? true : false;
+                        res = writeRepository.sessionUpdate(newParams) != 0;
                     }
 
                 }else if((newParams.get("fcm_idx").equals("") || newParams.get("fcm_idx").equals(null)) &&  newParams.get("mb_idx").equals("")){
@@ -685,7 +674,7 @@ public class UserMemberServiceImpl implements MemberService {
                         newParams.put("mb_idx", 0);
                         newParams.put("fcm_idx", 0);
                     }
-                    res = (writeRepository.fcmInsert(newParams) != 0) ? true : false;
+                    res = writeRepository.fcmInsert(newParams) != 0;
 
                 }else {
                     oldParams.replace("result", false);
@@ -717,8 +706,7 @@ public class UserMemberServiceImpl implements MemberService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
             oldParams.replace("result", true);
@@ -751,8 +739,7 @@ public class UserMemberServiceImpl implements MemberService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -765,7 +752,7 @@ public class UserMemberServiceImpl implements MemberService {
                     int db_email = Integer.parseInt(String.valueOf(temp.get("email_check")));
                     int param_email = Integer.parseInt(String.valueOf(newParams.get("email_check")));
 
-                    temp.put("check", (db_email == param_email) ? true : false);
+                    temp.put("check", db_email == param_email);
                 }else{
                     temp.put("check", false);
                 }
@@ -794,8 +781,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -812,7 +798,7 @@ public class UserMemberServiceImpl implements MemberService {
                     newParams.put("type", "marketing_use");
                 }
 
-                boolean res = (writeRepository.alarmCheck(newParams) != 0) ? true : false;
+                boolean res = writeRepository.alarmCheck(newParams) != 0;
                 paramRes.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -840,8 +826,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -887,8 +872,7 @@ public class UserMemberServiceImpl implements MemberService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");

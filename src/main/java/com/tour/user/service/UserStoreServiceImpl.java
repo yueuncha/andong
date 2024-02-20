@@ -78,8 +78,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -107,8 +106,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -159,8 +157,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -205,8 +202,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -254,8 +250,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -296,8 +291,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -329,8 +323,7 @@ public class UserStoreServiceImpl implements StoreService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -427,8 +420,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> paramRes = new HashMap<>();
         boolean res = false;
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -436,7 +428,7 @@ public class UserStoreServiceImpl implements StoreService {
             newParams.put("url", ip+"/image/place/");
 
             if (newParams.containsKey("mb_idx") && newParams.containsKey("str_idx") && newParams.containsKey("rv_contents")) {
-                res = (writeRepository.strReviewCreate(newParams) != 0) ? true : false;
+                res = writeRepository.strReviewCreate(newParams) != 0;
 
                 //"D:\\image\\review\\"
                 //"/data/file/image/"
@@ -474,8 +466,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         oldParams.replace("result", true);
         if(state){
@@ -506,8 +497,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -548,8 +538,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -593,8 +582,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -627,8 +615,7 @@ public class UserStoreServiceImpl implements StoreService {
             Map<String, Object> oldParams = stringToJson(str);
             Map<String, Object> paramRes = new HashMap<>();
 
-            boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                    ? (boolean) oldParams.get("state") : false;
+            boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
             if(state) {
                 newParams = (Map<String, Object>) oldParams.get("result");
@@ -679,8 +666,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -715,8 +701,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -758,8 +743,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -794,8 +778,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -828,8 +811,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -880,8 +862,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -907,7 +888,7 @@ public class UserStoreServiceImpl implements StoreService {
                 String image_num = String.valueOf(newParams.get("images"));
                 String [] arr = image_num.split(",");
 
-                boolean res = (writeRepository.strReviewUpdate(newParams) != 0) ?  true : false;
+                boolean res = writeRepository.strReviewUpdate(newParams) != 0;
 
                 for (String images: arr) {
                     if(res){
@@ -941,8 +922,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -952,7 +932,7 @@ public class UserStoreServiceImpl implements StoreService {
                     && newParams.containsKey("rv_idx") && newParams.get("rv_idx") != ""){
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                boolean res = (writeRepository.strReviewDelete(newParams) != 0) ?  true : false;
+                boolean res = writeRepository.strReviewDelete(newParams) != 0;
                 List<Map<String, Object>> list = readRepository.reviewImageList(newParams);
 
                 for (Map<String, Object> images: list) {
@@ -986,8 +966,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -998,7 +977,7 @@ public class UserStoreServiceImpl implements StoreService {
                     && newParams.containsKey("rv_idx") && newParams.get("rv_idx") != ""){
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                paramRes.put("delete", (writeRepository.rvImageDelete(newParams) != 0) ? true : false);
+                paramRes.put("delete", writeRepository.rvImageDelete(newParams) != 0);
 
                 if ((boolean) oldParams.get("cryption")) {
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(paramRes)));
@@ -1023,8 +1002,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1063,8 +1041,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1100,8 +1077,7 @@ public class UserStoreServiceImpl implements StoreService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if (state) {
             newParams = (Map<String, Object>) oldParams.get("result");

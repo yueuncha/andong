@@ -6,9 +6,7 @@
     <title>이용약관</title>
 </head>
 <body>
-    <c:forEach var="i" items="${agreement}">
-        <h3>${i.key}</h3>
-        <p>${i.value}</p>
-    </c:forEach>
+        <h3>${agreement.faq_title}</h3>
+        <p>${agreement.faq_contents}</p>
 </body>
 </html>

@@ -18,8 +18,8 @@ import java.util.Map;
 @Service
 public class AppManageServiceImpl implements AppManageService{
 
-    private AppManageReadRepository readRepository;
-    private AppManageWriteRepository writeRepository;
+    private final AppManageReadRepository readRepository;
+    private final AppManageWriteRepository writeRepository;
 
     @Autowired
     public AppManageServiceImpl(AppManageReadRepository readRepository, AppManageWriteRepository writeRepository) {

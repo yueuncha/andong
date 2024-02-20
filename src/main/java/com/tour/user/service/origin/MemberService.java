@@ -3,6 +3,7 @@ package com.tour.user.service.origin;
 import com.tour.user.vo.RequestVO;
 import org.json.simple.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 public interface MemberService {
@@ -10,7 +11,7 @@ public interface MemberService {
     //암호화테스트
     Map<String, Object> test(RequestVO vo) throws Exception;
     //이용약관
-    Map<String, Object> userAgreement();
+    List<Map<String, Object>> userAgreement(Map<String, Object> param);
     //회원가입
     Map<String, Object> userJoin(RequestVO vo) throws Exception;
     //전체회원조회

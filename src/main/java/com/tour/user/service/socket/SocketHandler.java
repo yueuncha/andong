@@ -38,11 +38,11 @@ import java.util.*;
 @ServerEndpoint(value = "/ws/stamp" , configurator = SocketEndPointConfig.class)
 public class SocketHandler extends TextWebSocketHandler {
 
-    private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
+    private static final Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
 
-    private AroundReadRepository readRepository;
-    private AroundWriteRepository writeRepository;
-    private FCMService fcmService;
+    private final AroundReadRepository readRepository;
+    private final AroundWriteRepository writeRepository;
+    private final FCMService fcmService;
 
     @Autowired
     public SocketHandler(AroundReadRepository readRepository, AroundWriteRepository writeRepository, FCMService fcmService) {
@@ -76,9 +76,9 @@ public class SocketHandler extends TextWebSocketHandler {
 
             try {
                 if(!stamp.isEmpty()){
-                    boolean userCheck = (Integer.parseInt(String.valueOf(stamp.get("mb_idx"))) != 0) ? true : false;
+                    boolean userCheck = Integer.parseInt(String.valueOf(stamp.get("mb_idx"))) != 0;
                     stamp.put("userCheck", userCheck);
-                    System.out.println(String.valueOf(stamp.get("stamp_status")));
+                    System.out.println(stamp.get("stamp_status"));
 
                     if(userCheck){
                         if(String.valueOf(stamp.get("stamp_status")).equals("N")){

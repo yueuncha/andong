@@ -78,8 +78,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -119,8 +118,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -156,8 +154,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -192,8 +189,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -229,8 +225,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -238,7 +233,7 @@ public class AroundServiceimpl implements AroundService {
             newParams.put("storeUrl", ip + "/image/place/");
             newParams.put("iconUrl", ip + "/image/stamp/android/");
 
-            System.out.println("stamp : "+ newParams.toString());
+            System.out.println("stamp : "+ newParams);
 
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
                 ObjectMapper objectMapper = new ObjectMapper();
@@ -277,8 +272,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -315,8 +309,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -359,8 +352,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -402,8 +394,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -435,8 +426,7 @@ public class AroundServiceimpl implements AroundService {
         String str = (vo.getReq() != null) ? vo.getReq() : vo.getEreq();
         Map<String, Object> oldParams = stringToJson(str);
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state){
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -490,8 +480,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -595,8 +584,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -606,7 +594,7 @@ public class AroundServiceimpl implements AroundService {
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
                 ObjectMapper objectMapper = new ObjectMapper();//
                 List<String> image = imageUpload(request.getFiles("files"), "usr/local/tomcat9/webapps/data/file/image/mypage/");
-                boolean res = (writeRepository.postInsert(newParams) != 0) ? true : false;
+                boolean res = writeRepository.postInsert(newParams) != 0;
 
                 for(String img : image){
                     newParams.put("my_image_file", img);
@@ -640,8 +628,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> paramRes = new HashMap<>();
 
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -668,7 +655,7 @@ public class AroundServiceimpl implements AroundService {
                 String image_num = String.valueOf(newParams.get("images"));
                 String [] arr = image_num.split(",");
 
-                boolean res = (writeRepository.postUpdate(newParams) != 0) ?  true : false;
+                boolean res = writeRepository.postUpdate(newParams) != 0;
 
                 if(arr.length != 0){
                     for (String images: arr) {
@@ -706,8 +693,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -717,7 +703,7 @@ public class AroundServiceimpl implements AroundService {
                     && newParams.containsKey("post_idx") && newParams.get("post_idx") != ""){
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                boolean res = (writeRepository.postDelete(newParams) != 0) ? true : false;
+                boolean res = writeRepository.postDelete(newParams) != 0;
 
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("report", res))));
@@ -744,8 +730,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -753,7 +738,7 @@ public class AroundServiceimpl implements AroundService {
 
             if(newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
                 ObjectMapper objectMapper = new ObjectMapper();
-                boolean res = (writeRepository.reportPost(newParams) != 0) ? true : false;
+                boolean res = writeRepository.reportPost(newParams) != 0;
 
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("report", res))));
@@ -780,8 +765,7 @@ public class AroundServiceimpl implements AroundService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");

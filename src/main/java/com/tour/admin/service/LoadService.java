@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class LoadService {
             urlConnection.setRequestProperty("Content-type", "application/json");
             urlConnection.setDoOutput(true);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
             result = br.readLine();
 
             System.out.println(result);
@@ -60,7 +61,7 @@ public class LoadService {
                 JSONObject items = (JSONObject)body.get("items");
                 JSONArray item = (JSONArray) items.get("item");
 
-                for (Object obj: (JSONArray) item) {
+                for (Object obj: item) {
                     JSONObject params = (JSONObject)obj;
 
                     if(!params.isEmpty()){
@@ -83,7 +84,7 @@ public class LoadService {
 
 
     public boolean storeInsert(JSONArray arr) throws Exception{
-        for (Object obj: (JSONArray) arr) {
+        for (Object obj: arr) {
             JSONObject params = (JSONObject)obj;
             loadWriteRepository.storeInsert(params);
         }

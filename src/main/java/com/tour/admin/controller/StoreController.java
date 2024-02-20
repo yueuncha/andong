@@ -14,7 +14,7 @@ import java.util.Map;
 @Controller
 public class StoreController {
 
-    private AdminStoreServiceImpl service;
+    private final AdminStoreServiceImpl service;
     @Value("#{address['ip']}")
     private String ip;
 

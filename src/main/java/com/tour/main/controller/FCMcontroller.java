@@ -28,7 +28,7 @@ import java.util.Set;
 @Controller
 public class FCMcontroller {
 
-    private FCMService service;
+    private final FCMService service;
 
     @Autowired
     public FCMcontroller(FCMService service) {

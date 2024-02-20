@@ -89,8 +89,7 @@ public class FCMService {
         Map<String, Object> oldParams = stringToJson(str);
         String response = "FAIL";
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             Map<String, Object> newParams = (Map<String, Object>) oldParams.get("result");
@@ -172,7 +171,7 @@ public class FCMService {
         System.out.println(result);
 
         if(result){
-            result = (writeRepository.fcmLogInsert(params) != 0)? true : false;
+            result = writeRepository.fcmLogInsert(params) != 0;
         }
         return result;
     }
@@ -222,7 +221,7 @@ public class FCMService {
             result = false;
         }
         if(result){
-            result = (writeRepository.fcmLogInsert(params) != 0)? true : false;
+            result = writeRepository.fcmLogInsert(params) != 0;
         }
         return result;
     }

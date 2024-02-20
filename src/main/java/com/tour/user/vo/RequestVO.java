@@ -27,7 +27,7 @@ public class RequestVO {
             result.put("data", "");
             result.put("msg", "");
             result.put("cryption", false);
-            result.put("state", (req != null) ? true : false);
+            result.put("state", req != null);
             res = new JSONObject(result).toJSONString();
         }else{
             res = result.toString();
@@ -43,7 +43,7 @@ public class RequestVO {
            result.put("data", "");
             result.put("msg", "");
            result.put("cryption", true);
-           result.put("state", (ereq != null) ? true : false);
+           result.put("state", ereq != null);
            res = new JSONObject(result).toJSONString();
        }else{
            res = null;

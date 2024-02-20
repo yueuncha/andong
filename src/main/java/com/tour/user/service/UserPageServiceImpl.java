@@ -122,8 +122,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -159,8 +158,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -204,8 +202,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -240,8 +237,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -293,8 +289,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -328,8 +323,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -377,8 +371,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -414,8 +407,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -451,8 +443,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -489,8 +480,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -527,8 +517,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -573,8 +562,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -619,8 +607,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -630,7 +617,7 @@ public class UserPageServiceImpl implements PageService {
             if(newParams.containsKey("ps_title") && newParams.get("ps_title") != ""
                 && newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
 
-                boolean res = (userPageWriteRepository.passInsert(newParams) != 0) ? true  : false;
+                boolean res = userPageWriteRepository.passInsert(newParams) != 0;
 
                 if(res){
                     userPageWriteRepository.passDayFirst(Integer.parseInt(String.valueOf(newParams.get("ps_idx"))));
@@ -662,8 +649,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -671,7 +657,7 @@ public class UserPageServiceImpl implements PageService {
             newParams.put("url", ip + "/image/story/");
 
             if(newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""){
-                boolean res = (userPageWriteRepository.passDayInsert(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passDayInsert(newParams) != 0;
                 paramRes.put("write", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -699,8 +685,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -710,7 +695,7 @@ public class UserPageServiceImpl implements PageService {
             if(newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""
                     && newParams.containsKey("str_idx") && newParams.get("str_idx") != ""){
 
-                boolean res = (userPageWriteRepository.passStoreInsert(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passStoreInsert(newParams) != 0;
                 paramRes.put("write", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -739,8 +724,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -749,7 +733,7 @@ public class UserPageServiceImpl implements PageService {
 
             if(true){
 
-                boolean res = (userPageWriteRepository.passDelete(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passDelete(newParams) != 0;
                 paramRes.put("update", res);
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(new JSONObject(paramRes).toJSONString()));
@@ -776,8 +760,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -811,8 +794,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -822,7 +804,7 @@ public class UserPageServiceImpl implements PageService {
             if(newParams.containsKey("day_number") && newParams.get("day_number") != ""
                     && newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""){
 
-                boolean res = (userPageWriteRepository.passDayDelete(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passDayDelete(newParams) != 0;
                 paramRes.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -850,8 +832,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -885,8 +866,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -897,7 +877,7 @@ public class UserPageServiceImpl implements PageService {
                     && newParams.containsKey("day_number") && newParams.get("day_number") != ""
                     && newParams.containsKey("psl_idx") && newParams.get("psl_idx") != ""){
 
-                boolean res = (userPageWriteRepository.passStoreDelete(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passStoreDelete(newParams) != 0;
                 paramRes.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -925,8 +905,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -937,7 +916,7 @@ public class UserPageServiceImpl implements PageService {
                     && newParams.containsKey("ps_idx") && newParams.get("ps_idx") != ""
                     && newParams.containsKey("mb_idx") && newParams.get("mb_idx") != ""){
 
-                boolean res = (userPageWriteRepository.passNameUpdate(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.passNameUpdate(newParams) != 0;
                 paramRes.put("update", res);
 
                 if((boolean)oldParams.get("cryption")){
@@ -965,8 +944,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1002,8 +980,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1031,8 +1008,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1042,7 +1018,7 @@ public class UserPageServiceImpl implements PageService {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 int testNumber = userPageWriteRepository.inquiryInsert(newParams);
-                boolean res = (testNumber != 0) ? true : false;
+                boolean res = testNumber != 0;
 
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
@@ -1068,8 +1044,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1105,8 +1080,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1141,8 +1115,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1153,7 +1126,7 @@ public class UserPageServiceImpl implements PageService {
 
                 if(newParams.get("iq_status").equals("E")){
                     ObjectMapper objectMapper = new ObjectMapper();
-                    boolean res = (userPageWriteRepository.inquiryUpdate(newParams) != 0) ? true : false;
+                    boolean res = userPageWriteRepository.inquiryUpdate(newParams) != 0;
 
                     if((boolean)oldParams.get("cryption")){
                         oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update",res))));
@@ -1184,8 +1157,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1221,8 +1193,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1231,7 +1202,7 @@ public class UserPageServiceImpl implements PageService {
             if(newParams.containsKey("mb_idx") && newParams.containsKey("iq_idx")){
                 ObjectMapper objectMapper = new ObjectMapper();
 
-                boolean res = (userPageWriteRepository.inquiryDelete(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.inquiryDelete(newParams) != 0;
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
                 }else{
@@ -1256,8 +1227,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
@@ -1266,7 +1236,7 @@ public class UserPageServiceImpl implements PageService {
             if(newParams.containsKey("mb_idx") ){
                 ObjectMapper objectMapper = new ObjectMapper();
 
-                boolean res = (userPageWriteRepository.userSecession(newParams) != 0) ? true : false;
+                boolean res = userPageWriteRepository.userSecession(newParams) != 0;
                 if((boolean)oldParams.get("cryption")){
                     oldParams.put("data", Encrypt(objectMapper.writeValueAsString(Collections.singletonMap("update", res))));
                 }else{
@@ -1292,8 +1262,7 @@ public class UserPageServiceImpl implements PageService {
         Map<String, Object> oldParams = stringToJson(str);
         Map<String, Object> paramRes = new HashMap<>();
 
-        boolean state = (oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption"))
-                ? (boolean) oldParams.get("state") : false;
+        boolean state = oldParams != null && oldParams.containsKey("result") && oldParams.containsKey("cryption") && (boolean) oldParams.get("state");
 
         if(state) {
             newParams = (Map<String, Object>) oldParams.get("result");
