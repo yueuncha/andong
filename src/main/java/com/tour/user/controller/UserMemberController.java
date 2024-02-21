@@ -23,6 +23,9 @@ public class UserMemberController {
     @Value("#{aesConfig['key']}")
     private String key;
 
+    @Value("#{address['ip']}")
+    private String ip;
+
     private final UserMemberServiceImpl userMemberService;
     private final Map<String, Object> setForm;
 
@@ -47,7 +50,7 @@ public class UserMemberController {
     public List<Map<String, Object>> userAgreement(HttpServletRequest request){
         Map<String, Object> param = new HashMap<>();
         param.put("idx", null);
-        param.put("ip", request.getRequestURL());
+        param.put("ip", ip+request.getRequestURI().substring(1));
         return userMemberService.userAgreement(param);
     }
 

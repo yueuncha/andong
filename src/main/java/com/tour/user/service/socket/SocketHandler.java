@@ -57,9 +57,8 @@ public class SocketHandler extends TextWebSocketHandler {
 
         if(!clients.contains(session)){
             clients.add(session);
-            System.out.println("session Open : " + session );
         } else {
-            System.out.println("이미 연결된 session");
+
         }
     }
 
@@ -72,13 +71,10 @@ public class SocketHandler extends TextWebSocketHandler {
             Map<String, Object> stamp = readRepository.userStampCalc(json);
 
         for(Session s : clients) {
-            System.out.println("send data : " + json.toJSONString());
-
             try {
                 if(!stamp.isEmpty()){
                     boolean userCheck = Integer.parseInt(String.valueOf(stamp.get("mb_idx"))) != 0;
                     stamp.put("userCheck", userCheck);
-                    System.out.println(stamp.get("stamp_status"));
 
                     if(userCheck){
                         if(String.valueOf(stamp.get("stamp_status")).equals("N")){
