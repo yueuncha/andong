@@ -266,6 +266,12 @@
         $('#bannerUrl').text(value.dataset['url'])
     }
 
+    function fnStoreUpdate(){
+        let objBox = document.getElementById('storeItem');
+        console.log(objBox)
+        console.log(objBox.querySelectorAll('p'))
+    }
+
     function fnBannerUpdate(obj, idx){
         let tr = obj.parentNode.parentNode;
 

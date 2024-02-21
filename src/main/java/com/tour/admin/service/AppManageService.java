@@ -21,4 +21,5 @@ public interface AppManageService {
     List<Map<String, Object>> boardUserList();
 
     int bannerUpdate(Map<String, Object> banner) throws Exception;
+
 }

@@ -78,7 +78,7 @@
         SELECT
             ps_idx
              , ps_title
-             , ps_regdate
+             , DATE_FORMAT(ps_regdate, '%Y-%m-%d') AS ps_regdate
              , ps_use
              , ps_content
         FROM ad_pass_set aps
@@ -98,6 +98,5 @@
                  LEFT JOIN ad_member am ON am.mb_idx = ap.mb_idx
         WHERE ap.post_status = 'Y'
     </select>
-
 
 </mapper>

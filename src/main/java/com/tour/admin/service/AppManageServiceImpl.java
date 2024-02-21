@@ -109,4 +109,5 @@ public class AppManageServiceImpl implements AppManageService{
     public List<Map<String, Object>> boardUserList() {
         return readRepository.boardUserList();
     }
+
 }

@@ -35,7 +35,7 @@
                                     </c:forEach>
                                 </div>
                                 <c:forEach var="item" items="${list}" varStatus="status">
-                                    <div class="form-group mb-3 font-weight-bold store_${status.index} store" style="display: none; text-align: center" >
+                                    <div id="storeItem" class="form-group mb-3 font-weight-bold store_${status.index} store" style="display: none; text-align: center" >
                                         <hr>
                                         <hr>
                                         <p class="text-primary">명칭</p>
@@ -51,6 +51,9 @@
                                     </div>
                                 </c:forEach>
                                 <div style="float: right;">
+                                    <a class="btn btn-dark btn-icon-split" onclick="fnStoreUpdate()">
+                                        <span class="text">수정</span>
+                                    </a>
                                     <a class="btn btn-primary btn-icon-split" onclick="history.back()">
                                         <span class="text">확인</span>
                                     </a>

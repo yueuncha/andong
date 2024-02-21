@@ -30,7 +30,7 @@
                                         <thead>
                                         <tr>
                                             <th>제목</th>
-                                            <th>조회수</th>
+                                            <th>설명</th>
                                             <th>등록일자</th>
                                             <th>사용유/무</th>
                                         </tr>
@@ -38,20 +38,20 @@
                                         <tfoot>
                                         <tr>
                                             <th>제목</th>
-                                            <th>조회수</th>
+                                            <th>설명</th>
                                             <th>등록일자</th>
                                             <th>사용유/무</th>
                                         </tr>
                                         </tfoot>
                                         <tbody>
-<%--                                        <c:forEach var="item" items="${list}">--%>
-<%--                                            <tr onclick="location.href='/admin/story/view?tour_idx='+${item.tour_idx}">--%>
-<%--                                                <td>${item.tour_title}</td>--%>
-<%--                                                <td>${item.tour_view_cnt}</td>--%>
-<%--                                                <td>${item.tour_reg_dt}</td>--%>
-<%--                                                <td>${item.tour_use}</td>--%>
-<%--                                            </tr>--%>
-<%--                                        </c:forEach>--%>
+                                        <c:forEach var="item" items="${list}">
+                                            <tr onclick="location.href='/admin/story/view?tour_idx='+${item.tour_idx}">
+                                                <td>${item.ps_title}</td>
+                                                <td>${item.ps_content}</td>
+                                                <td>${item.ps_regdate}</td>
+                                                <td>${item.ps_use}</td>
+                                            </tr>
+                                        </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>

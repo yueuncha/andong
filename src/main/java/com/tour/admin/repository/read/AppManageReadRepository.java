@@ -15,4 +15,5 @@ public interface AppManageReadRepository {
     List<Map<String, Object>> pushSendList(Map<String, Object> params);
     List<Map<String, Object>> recommendTourList();
     List<Map<String, Object>> boardUserList();
+
 }
