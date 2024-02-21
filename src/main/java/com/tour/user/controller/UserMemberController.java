@@ -50,7 +50,7 @@ public class UserMemberController {
     public List<Map<String, Object>> userAgreement(HttpServletRequest request){
         Map<String, Object> param = new HashMap<>();
         param.put("idx", null);
-        param.put("ip", ip+request.getRequestURI().substring(1));
+        param.put("ip", ip+request.getRequestURI());
         return userMemberService.userAgreement(param);
     }
 
